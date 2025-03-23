@@ -1,14 +1,16 @@
-package cli
+package ansi
 
 import (
 	"os"
 	"regexp"
+
+	"github.com/redrock/autocrafter/terminal"
 )
 
 var stripANSIRegExp = regexp.MustCompile(`(\x{1b}\[.*?m)`)
 
-func stripANSIIfIsNotTerminal(file *os.File, str string) string {
-	if isTerminal(file) {
+func StripANSIWhenFile(file *os.File, str string) string {
+	if terminal.IsTerminal(file) {
 		return str
 	}
 

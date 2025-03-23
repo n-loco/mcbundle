@@ -1,6 +1,6 @@
 //go:build windows
 
-package cli
+package ansi
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func SetUpANSIEscapeCodes() {
+func SetUpANSIFormatCodes() {
 	enableVirtualTerminalProcessing(windows.Handle(os.Stdout.Fd()))
 	enableVirtualTerminalProcessing(windows.Handle(os.Stderr.Fd()))
 }

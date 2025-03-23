@@ -2,23 +2,21 @@ package recipe
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
-	"reflect"
+
+	"github.com/redrock/autocrafter/cli"
 )
 
 func LoadRecipe() *Recipe {
-	data, file_err := os.ReadFile("recipe.json")
-	if file_err != nil {
-		fmt.Fprintln(os.Stderr, file_err)
-		fmt.Fprintln(os.Stderr, reflect.TypeOf(file_err))
+	data, fileErr := os.ReadFile("recipe.json")
+	if fileErr != nil {
+		cli.Eprintf("%s\n", fileErr.Error())
 		os.Exit(1)
 	}
 
 	recipe := new(Recipe)
 	if err := json.Unmarshal(data, recipe); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		fmt.Fprintln(os.Stderr, reflect.TypeOf(err))
+		cli.Eprintf("%s\n", err.Error())
 		os.Exit(1)
 	}
 

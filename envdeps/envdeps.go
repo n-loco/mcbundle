@@ -20,13 +20,13 @@ func GetEnvironmentDependencies(flags DependenciesFlags) EnvironmentDependencies
 
 	var deps = EnvironmentDependencies{}
 
+	if needsRecipe {
+		deps.ProjectRecipe = recipe.LoadRecipe()
+	}
+
 	warnComMojangPath(!needsComMojangPath)
 	if needsComMojangPath {
 		deps.ComMojangPath = getComMojangPath()
-	}
-
-	if needsRecipe {
-		deps.ProjectRecipe = recipe.LoadRecipe()
 	}
 
 	return deps

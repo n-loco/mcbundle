@@ -1,6 +1,6 @@
 //go:build unix
 
-package cli
+package terminal
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func isTerminal(file *os.File) bool {
+func IsTerminal(file *os.File) bool {
 	_, err := unix.IoctlGetWinsize(int(file.Fd()), unix.TIOCGWINSZ)
 	return err == nil
 }
