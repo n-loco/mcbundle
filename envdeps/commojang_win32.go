@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-func warnComMojangPath(b bool) {
+func warnComMojangPath(_ bool) {
 
 }
 
 func getComMojangPath() string {
-	value, exists := os.LookupEnv("AUTOCRAFTER_COM_MOJANG_PATH")
+	value, exists := os.LookupEnv(comMojangVarKey)
 
 	if exists {
 		return value

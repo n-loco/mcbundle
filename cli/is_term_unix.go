@@ -2,8 +2,13 @@
 
 package cli
 
-import "os"
+import (
+	"os"
+
+	"golang.org/x/sys/unix"
+)
 
 func isTerminal(file *os.File) bool {
-	return true
+	_, err := unix.IoctlGetWinsize(int(file.Fd()), unix.TIOCGWINSZ)
+	return err == nil
 }
