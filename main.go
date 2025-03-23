@@ -1,17 +1,12 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/redrock/autocrafter/cli"
-	"github.com/redrock/autocrafter/genout"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/envdeps"
 )
 
 func main() {
-	cli.SetUpANSI()
-	projectRecipe := recipe.LoadRecipe()
-	fmt.Println(projectRecipe)
-
-	genout.GenerateOutput(projectRecipe)
+	cli.SetUpANSIEscapeCodes()
+	cli.Print("\x1b[1;92mCOLOR!!\x1b[0m 😊\n")
+	cli.Printf("%s\n", envdeps.GetEnvironmentDependencies(envdeps.ComMojangPath).ComMojangPath)
 }

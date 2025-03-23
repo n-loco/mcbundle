@@ -2,6 +2,6 @@
 
 package cli
 
-func SetUpANSI() {
+func SetUpANSIEscapeCodes() {
 
 }

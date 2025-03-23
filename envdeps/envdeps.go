@@ -11,9 +11,23 @@ const (
 
 type EnvironmentDependencies struct {
 	ProjectRecipe *recipe.Recipe
-	ComMojangPath *string
+	ComMojangPath string
 }
 
-func GetEnvironmentDependencies(flags DependenciesFlags) (EnvironmentDependencies, error) {
-	return EnvironmentDependencies{}, nil
+func GetEnvironmentDependencies(flags DependenciesFlags) EnvironmentDependencies {
+	var needsRecipe = (flags & ProjectRecipe) > 0
+	var needsComMojangPath = (flags & ComMojangPath) > 0
+
+	var deps = EnvironmentDependencies{}
+
+	warnComMojangPath(!needsComMojangPath)
+	if needsComMojangPath {
+		deps.ComMojangPath = getComMojangPath()
+	}
+
+	if needsRecipe {
+		deps.ProjectRecipe = recipe.LoadRecipe()
+	}
+
+	return deps
 }
