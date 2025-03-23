@@ -1,0 +1,9 @@
+# Code editors / IDEs
+*.code-workspace
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.sw?
+
+/*[Uu][Ss][Ee][Rr]*
