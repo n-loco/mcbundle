@@ -12,9 +12,9 @@ import (
 type RecipeType uint8
 
 const (
-	BehaviourPack RecipeType = iota + 1
-	ResourcePack
-	Addon
+	BehaviourPackRecipeType RecipeType = iota + 1
+	ResourcePackRecipeType
+	AddonRecipeType
 )
 
 type UUIDPack struct {
@@ -60,22 +60,26 @@ func (recipe *Recipe) UnmarshalJSON(data []byte) error {
 			recipe.Artifact = rawRecipe.Config.Artifact
 
 			recipe.Version = rawRecipe.Header.Version
+
 			recipe.UUIDs.Single = rawRecipe.Header.UUID
 			recipe.UUIDs.BP = rawRecipe.Header.UUIDs.BP
 			recipe.UUIDs.RP = rawRecipe.Header.UUIDs.RP
+
 			recipe.MinEngineVersion = rawRecipe.Header.MinEngineVersion
 
-			mod_len := len(rawRecipe.Modules)
-			recipe.Modules = make([]Module, mod_len)
-			for i := 0; i < mod_len; i++ {
-				recipe.Modules[i].Description = rawRecipe.Modules[i].Description
-				recipe.Modules[i].Type = ModuleType(rawRecipe.Modules[i].Type)
-				recipe.Modules[i].Version = rawRecipe.Modules[i].Version
-				recipe.Modules[i].UUID = rawRecipe.Modules[i].UUID
+			modLen := len(rawRecipe.Modules)
+			recipe.Modules = make([]Module, modLen)
+			for i, mod := range rawRecipe.Modules {
+				recipe.Modules[i].Description = mod.Description
+				recipe.Modules[i].Type = ModuleType(mod.Type)
+				recipe.Modules[i].Version = mod.Version
+				recipe.Modules[i].UUID = mod.UUID
 			}
 
-			recipe.Authors = rawRecipe.Meta.Authors
-			recipe.License = rawRecipe.Meta.License
+			if rawRecipe.Meta != nil {
+				recipe.Authors = rawRecipe.Meta.Authors
+				recipe.License = rawRecipe.Meta.License
+			}
 
 			return nil
 		}

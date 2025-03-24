@@ -2,19 +2,19 @@ package recipe
 
 import "github.com/redrock/autocrafter/semver"
 
-type ModuleCategory uint8
+type Category uint8
 
 const (
-	Behaviour ModuleCategory = iota + 1
-	Resources
+	BehavioursCategory Category = iota + 1
+	ResourcesCategory
 )
 
 type ModuleType uint8
 
 const (
-	Data ModuleType = iota + 1
-	Server
-	Resource
+	DataModuleType ModuleType = iota + 1
+	ServerModuleType
+	ResourceModuleType
 )
 
 type Module struct {
@@ -24,13 +24,14 @@ type Module struct {
 	UUID        string
 }
 
-func (m *Module) Category() ModuleCategory {
+func (m *Module) Category() Category {
 	switch m.Type {
-	case Data:
-	case Server:
-		return Behaviour
-	case Resource:
-		return Resources
+	case DataModuleType:
+		fallthrough
+	case ServerModuleType:
+		return BehavioursCategory
+	case ResourceModuleType:
+		return ResourcesCategory
 	}
 
 	return 0

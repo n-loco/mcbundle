@@ -8,10 +8,22 @@ import (
 type RecipeType uint8
 
 const (
-	BehaviourPack RecipeType = iota + 1
-	ResourcePack
-	Addon
+	BehaviourPackRecipeType RecipeType = iota + 1
+	ResourcePackRecipeType
+	AddonRecipeType
 )
+
+func (recipeType RecipeType) String() string {
+	switch recipeType {
+	case BehaviourPackRecipeType:
+		return "Behaviour Pack"
+	case ResourcePackRecipeType:
+		return "Resource Pack"
+	case AddonRecipeType:
+		return "Addon"
+	}
+	return ""
+}
 
 type Config struct {
 	Type     RecipeType
@@ -42,6 +54,18 @@ func (recipeConfig *Config) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (recipeConfig *Config) AllowedCategories() []Category {
+	switch recipeConfig.Type {
+	case ResourcePackRecipeType:
+		return []Category{ResourcesCategory}
+	case BehaviourPackRecipeType:
+		return []Category{BehavioursCategory}
+	case AddonRecipeType:
+		return []Category{ResourcesCategory, BehavioursCategory}
+	}
+	return nil
+}
+
 type rawConfig struct {
 	Type     string `json:"type"`
 	Artifact string `json:"artifact"`
@@ -54,11 +78,11 @@ func recipeTypeStringToEnum(s string) (RecipeType, error) {
 
 	switch s {
 	case "behaviour_pack":
-		return BehaviourPack, nil
+		return BehaviourPackRecipeType, nil
 	case "resource_pack":
-		return ResourcePack, nil
+		return ResourcePackRecipeType, nil
 	case "addon":
-		return Addon, nil
+		return AddonRecipeType, nil
 	}
 
 	return 0, &RecipeTypeError{fmt.Sprintf(`In field config.type: unknown type: "%s"`, s)}

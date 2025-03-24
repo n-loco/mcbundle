@@ -7,20 +7,25 @@ import (
 	"github.com/redrock/autocrafter/semver"
 )
 
-type ModuleCategory uint8
-
-const (
-	Behaviour ModuleCategory = iota + 1
-	Resources
-)
-
 type ModuleType uint8
 
 const (
-	Data ModuleType = iota + 1
-	Server
-	Resource
+	DataModuleType ModuleType = iota + 1
+	ServerModuleType
+	ResourceModuleType
 )
+
+func (moduleType ModuleType) String() string {
+	switch moduleType {
+	case DataModuleType:
+		return "Data"
+	case ServerModuleType:
+		return "Server"
+	case ResourceModuleType:
+		return "Resource"
+	}
+	return ""
+}
 
 func (moduleType *ModuleType) UnmarshalJSON(data []byte) error {
 	var jstr string
@@ -33,13 +38,13 @@ func (moduleType *ModuleType) UnmarshalJSON(data []byte) error {
 
 	switch jstr {
 	case "data":
-		*moduleType = Data
+		*moduleType = DataModuleType
 		return nil
 	case "server":
-		*moduleType = Server
+		*moduleType = ServerModuleType
 		return nil
 	case "resource":
-		*moduleType = Resource
+		*moduleType = ResourceModuleType
 		return nil
 	}
 
@@ -61,13 +66,14 @@ type Module struct {
 	UUID        string          `json:"uuid"`
 }
 
-func (module *Module) Category() ModuleCategory {
+func (module *Module) Category() Category {
 	switch module.Type {
-	case Data:
-	case Server:
-		return Behaviour
-	case Resource:
-		return Resources
+	case DataModuleType:
+		fallthrough
+	case ServerModuleType:
+		return BehavioursCategory
+	case ResourceModuleType:
+		return ResourcesCategory
 	}
 
 	return 0
