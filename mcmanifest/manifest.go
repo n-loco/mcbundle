@@ -11,14 +11,10 @@ type MCManifest struct {
 }
 
 func CreateManifestFromRecipe(projectRecipe *recipe.Recipe, filter recipe.Category) *MCManifest {
-	var mcManifest *MCManifest = new(MCManifest)
+	mcManifest := new(MCManifest)
 	mcManifest.FormatVersion = 2
 
-	mcManifest.Header = new(Header)
-	mcManifest.Header.Description = "pack.description"
-	mcManifest.Header.Name = "pack.name"
-	mcManifest.Header.Version = projectRecipe.Version
-	mcManifest.Header.MinEngineVersion = projectRecipe.MinEngineVersion
+	mcManifest.Header = createHeaderFromRecipe(projectRecipe, filter)
 
 	mcManifest.Meta = new(Meta)
 	mcManifest.Meta.Authors = projectRecipe.Authors
@@ -29,16 +25,18 @@ func CreateManifestFromRecipe(projectRecipe *recipe.Recipe, filter recipe.Catego
 		mcManifest.Dependencies[0].Version = projectRecipe.Version
 
 		if filter == recipe.BehavioursCategory {
-			mcManifest.Header.UUID = projectRecipe.UUIDs.BP
 			mcManifest.Dependencies[0].UUID = projectRecipe.UUIDs.RP
 		}
 		if filter == recipe.ResourcesCategory {
-			mcManifest.Header.UUID = projectRecipe.UUIDs.RP
-			mcManifest.Header.PackScope = WorldPackScope
 			mcManifest.Dependencies[0].UUID = projectRecipe.UUIDs.BP
 		}
-	} else {
-		mcManifest.Header.UUID = projectRecipe.UUIDs.Single
+	}
+
+	mcManifest.Modules = make([]Module, 0, len(projectRecipe.Modules))
+	for _, rMod := range projectRecipe.Modules {
+		if rMod.Category() == filter {
+			mcManifest.Modules = append(mcManifest.Modules, createModuleFromRecipeModule(rMod))
+		}
 	}
 
 	return mcManifest
