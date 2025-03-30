@@ -2,6 +2,13 @@ package mcmanifest
 
 import "github.com/redrock/autocrafter/recipe"
 
+type MCContext struct {
+	Recipe        *recipe.Recipe
+	ComMojangPath string
+	Category      recipe.Category
+	Release       bool
+}
+
 type MCManifest struct {
 	FormatVersion uint8        `json:"format_version"`
 	Header        *Header      `json:"header"`
@@ -10,31 +17,25 @@ type MCManifest struct {
 	Meta          *Meta        `json:"meta,omitempty,omitzero"`
 }
 
-func CreateManifestFromRecipe(projectRecipe *recipe.Recipe, filter recipe.Category) *MCManifest {
+func CreateManifest(context *MCContext) *MCManifest {
+	projectRecipe := context.Recipe
+	filter := context.Category
+
 	mcManifest := new(MCManifest)
 	mcManifest.FormatVersion = 2
 
-	mcManifest.Header = createHeaderFromRecipe(projectRecipe, filter)
+	mcManifest.Header = createHeader(context)
 
 	mcManifest.Meta = new(Meta)
 	mcManifest.Meta.Authors = projectRecipe.Authors
 	mcManifest.Meta.License = projectRecipe.License
 
 	if projectRecipe.Type == recipe.AddonRecipeType {
-		mcManifest.Dependencies = make([]Dependency, 1, 6)
-		mcManifest.Dependencies[0].Version = projectRecipe.Version
-
-		if filter == recipe.BehavioursCategory {
-			mcManifest.Dependencies[0].UUID = projectRecipe.UUIDs.RP
-		}
-		if filter == recipe.ResourcesCategory {
-			mcManifest.Dependencies[0].UUID = projectRecipe.UUIDs.BP
-		}
+		mcManifest.Dependencies = append(mcManifest.Dependencies, configAddonDependency(context))
 	}
 
-	mcManifest.Modules = make([]Module, 0, len(projectRecipe.Modules))
 	for _, rMod := range projectRecipe.Modules {
-		if rMod.Category() == filter {
+		if filter == recipe.Any || rMod.Category() == filter {
 			mcManifest.Modules = append(mcManifest.Modules, createModuleFromRecipeModule(rMod))
 		}
 	}

@@ -29,7 +29,7 @@ func (packScope PackScope) String() string {
 }
 
 func (packScope PackScope) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%v"`, packScope)), nil
+	return fmt.Appendf(nil, `"%v"`, packScope), nil
 }
 
 type Header struct {
@@ -41,7 +41,10 @@ type Header struct {
 	Version          *semver.Version `json:"version"`
 }
 
-func createHeaderFromRecipe(projectRecipe *recipe.Recipe, filter recipe.Category) *Header {
+func createHeader(context *MCContext) *Header {
+	projectRecipe := context.Recipe
+	filter := context.Category
+
 	header := new(Header)
 
 	header.Description = "pack.description"

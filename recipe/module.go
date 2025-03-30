@@ -7,6 +7,7 @@ type Category uint8
 const (
 	BehavioursCategory Category = iota + 1
 	ResourcesCategory
+	Any Category = 0xFF
 )
 
 type ModuleType uint8
@@ -16,6 +17,18 @@ const (
 	ServerModuleType
 	ResourceModuleType
 )
+
+func (moduleType ModuleType) String() string {
+	switch moduleType {
+	case DataModuleType:
+		return "data"
+	case ServerModuleType:
+		return "server"
+	case ResourceModuleType:
+		return "resource"
+	}
+	return ""
+}
 
 type Module struct {
 	Description string

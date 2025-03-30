@@ -1,12 +1,14 @@
 package envdeps
 
-import "github.com/redrock/autocrafter/recipe"
+import (
+	"github.com/redrock/autocrafter/recipe"
+)
 
 type DependenciesFlags uint8
 
 const (
-	ProjectRecipe DependenciesFlags = 1 << iota
-	ComMojangPath
+	ProjectRecipeDependencyFlag DependenciesFlags = 1 << iota
+	ComMojangPathDependencyFlag
 )
 
 type EnvironmentDependencies struct {
@@ -15,9 +17,8 @@ type EnvironmentDependencies struct {
 }
 
 func GetEnvironmentDependencies(flags DependenciesFlags) EnvironmentDependencies {
-	var needsRecipe = (flags & ProjectRecipe) > 0
-	var needsComMojangPath = (flags & ComMojangPath) > 0
-
+	var needsRecipe = (flags & ProjectRecipeDependencyFlag) > 0
+	var needsComMojangPath = (flags & ComMojangPathDependencyFlag) > 0
 	var deps = EnvironmentDependencies{}
 
 	if needsRecipe {
@@ -26,7 +27,7 @@ func GetEnvironmentDependencies(flags DependenciesFlags) EnvironmentDependencies
 
 	warnComMojangPath(!needsComMojangPath)
 	if needsComMojangPath {
-		deps.ComMojangPath = getComMojangPath()
+		deps.ComMojangPath = ComMojangPath()
 	}
 
 	return deps

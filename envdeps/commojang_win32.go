@@ -4,25 +4,26 @@ package envdeps
 
 import (
 	"os"
-	"strings"
+	"path/filepath"
 )
 
-func warnComMojangPath(_ bool) {
+func warnComMojangPath(bool) {
 
 }
 
-func getComMojangPath() string {
-	value, exists := os.LookupEnv(comMojangVarKey)
+func ComMojangPath() string {
+	value, exists := os.LookupEnv(ComMojangPathVarKey)
 
 	if exists {
 		return value
 	}
 
-	appDataDir := os.Getenv("LocalAppData")
-	comMojangDir := strings.Join([]string{
-		appDataDir,
-		"Packages\\Microsoft.MinecraftUWP_8wekyb3d8bbwe\\LocalState\\games\\com.mojang",
-	}, "\\")
-
-	return strings.ReplaceAll(comMojangDir, "\\\\", "\\")
+	return filepath.Join(
+		os.Getenv("LocalAppData"),
+		"Packages",
+		"Microsoft.MinecraftUWP_8wekyb3d8bbwe",
+		"LocalState",
+		"games",
+		"com.mojang",
+	)
 }
