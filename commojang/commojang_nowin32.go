@@ -1,6 +1,6 @@
 //go:build !windows
 
-package envdeps
+package commojang
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"github.com/redrock/autocrafter/terminal"
 )
 
-func warnComMojangPath(should bool) {
+func WarnComMojangPath(should bool) {
 	if should {
 		_, exists := os.LookupEnv(ComMojangPathVarKey)
 		if !exists {

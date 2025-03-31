@@ -1,6 +1,7 @@
 package envdeps
 
 import (
+	"github.com/redrock/autocrafter/commojang"
 	"github.com/redrock/autocrafter/recipe"
 )
 
@@ -25,9 +26,9 @@ func GetEnvironmentDependencies(flags DependenciesFlags) EnvironmentDependencies
 		deps.ProjectRecipe = recipe.LoadRecipe()
 	}
 
-	warnComMojangPath(!needsComMojangPath)
+	commojang.WarnComMojangPath(!needsComMojangPath)
 	if needsComMojangPath {
-		deps.ComMojangPath = ComMojangPath()
+		deps.ComMojangPath = commojang.ComMojangPath()
 	}
 
 	return deps

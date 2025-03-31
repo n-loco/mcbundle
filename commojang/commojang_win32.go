@@ -1,6 +1,6 @@
 //go:build windows
 
-package envdeps
+package commojang
 
 import (
 	"os"
