@@ -1,4 +1,4 @@
-package ansi
+package terminal
 
 const (
 	Reset = "\x1b[0m"

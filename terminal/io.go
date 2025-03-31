@@ -1,12 +1,9 @@
-package cli
+package terminal
 
 import (
 	"fmt"
 	"os"
 	"strings"
-
-	"github.com/redrock/autocrafter/ansi"
-	"github.com/redrock/autocrafter/terminal"
 )
 
 type outCfg struct {
@@ -23,14 +20,14 @@ var normalCfg = outCfg{
 
 var errorCfg = outCfg{
 	os.Stderr,
-	ansi.BoldRed + "Error: " + ansi.Reset,
-	ansi.BoldRed + "     : " + ansi.Reset,
+	BoldRed + "Error: " + Reset,
+	BoldRed + "     : " + Reset,
 }
 
 var warnCfg = outCfg{
 	os.Stderr,
-	ansi.BoldYellow + "Warning: " + ansi.Reset,
-	ansi.BoldYellow + "       : " + ansi.Reset,
+	BoldYellow + "Warning: " + Reset,
+	BoldYellow + "       : " + Reset,
 }
 
 var lastOutCfg = &normalCfg
@@ -64,8 +61,8 @@ func fprintfInternal(selectedOutCfg *outCfg, format string, a ...any) {
 }
 
 func fprintInternal(selectedOutCfg *outCfg, rawMsg string) {
-	if !terminal.IsTerminal(selectedOutCfg.File) {
-		rawMsg = ansi.StripANSI(rawMsg)
+	if !IsTerminal(selectedOutCfg.File) {
+		rawMsg = StripANSI(rawMsg)
 	}
 
 	lines := strings.Split(rawMsg, "\n")

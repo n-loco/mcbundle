@@ -1,6 +1,6 @@
 //go:build windows
 
-package ansi
+package terminal
 
 import (
 	"os"
