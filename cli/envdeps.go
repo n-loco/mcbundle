@@ -1,4 +1,4 @@
-package envdeps
+package cli
 
 import (
 	"github.com/redrock/autocrafter/commojang"
