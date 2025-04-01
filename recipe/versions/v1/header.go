@@ -7,15 +7,15 @@ import (
 )
 
 type UUIDPair struct {
-	BP string `json:"behaviour_pack"`
-	RP string `json:"resource_pack"`
+	BP *jsonst.UUID `json:"behaviour_pack"`
+	RP *jsonst.UUID `json:"resource_pack"`
 }
 
 type Header struct {
-	Version          *jsonst.Version
-	UUID             string
-	UUIDs            UUIDPair
-	MinEngineVersion *jsonst.Version
+	Version          *jsonst.SemVer
+	UUID             *jsonst.UUID
+	UUIDs            *UUIDPair
+	MinEngineVersion *jsonst.SemVer
 }
 
 func (recipeHeader *Header) UnmarshalJSON(data []byte) error {
@@ -38,8 +38,8 @@ func (recipeHeader *Header) UnmarshalJSON(data []byte) error {
 }
 
 type rawHeader struct {
-	Version          *jsonst.Version `json:"version"`
-	UUID             string          `json:"uuid"`
-	UUIDs            UUIDPair        `json:"uuids"`
-	MinEngineVersion *jsonst.Version `json:"min_engine_version"`
+	Version          *jsonst.SemVer `json:"version"`
+	UUID             *jsonst.UUID   `json:"uuid"`
+	UUIDs            *UUIDPair      `json:"uuids"`
+	MinEngineVersion *jsonst.SemVer `json:"min_engine_version"`
 }

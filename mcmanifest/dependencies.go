@@ -6,9 +6,9 @@ import (
 )
 
 type Dependency struct {
-	UUID       string          `json:"uuid,omitempty,omitzero"`
-	ModuleName string          `json:"module_name,omitempty,omitzero"`
-	Version    *jsonst.Version `json:"version"`
+	UUID       *jsonst.UUID   `json:"uuid,omitempty,omitzero"`
+	ModuleName string         `json:"module_name,omitempty,omitzero"`
+	Version    *jsonst.SemVer `json:"version"`
 }
 
 func configAddonDependency(context *MCContext) Dependency {

@@ -33,12 +33,12 @@ func (packScope PackScope) MarshalJSON() ([]byte, error) {
 }
 
 type Header struct {
-	Description      string          `json:"description,omitempty"`
-	MinEngineVersion *jsonst.Version `json:"min_engine_version,omitempty"`
-	Name             string          `json:"name"`
-	PackScope        PackScope       `json:"pack_scope,omitempty"`
-	UUID             string          `json:"uuid"`
-	Version          *jsonst.Version `json:"version"`
+	Description      string         `json:"description,omitempty"`
+	MinEngineVersion *jsonst.SemVer `json:"min_engine_version,omitempty"`
+	Name             string         `json:"name"`
+	PackScope        PackScope      `json:"pack_scope,omitempty"`
+	UUID             *jsonst.UUID   `json:"uuid"`
+	Version          *jsonst.SemVer `json:"version"`
 }
 
 func createHeader(context *MCContext) *Header {

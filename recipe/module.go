@@ -35,8 +35,8 @@ func (moduleType ModuleType) String() string {
 type Module struct {
 	Description string
 	Type        ModuleType
-	Version     *jsonst.Version
-	UUID        string
+	Version     *jsonst.SemVer
+	UUID        *jsonst.UUID
 }
 
 func (m *Module) Category() Category {

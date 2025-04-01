@@ -32,12 +32,12 @@ func (moduleType ModuleType) MarshalJSON() ([]byte, error) {
 }
 
 type Module struct {
-	Description string          `json:"description,omitempty,omitzero"`
-	Type        ModuleType      `json:"type"`
-	UUID        string          `json:"uuid"`
-	Version     *jsonst.Version `json:"version"`
-	Language    string          `json:"language,omitempty,omitzero"`
-	Entry       string          `json:"entry,omitempty,omitzero"`
+	Description string         `json:"description,omitempty,omitzero"`
+	Type        ModuleType     `json:"type"`
+	UUID        *jsonst.UUID   `json:"uuid"`
+	Version     *jsonst.SemVer `json:"version"`
+	Language    string         `json:"language,omitempty,omitzero"`
+	Entry       string         `json:"entry,omitempty,omitzero"`
 }
 
 func createModuleFromRecipeModule(recipeMod recipe.Module) Module {

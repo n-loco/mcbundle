@@ -1,10 +1,19 @@
 package jsonst
 
-type VersionUnmarshalError struct {
-	msg string
+import "fmt"
+
+type InvalidSemVerError struct {
+	String string
 }
 
-func (e *VersionUnmarshalError) Error() string {
+func (err InvalidSemVerError) Error() string {
+	return fmt.Sprintf("invalid semver: %s", err.String)
+}
 
-	return e.msg
+type InvalidUUIDError struct {
+	String string
+}
+
+func (err InvalidUUIDError) Error() string {
+	return fmt.Sprintf("invalid uuid: %s", err.String)
 }

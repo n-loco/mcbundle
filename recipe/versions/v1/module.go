@@ -60,10 +60,10 @@ func (moduleTypeError *ModuleTypeError) Error() string {
 }
 
 type Module struct {
-	Description string          `json:"description"`
-	Type        ModuleType      `json:"type"`
-	Version     *jsonst.Version `json:"version"`
-	UUID        string          `json:"uuid"`
+	Description string         `json:"description"`
+	Type        ModuleType     `json:"type"`
+	Version     *jsonst.SemVer `json:"version"`
+	UUID        *jsonst.UUID   `json:"uuid"`
 }
 
 func (module *Module) Category() Category {
