@@ -2,11 +2,10 @@ package recipe
 
 import (
 	"encoding/json"
-	"fmt"
 
-	"github.com/redrock/autocrafter/recipe/getformatv"
+	"github.com/redrock/autocrafter/jsonst"
+	"github.com/redrock/autocrafter/recipe/formatv"
 	v1 "github.com/redrock/autocrafter/recipe/versions/v1"
-	"github.com/redrock/autocrafter/semver"
 )
 
 type RecipeType uint8
@@ -29,9 +28,9 @@ type Recipe struct {
 	Artifact string
 
 	/* Header */
-	Version          *semver.Version
+	Version          *jsonst.Version
 	UUIDs            UUIDPack
-	MinEngineVersion *semver.Version
+	MinEngineVersion *jsonst.Version
 
 	/* Modules */
 	Modules []Module
@@ -42,12 +41,12 @@ type Recipe struct {
 }
 
 func (recipe *Recipe) UnmarshalJSON(data []byte) error {
-	format_version, json_err := getformatv.Get(data)
+	formatVersion, json_err := formatv.Get(data)
 	if json_err != nil {
 		return json_err
 	}
 
-	switch format_version {
+	switch formatVersion {
 	case 1:
 		{
 			var rawRecipe v1.Recipe
@@ -85,13 +84,5 @@ func (recipe *Recipe) UnmarshalJSON(data []byte) error {
 		}
 	}
 
-	return &FormatVersionError{msg: fmt.Sprintf("Unknown format version: %d", format_version)}
-}
-
-type FormatVersionError struct {
-	msg string
-}
-
-func (e *FormatVersionError) Error() string {
-	return e.msg
+	return &formatv.UnsupportedFormatVersionError{Version: formatVersion}
 }

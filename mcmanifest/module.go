@@ -3,8 +3,8 @@ package mcmanifest
 import (
 	"fmt"
 
+	"github.com/redrock/autocrafter/jsonst"
 	"github.com/redrock/autocrafter/recipe"
-	"github.com/redrock/autocrafter/semver"
 )
 
 type ModuleType uint8
@@ -35,7 +35,7 @@ type Module struct {
 	Description string          `json:"description,omitempty,omitzero"`
 	Type        ModuleType      `json:"type"`
 	UUID        string          `json:"uuid"`
-	Version     *semver.Version `json:"version"`
+	Version     *jsonst.Version `json:"version"`
 	Language    string          `json:"language,omitempty,omitzero"`
 	Entry       string          `json:"entry,omitempty,omitzero"`
 }

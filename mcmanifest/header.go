@@ -3,8 +3,8 @@ package mcmanifest
 import (
 	"fmt"
 
+	"github.com/redrock/autocrafter/jsonst"
 	"github.com/redrock/autocrafter/recipe"
-	"github.com/redrock/autocrafter/semver"
 )
 
 type PackScope uint8
@@ -34,11 +34,11 @@ func (packScope PackScope) MarshalJSON() ([]byte, error) {
 
 type Header struct {
 	Description      string          `json:"description,omitempty"`
-	MinEngineVersion *semver.Version `json:"min_engine_version,omitempty"`
+	MinEngineVersion *jsonst.Version `json:"min_engine_version,omitempty"`
 	Name             string          `json:"name"`
 	PackScope        PackScope       `json:"pack_scope,omitempty"`
 	UUID             string          `json:"uuid"`
-	Version          *semver.Version `json:"version"`
+	Version          *jsonst.Version `json:"version"`
 }
 
 func createHeader(context *MCContext) *Header {

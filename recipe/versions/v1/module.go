@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/redrock/autocrafter/semver"
+	"github.com/redrock/autocrafter/jsonst"
 )
 
 type ModuleType uint8
@@ -62,7 +62,7 @@ func (moduleTypeError *ModuleTypeError) Error() string {
 type Module struct {
 	Description string          `json:"description"`
 	Type        ModuleType      `json:"type"`
-	Version     *semver.Version `json:"version"`
+	Version     *jsonst.Version `json:"version"`
 	UUID        string          `json:"uuid"`
 }
 

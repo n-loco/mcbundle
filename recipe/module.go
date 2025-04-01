@@ -1,6 +1,8 @@
 package recipe
 
-import "github.com/redrock/autocrafter/semver"
+import (
+	"github.com/redrock/autocrafter/jsonst"
+)
 
 type Category uint8
 
@@ -33,7 +35,7 @@ func (moduleType ModuleType) String() string {
 type Module struct {
 	Description string
 	Type        ModuleType
-	Version     *semver.Version
+	Version     *jsonst.Version
 	UUID        string
 }
 

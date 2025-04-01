@@ -2,10 +2,38 @@ package recipe
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"github.com/redrock/autocrafter/terminal"
 )
+
+type SyntaxError struct {
+	Offset  int64
+	File    string
+	Data    []byte
+	prevMsg string
+}
+
+func (syntaxError *SyntaxError) Error() string {
+	var line int64 = 1
+	var col int64 = 0
+
+	for i, c := range syntaxError.Data {
+		if i == int(syntaxError.Offset) {
+			break
+		}
+
+		if c == '\n' {
+			col = 0
+			line++
+		} else {
+			col++
+		}
+	}
+
+	return fmt.Sprintf("%s:%d:%d: %s", syntaxError.File, line, col, syntaxError.prevMsg)
+}
 
 func LoadRecipe() *Recipe {
 	data, fileErr := os.ReadFile("recipe.json")
@@ -15,8 +43,18 @@ func LoadRecipe() *Recipe {
 	}
 
 	recipe := new(Recipe)
-	if err := json.Unmarshal(data, recipe); err != nil {
-		terminal.Eprintf("%s\n", err.Error())
+	if jsonErr := json.Unmarshal(data, recipe); jsonErr != nil {
+		switch err := jsonErr.(type) {
+		case *json.SyntaxError:
+			jsonErr = &SyntaxError{
+				Offset:  err.Offset,
+				File:    "recipe.json",
+				Data:    data,
+				prevMsg: err.Error(),
+			}
+		}
+
+		terminal.Eprintf("%s\n", jsonErr.Error())
 		os.Exit(1)
 	}
 

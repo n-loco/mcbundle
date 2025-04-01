@@ -1,7 +1,8 @@
-package getformatv
+package formatv
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 type formatGetter struct {
@@ -18,4 +19,12 @@ func Get(data []byte) (uint8, error) {
 	}
 
 	return formatg.FormatVersion, nil
+}
+
+type UnsupportedFormatVersionError struct {
+	Version uint8
+}
+
+func (e UnsupportedFormatVersionError) Error() string {
+	return fmt.Sprintf("unsupoted format version: %d", e.Version)
 }

@@ -3,7 +3,7 @@ package v1
 import (
 	"encoding/json"
 
-	"github.com/redrock/autocrafter/semver"
+	"github.com/redrock/autocrafter/jsonst"
 )
 
 type UUIDPair struct {
@@ -12,10 +12,10 @@ type UUIDPair struct {
 }
 
 type Header struct {
-	Version          *semver.Version
+	Version          *jsonst.Version
 	UUID             string
 	UUIDs            UUIDPair
-	MinEngineVersion *semver.Version
+	MinEngineVersion *jsonst.Version
 }
 
 func (recipeHeader *Header) UnmarshalJSON(data []byte) error {
@@ -38,8 +38,8 @@ func (recipeHeader *Header) UnmarshalJSON(data []byte) error {
 }
 
 type rawHeader struct {
-	Version          *semver.Version `json:"version"`
+	Version          *jsonst.Version `json:"version"`
 	UUID             string          `json:"uuid"`
 	UUIDs            UUIDPair        `json:"uuids"`
-	MinEngineVersion *semver.Version `json:"min_engine_version"`
+	MinEngineVersion *jsonst.Version `json:"min_engine_version"`
 }
