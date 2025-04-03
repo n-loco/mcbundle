@@ -6,5 +6,5 @@ type Meta struct {
 }
 
 func (meta *Meta) IsZero() bool {
-	return (len(meta.Authors) != 0) && (len(meta.License) != 0)
+	return (len(meta.Authors) == 0) && (len(meta.License) == 0)
 }
