@@ -1,13 +1,9 @@
 package mcmanifest
 
-import "github.com/redrock/autocrafter/recipe"
-
-type MCContext struct {
-	Recipe        *recipe.Recipe
-	ComMojangPath string
-	Category      recipe.Category
-	Release       bool
-}
+import (
+	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/rcontext/recipe"
+)
 
 type MCManifest struct {
 	FormatVersion uint8        `json:"format_version"`
@@ -17,9 +13,9 @@ type MCManifest struct {
 	Meta          *Meta        `json:"meta,omitempty,omitzero"`
 }
 
-func CreateManifest(context *MCContext) *MCManifest {
+func CreateManifest(context *rcontext.Context) *MCManifest {
 	projectRecipe := context.Recipe
-	filter := context.Category
+	filter := context.PackType
 
 	mcManifest := new(MCManifest)
 	mcManifest.FormatVersion = 2
@@ -30,12 +26,12 @@ func CreateManifest(context *MCContext) *MCManifest {
 	mcManifest.Meta.Authors = projectRecipe.Authors
 	mcManifest.Meta.License = projectRecipe.License
 
-	if projectRecipe.Type == recipe.AddonRecipeType {
+	if projectRecipe.Type == recipe.RecipeTypeAddon {
 		mcManifest.Dependencies = append(mcManifest.Dependencies, configAddonDependency(context))
 	}
 
 	for _, rMod := range projectRecipe.Modules {
-		if filter == recipe.Any || rMod.Category() == filter {
+		if rMod.Type.PackType() == filter {
 			mcManifest.Modules = append(mcManifest.Modules, createModuleFromRecipeModule(rMod))
 		}
 	}

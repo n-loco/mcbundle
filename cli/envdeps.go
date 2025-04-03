@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"github.com/redrock/autocrafter/commojang"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext/commojang"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 type DependenciesFlags uint8

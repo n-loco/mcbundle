@@ -6,41 +6,42 @@ import (
 	"path/filepath"
 
 	"github.com/redrock/autocrafter/mcmanifest"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 func GeneratePackageTree(projectRecipe *recipe.Recipe) {
 
-	if projectRecipe.Type == recipe.AddonRecipeType {
-		bpContext := mcmanifest.MCContext{
+	if projectRecipe.Type == recipe.RecipeTypeAddon {
+		bpContext := rcontext.Context{
 			Recipe:   projectRecipe,
-			Category: recipe.BehavioursCategory,
+			PackType: recipe.PackTypeBehaviour,
 		}
 
 		genMCPackTree(&bpContext)
 
-		rpContext := mcmanifest.MCContext{
+		rpContext := rcontext.Context{
 			Recipe:   projectRecipe,
-			Category: recipe.ResourcesCategory,
+			PackType: recipe.PackTypeBehaviour,
 		}
 
 		genMCPackTree(&rpContext)
 	} else {
-		genMCPackTree(&mcmanifest.MCContext{
+		genMCPackTree(&rcontext.Context{
 			Recipe:   projectRecipe,
-			Category: recipe.Any,
+			PackType: projectRecipe.Type.PackType(),
 		})
 	}
 }
 
-func genMCPackTree(context *mcmanifest.MCContext) {
+func genMCPackTree(context *rcontext.Context) {
 	projectRecipe := context.Recipe
-	filter := context.Category
+	filter := context.PackType
 
 	packDistPath := GetPackDistPath(context)
 
 	for _, rMod := range projectRecipe.Modules {
-		if filter == recipe.Any || rMod.Category() == filter {
+		if rMod.Type.PackType() == filter {
 			fsType, sourcePath := GetModuleSourcePath(&rMod)
 
 			if fsType == ContentsFSType {

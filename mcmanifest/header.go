@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"github.com/redrock/autocrafter/jsonst"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 type PackScope uint8
@@ -41,9 +42,9 @@ type Header struct {
 	Version          *jsonst.SemVer `json:"version"`
 }
 
-func createHeader(context *MCContext) *Header {
+func createHeader(context *rcontext.Context) *Header {
 	projectRecipe := context.Recipe
-	filter := context.Category
+	filter := context.PackType
 
 	header := new(Header)
 
@@ -52,11 +53,11 @@ func createHeader(context *MCContext) *Header {
 	header.Version = projectRecipe.Version
 	header.MinEngineVersion = projectRecipe.MinEngineVersion
 
-	if projectRecipe.Type == recipe.AddonRecipeType {
-		if filter == recipe.BehavioursCategory {
+	if projectRecipe.Type == recipe.RecipeTypeAddon {
+		if filter == recipe.PackTypeBehaviour {
 			header.UUID = projectRecipe.UUIDs.BP
 		}
-		if filter == recipe.ResourcesCategory {
+		if filter == recipe.PackTypeResource {
 			header.UUID = projectRecipe.UUIDs.RP
 			header.PackScope = WorldPackScope
 		}

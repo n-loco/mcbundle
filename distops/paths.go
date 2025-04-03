@@ -3,8 +3,8 @@ package distops
 import (
 	"path/filepath"
 
-	"github.com/redrock/autocrafter/mcmanifest"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 type ModuleFSType uint8
@@ -14,13 +14,13 @@ const (
 	ScriptingFSType
 )
 
-func GetModuleFSType(moduleType recipe.ModuleType) ModuleFSType {
+func GetModuleFSType(moduleType recipe.RecipeModuleType) ModuleFSType {
 	switch moduleType {
-	case recipe.ServerModuleType:
+	case recipe.RecipeModuleTypeServer:
 		return ScriptingFSType
-	case recipe.DataModuleType:
+	case recipe.RecipeModuleTypeData:
 		fallthrough
-	case recipe.ResourceModuleType:
+	case recipe.RecipeModuleTypeResources:
 		return ContentsFSType
 	}
 	return 0
@@ -38,7 +38,7 @@ func (fsType ModuleFSType) String() string {
 
 const SourcePath = "source"
 
-func GetModuleSourcePath(rMod *recipe.Module) (ModuleFSType, string) {
+func GetModuleSourcePath(rMod *recipe.RecipeModule) (ModuleFSType, string) {
 	fsType := GetModuleFSType(rMod.Type)
 	superDir := fsType.String()
 	subDir := rMod.Type.String()
@@ -59,18 +59,18 @@ func DistTypePath(release bool) string {
 	return filepath.Join("dist", buildPath)
 }
 
-func GetPackDistPath(context *mcmanifest.MCContext) string {
+func GetPackDistPath(context *rcontext.Context) string {
 	projectRecipe := context.Recipe
-	category := context.Category
+	category := context.PackType
 	release := context.Release
 
-	if projectRecipe.Type == recipe.AddonRecipeType {
+	if projectRecipe.Type == recipe.RecipeTypeAddon {
 		var packPath string
 
 		switch category {
-		case recipe.ResourcesCategory:
+		case recipe.PackTypeResource:
 			packPath = "rp"
-		case recipe.BehavioursCategory:
+		case recipe.PackTypeBehaviour:
 			packPath = "bp"
 		}
 

@@ -4,16 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/redrock/autocrafter/jsonst"
-	"github.com/redrock/autocrafter/recipe/formatv"
-	v1 "github.com/redrock/autocrafter/recipe/versions/v1"
-)
-
-type RecipeType uint8
-
-const (
-	BehaviourPackRecipeType RecipeType = iota + 1
-	ResourcePackRecipeType
-	AddonRecipeType
+	"github.com/redrock/autocrafter/rcontext/recipe/internal/formatv"
+	v1 "github.com/redrock/autocrafter/rcontext/recipe/internal/versions/v1"
 )
 
 type UUIDPack struct {
@@ -33,7 +25,7 @@ type Recipe struct {
 	MinEngineVersion *jsonst.SemVer
 
 	/* Modules */
-	Modules []Module
+	Modules []RecipeModule
 
 	/* Meta */
 	Authors []string
@@ -75,10 +67,10 @@ func loadV1(recipe *Recipe, data []byte) error {
 	recipe.MinEngineVersion = rawRecipe.Header.MinEngineVersion
 
 	modLen := len(rawRecipe.Modules)
-	recipe.Modules = make([]Module, modLen)
+	recipe.Modules = make([]RecipeModule, modLen)
 	for i, mod := range rawRecipe.Modules {
 		recipe.Modules[i].Description = mod.Description
-		recipe.Modules[i].Type = ModuleType(mod.Type)
+		recipe.Modules[i].Type = RecipeModuleType(mod.Type)
 		recipe.Modules[i].Version = mod.Version
 		recipe.Modules[i].UUID = mod.UUID
 	}

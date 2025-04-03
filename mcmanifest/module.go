@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/redrock/autocrafter/jsonst"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 type ModuleType uint8
@@ -40,7 +40,7 @@ type Module struct {
 	Entry       string         `json:"entry,omitempty,omitzero"`
 }
 
-func createModuleFromRecipeModule(recipeMod recipe.Module) Module {
+func createModuleFromRecipeModule(recipeMod recipe.RecipeModule) Module {
 	var mod Module
 
 	mod.Description = recipeMod.Description
@@ -48,7 +48,7 @@ func createModuleFromRecipeModule(recipeMod recipe.Module) Module {
 	mod.Version = recipeMod.Version
 	mod.Type = ModuleType(recipeMod.Type)
 
-	if recipeMod.Type == recipe.ServerModuleType {
+	if recipeMod.Type == recipe.RecipeModuleTypeServer {
 		mod.Language = "javascript"
 		mod.Entry = "scripts/server.js"
 	}

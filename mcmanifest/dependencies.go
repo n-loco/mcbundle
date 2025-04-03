@@ -2,7 +2,8 @@ package mcmanifest
 
 import (
 	"github.com/redrock/autocrafter/jsonst"
-	"github.com/redrock/autocrafter/recipe"
+	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/rcontext/recipe"
 )
 
 type Dependency struct {
@@ -11,17 +12,17 @@ type Dependency struct {
 	Version    *jsonst.SemVer `json:"version"`
 }
 
-func configAddonDependency(context *MCContext) Dependency {
+func configAddonDependency(context *rcontext.Context) Dependency {
 	projectRecipe := context.Recipe
-	category := context.Category
+	packType := context.PackType
 
 	dependency := Dependency{}
 	dependency.Version = projectRecipe.Version
 
-	switch category {
-	case recipe.BehavioursCategory:
+	switch packType {
+	case recipe.PackTypeBehaviour:
 		dependency.UUID = projectRecipe.UUIDs.RP
-	case recipe.ResourcesCategory:
+	case recipe.PackTypeResource:
 		dependency.UUID = projectRecipe.UUIDs.BP
 	}
 
