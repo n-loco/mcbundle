@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/redrock/autocrafter/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/jsonst"
 )
 
 type ModuleType uint8

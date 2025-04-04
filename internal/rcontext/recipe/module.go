@@ -1,7 +1,7 @@
 package recipe
 
 import (
-	"github.com/redrock/autocrafter/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/jsonst"
 )
 
 type RecipeModule struct {

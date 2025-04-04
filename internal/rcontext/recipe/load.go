@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/redrock/autocrafter/internal/terminal"
+	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 type SyntaxError struct {

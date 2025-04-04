@@ -3,8 +3,8 @@ package mcmanifest
 import (
 	"fmt"
 
-	"github.com/redrock/autocrafter/internal/jsonst"
-	"github.com/redrock/autocrafter/internal/rcontext/recipe"
+	"github.com/n-loco/mcbuild/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/rcontext/recipe"
 )
 
 type ModuleType uint8

@@ -3,9 +3,9 @@ package mcmanifest
 import (
 	"fmt"
 
-	"github.com/redrock/autocrafter/internal/jsonst"
-	"github.com/redrock/autocrafter/internal/rcontext"
-	"github.com/redrock/autocrafter/internal/rcontext/recipe"
+	"github.com/n-loco/mcbuild/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/rcontext"
+	"github.com/n-loco/mcbuild/internal/rcontext/recipe"
 )
 
 type PackScope uint8

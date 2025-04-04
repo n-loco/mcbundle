@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/redrock/autocrafter/internal/terminal"
+	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 var helpTask = TaskDefs{

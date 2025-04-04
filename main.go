@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/redrock/autocrafter/internal/cli"
-	"github.com/redrock/autocrafter/internal/terminal"
+	"github.com/n-loco/mcbuild/internal/cli"
+	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 func main() {

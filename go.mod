@@ -1,4 +1,4 @@
-module github.com/redrock/autocrafter
+module github.com/n-loco/mcbuild
 
 go 1.23.0
 

@@ -1,7 +1,7 @@
 package mcmanifest
 
 import (
-	"github.com/redrock/autocrafter/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/jsonst"
 )
 
 type Dependency struct {

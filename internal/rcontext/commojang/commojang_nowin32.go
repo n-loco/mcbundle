@@ -5,7 +5,7 @@ package commojang
 import (
 	"os"
 
-	"github.com/redrock/autocrafter/internal/terminal"
+	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 func WarnComMojangPath(should bool) {

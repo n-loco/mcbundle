@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/redrock/autocrafter/internal/jsonst"
-	"github.com/redrock/autocrafter/internal/mcmanifest"
-	"github.com/redrock/autocrafter/internal/rcontext"
-	"github.com/redrock/autocrafter/internal/rcontext/recipe"
+	"github.com/n-loco/mcbuild/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/mcmanifest"
+	"github.com/n-loco/mcbuild/internal/rcontext"
+	"github.com/n-loco/mcbuild/internal/rcontext/recipe"
 )
 
 type buildModuleContext struct {

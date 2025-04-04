@@ -3,9 +3,9 @@ package recipe
 import (
 	"encoding/json"
 
-	"github.com/redrock/autocrafter/internal/jsonst"
-	"github.com/redrock/autocrafter/internal/rcontext/recipe/internal/formatv"
-	v1 "github.com/redrock/autocrafter/internal/rcontext/recipe/internal/versions/v1"
+	"github.com/n-loco/mcbuild/internal/jsonst"
+	"github.com/n-loco/mcbuild/internal/rcontext/recipe/internal/formatv"
+	v1 "github.com/n-loco/mcbuild/internal/rcontext/recipe/internal/versions/v1"
 )
 
 type UUIDPack struct {
