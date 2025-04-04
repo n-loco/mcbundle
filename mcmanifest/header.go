@@ -42,27 +42,24 @@ type Header struct {
 	Version          *jsonst.SemVer `json:"version"`
 }
 
-func createHeader(context *rcontext.Context) *Header {
-	projectRecipe := context.Recipe
-	filter := context.PackType
-
+func createHeader(ctx *rcontext.Context) *Header {
 	header := new(Header)
 
 	header.Description = "pack.description"
 	header.Name = "pack.name"
-	header.Version = projectRecipe.Version
-	header.MinEngineVersion = projectRecipe.MinEngineVersion
+	header.Version = ctx.Recipe.Version
+	header.MinEngineVersion = ctx.Recipe.MinEngineVersion
 
-	if projectRecipe.Type == recipe.RecipeTypeAddon {
-		if filter == recipe.PackTypeBehaviour {
-			header.UUID = projectRecipe.UUIDs.BP
+	if ctx.Recipe.Type == recipe.RecipeTypeAddon {
+		if ctx.PackType == recipe.PackTypeBehaviour {
+			header.UUID = ctx.Recipe.UUIDs.BP
 		}
-		if filter == recipe.PackTypeResource {
-			header.UUID = projectRecipe.UUIDs.RP
+		if ctx.PackType == recipe.PackTypeResource {
+			header.UUID = ctx.Recipe.UUIDs.RP
 			header.PackScope = WorldPackScope
 		}
 	} else {
-		header.UUID = projectRecipe.UUIDs.Single
+		header.UUID = ctx.Recipe.UUIDs.Single
 	}
 
 	return header

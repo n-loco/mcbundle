@@ -10,18 +10,18 @@ import (
 type ModuleType uint8
 
 const (
-	DataModuleType ModuleType = iota + 1
-	ScriptModuleType
-	ResourcesModuleType
+	ModuleTypeData ModuleType = iota + 1
+	ModuleTypeScript
+	ModuleTypeResources
 )
 
 func (moduleType ModuleType) String() string {
 	switch moduleType {
-	case ResourcesModuleType:
+	case ModuleTypeResources:
 		return "resources"
-	case DataModuleType:
+	case ModuleTypeData:
 		return "data"
-	case ScriptModuleType:
+	case ModuleTypeScript:
 		return "script"
 	}
 	return ""
@@ -40,18 +40,14 @@ type Module struct {
 	Entry       string         `json:"entry,omitempty,omitzero"`
 }
 
-func createModuleFromRecipeModule(recipeMod recipe.RecipeModule) Module {
-	var mod Module
-
-	mod.Description = recipeMod.Description
-	mod.UUID = recipeMod.UUID
-	mod.Version = recipeMod.Version
-	mod.Type = ModuleType(recipeMod.Type)
-
-	if recipeMod.Type == recipe.RecipeModuleTypeServer {
-		mod.Language = "javascript"
-		mod.Entry = "scripts/server.js"
+func ModuleTypeFromRecipeModuleType(recipeModType recipe.RecipeModuleType) ModuleType {
+	switch recipeModType {
+	case recipe.RecipeModuleTypeData:
+		return ModuleTypeData
+	case recipe.RecipeModuleTypeResources:
+		return ModuleTypeResources
+	case recipe.RecipeModuleTypeServer:
+		return ModuleTypeScript
 	}
-
-	return mod
+	panic("invalid RecipeModuleType")
 }
