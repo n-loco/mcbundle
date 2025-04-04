@@ -1,7 +1,7 @@
 package recipe
 
 import (
-	"github.com/redrock/autocrafter/jsonst"
+	"github.com/redrock/autocrafter/internal/jsonst"
 )
 
 type RecipeModule struct {

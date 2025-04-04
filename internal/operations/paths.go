@@ -3,8 +3,8 @@ package operations
 import (
 	"path/filepath"
 
-	"github.com/redrock/autocrafter/rcontext"
-	"github.com/redrock/autocrafter/rcontext/recipe"
+	"github.com/redrock/autocrafter/internal/rcontext"
+	"github.com/redrock/autocrafter/internal/rcontext/recipe"
 )
 
 const outPath = "dist"

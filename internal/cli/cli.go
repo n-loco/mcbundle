@@ -3,7 +3,7 @@ package cli
 import (
 	"os"
 
-	"github.com/redrock/autocrafter/terminal"
+	"github.com/redrock/autocrafter/internal/terminal"
 )
 
 type TaskDefs struct {

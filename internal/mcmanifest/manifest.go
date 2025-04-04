@@ -1,7 +1,7 @@
 package mcmanifest
 
 import (
-	"github.com/redrock/autocrafter/rcontext"
+	"github.com/redrock/autocrafter/internal/rcontext"
 )
 
 type MCManifest struct {

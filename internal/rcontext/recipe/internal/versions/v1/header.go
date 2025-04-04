@@ -3,7 +3,7 @@ package v1
 import (
 	"encoding/json"
 
-	"github.com/redrock/autocrafter/jsonst"
+	"github.com/redrock/autocrafter/internal/jsonst"
 )
 
 type UUIDPair struct {

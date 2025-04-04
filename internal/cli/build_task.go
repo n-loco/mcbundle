@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/redrock/autocrafter/operations"
+import "github.com/redrock/autocrafter/internal/operations"
 
 var getTreeTask = TaskDefs{
 	Dependencies: ProjectRecipeDependencyFlag,

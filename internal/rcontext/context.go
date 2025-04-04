@@ -1,6 +1,6 @@
 package rcontext
 
-import "github.com/redrock/autocrafter/rcontext/recipe"
+import "github.com/redrock/autocrafter/internal/rcontext/recipe"
 
 type Context struct {
 	Recipe        *recipe.Recipe
