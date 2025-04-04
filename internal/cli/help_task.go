@@ -14,7 +14,7 @@ var helpTask = TaskDefs{
 	Doc:          "prints this message.",
 	Dependencies: 0,
 	Execute: func(*EnvironmentDependencies) {
-		terminal.Print("Usage: " + terminal.UnderlineWhite + "autocrafter [task]" + terminal.Reset + "\n\n")
+		terminal.Print("Usage: " + terminal.UnderlineWhite + "mcbuild [task]" + terminal.Reset + "\n\n")
 		terminal.Print("Tasks:\n")
 
 		for i, task := range taskList {
