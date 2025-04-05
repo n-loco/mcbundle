@@ -14,6 +14,7 @@ import (
 
 type buildModuleContext struct {
 	buildPath           string
+	sourcePath          string
 	scriptDependencyMap map[string]mcmanifest.Dependency
 	recipeModule        *recipe.RecipeModule
 }
@@ -45,8 +46,11 @@ func BuildProject(projectRecipe *recipe.Recipe, release bool) {
 
 func buildPack(ctx *rcontext.Context) {
 	buildPath := buildPath(ctx)
-	scriptDeps := make(map[string]mcmanifest.Dependency)
+	if _, err := os.Stat(buildPath); err == nil {
+		os.RemoveAll(buildPath)
+	}
 
+	scriptDeps := make(map[string]mcmanifest.Dependency)
 	manifest := mcmanifest.CreateManifest(ctx)
 
 	if ctx.Recipe.Type == recipe.RecipeTypeAddon {
@@ -72,6 +76,7 @@ func buildPack(ctx *rcontext.Context) {
 
 		buildModCtx := buildModuleContext{
 			buildPath:           buildPath,
+			sourcePath:          moduleSourcePath(&recipeModule),
 			scriptDependencyMap: scriptDeps,
 			recipeModule:        &recipeModule,
 		}
@@ -93,21 +98,21 @@ func buildPack(ctx *rcontext.Context) {
 	os.WriteFile(manifestPath, manifestData, os.ModePerm)
 }
 
-func buildModule(_ *rcontext.Context, buildModCtx *buildModuleContext) (mod mcmanifest.Module, err error) {
-	sourcePath := moduleSourcePath(buildModCtx.recipeModule)
-
+func buildModule(ctx *rcontext.Context, buildModCtx *buildModuleContext) (mod mcmanifest.Module, err error) {
 	switch buildModCtx.recipeModule.Type {
 	case recipe.RecipeModuleTypeData:
 		fallthrough
 	case recipe.RecipeModuleTypeResources:
 		{
-			err = copyDataToBuild(sourcePath, buildModCtx.buildPath)
+			err = copyDataToBuild(buildModCtx.sourcePath, buildModCtx.buildPath)
 		}
 	case recipe.RecipeModuleTypeServer:
 		{
-			log.Print("TODO: bundle JS/TS")
-			mod.Language = "javascript"
-			mod.Entry = "scripts/server.js"
+			err = esbuild(ctx, buildModCtx)
+			if err == nil {
+				mod.Entry = "scripts/server.js"
+				mod.Language = "javascript"
+			}
 		}
 	default:
 		panic("invalid module")
