@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/n-loco/mcbuild/internal/cli"
+	"github.com/n-loco/mcbuild/internal/projctx"
 	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
@@ -11,6 +12,7 @@ func main() {
 	cli.SetupTasks()
 	taskDefs := cli.GetTask()
 
-	dependencies := cli.GetEnvironmentDependencies(taskDefs.Dependencies)
-	taskDefs.Execute(&dependencies)
+	projCtx := projctx.CreateProjectContext(taskDefs.Requires)
+
+	taskDefs.Execute(&projCtx)
 }

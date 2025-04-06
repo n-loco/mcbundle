@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 
 	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/rcontext/recipe/internal/formatv"
-	v1 "github.com/n-loco/mcbuild/internal/rcontext/recipe/internal/versions/v1"
+	"github.com/n-loco/mcbuild/internal/projctx/recipe/internal/formatv"
+	v1 "github.com/n-loco/mcbuild/internal/projctx/recipe/internal/versions/v1"
 )
 
 type UUIDPack struct {

@@ -7,12 +7,12 @@ import (
 	"path/filepath"
 )
 
-func warnComMojangPath(bool) {
+func WarnComMojangPath(bool) {
 
 }
 
 func ComMojangPath() string {
-	value, exists := os.LookupEnv(ComMojangPathVarKey)
+	value, exists := os.LookupEnv(comMojangPathVarKey)
 
 	if exists {
 		return value

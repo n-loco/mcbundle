@@ -5,15 +5,16 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/n-loco/mcbuild/internal/projctx"
 	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 var helpTask = TaskDefs{
-	Name:         "help",
-	Aliases:      []string{"--help", "-h"},
-	Doc:          "prints this message.",
-	Dependencies: 0,
-	Execute: func(*EnvironmentDependencies) {
+	Name:     "help",
+	Aliases:  []string{"--help", "-h"},
+	Doc:      "prints this message.",
+	Requires: 0,
+	Execute: func(*projctx.ProjectContext) {
 		terminal.Print("Usage: " + terminal.UnderlineWhite + "mcbuild [task]" + terminal.Reset + "\n\n")
 		terminal.Print("Tasks:\n")
 

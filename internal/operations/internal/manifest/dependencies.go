@@ -1,4 +1,4 @@
-package mcmanifest
+package manifest
 
 import (
 	"github.com/n-loco/mcbuild/internal/jsonst"

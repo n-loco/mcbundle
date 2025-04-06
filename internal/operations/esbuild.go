@@ -5,30 +5,31 @@ import (
 	"path/filepath"
 
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/n-loco/mcbuild/internal/rcontext"
 )
 
-func esbuild(ctx *rcontext.Context, buildModCtx *buildModuleContext) error {
-	mainFile := filepath.Join(buildModCtx.sourcePath, "main")
+func esbuild(modCtx *moduleContext) error {
+	recipeModule := modCtx.recipeModule
+
+	mainFile := filepath.Join(modCtx.modSourcePath, "main")
 	if stat, err := os.Stat(mainFile + ".ts"); err == nil && !stat.IsDir() {
 		mainFile += ".ts"
 	} else if stat, err := os.Stat(mainFile + ".js"); err == nil && !stat.IsDir() {
 		mainFile += ".js"
 	} else {
-		return &MainFileNotFoundError{ExpectedFiles: []string{"main.ts", "main.ts"}, ModuleType: buildModCtx.recipeModule.Type}
+		return &MainFileNotFoundError{ExpectedFiles: []string{"main.ts", "main.ts"}, ModuleType: recipeModule.Type}
 	}
 
-	outFile := filepath.Join(buildModCtx.buildPath, "scripts", buildModCtx.recipeModule.Type.String()+".js")
+	outFile := filepath.Join(modCtx.packDistDir, "scripts", recipeModule.Type.String()+".js")
 
 	sourcemap := api.SourceMapNone
-	if !ctx.Release {
+	if !modCtx.release {
 		sourcemap = api.SourceMapLinked
 	}
 
 	result := api.Build(api.BuildOptions{
 		// General
 		Plugins: []api.Plugin{
-			mcNativeModResolverPlugin(buildModCtx),
+			mcNativeModResolverPlugin(modCtx),
 		},
 		Write:  true,
 		Bundle: true,
@@ -42,9 +43,9 @@ func esbuild(ctx *rcontext.Context, buildModCtx *buildModuleContext) error {
 		Platform:          api.PlatformNeutral,
 		Target:            api.ES2020,
 		Sourcemap:         sourcemap,
-		MinifyWhitespace:  ctx.Release,
-		MinifySyntax:      ctx.Release,
-		MinifyIdentifiers: ctx.Release,
+		MinifyWhitespace:  modCtx.release,
+		MinifySyntax:      modCtx.release,
+		MinifyIdentifiers: modCtx.release,
 	})
 
 	if len(result.Errors) > 0 {

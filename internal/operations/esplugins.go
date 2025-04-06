@@ -7,14 +7,14 @@ import (
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/mcmanifest"
+	"github.com/n-loco/mcbuild/internal/operations/internal/manifest"
 )
 
 type packageJSON struct {
 	Version *jsonst.SemVer `json:"version"`
 }
 
-func mcNativeModResolverPlugin(buildModCtx *buildModuleContext) api.Plugin {
+func mcNativeModResolverPlugin(modCtx *moduleContext) api.Plugin {
 	return api.Plugin{
 		Name: "Minecraft Native Module Resolver",
 		Setup: func(build api.PluginBuild) {
@@ -23,7 +23,7 @@ func mcNativeModResolverPlugin(buildModCtx *buildModuleContext) api.Plugin {
 					Filter: `^@minecraft\/(?:common|debug-utilities|diagnostics|server(?:|-admin|-editor|-gametest|-net|-ui))$`,
 				},
 				func(args api.OnResolveArgs) (api.OnResolveResult, error) {
-					err := findNativeModuleVersion(&build, &args, buildModCtx)
+					err := findNativeModuleVersion(&build, &args, modCtx)
 					if err != nil {
 						return api.OnResolveResult{}, err
 					}
@@ -37,9 +37,9 @@ func mcNativeModResolverPlugin(buildModCtx *buildModuleContext) api.Plugin {
 func findNativeModuleVersion(
 	build *api.PluginBuild,
 	args *api.OnResolveArgs,
-	buildModCtx *buildModuleContext,
+	modCtx *moduleContext,
 ) error {
-	if _, ok := buildModCtx.scriptDependencyMap[args.Path]; ok {
+	if _, ok := modCtx.scriptDeps[args.Path]; ok {
 		return nil
 	}
 
@@ -64,7 +64,7 @@ func findNativeModuleVersion(
 		return &NativeModuleError{NativeModule: args.Path}
 	}
 
-	buildModCtx.scriptDependencyMap[args.Path] = mcmanifest.Dependency{
+	modCtx.scriptDeps[args.Path] = manifest.Dependency{
 		ModuleName: args.Path,
 		Version:    packageJSON.Version,
 	}

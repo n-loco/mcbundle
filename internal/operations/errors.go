@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/n-loco/mcbuild/internal/rcontext/recipe"
+	"github.com/n-loco/mcbuild/internal/projctx/recipe"
 )
 
 type NativeModuleError struct {

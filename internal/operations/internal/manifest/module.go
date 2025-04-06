@@ -1,13 +1,13 @@
-package mcmanifest
+package manifest
 
 import (
 	"fmt"
 
 	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/rcontext/recipe"
+	"github.com/n-loco/mcbuild/internal/projctx/recipe"
 )
 
-type ModuleType uint8
+type ModuleType byte
 
 const (
 	ModuleTypeData ModuleType = iota + 1

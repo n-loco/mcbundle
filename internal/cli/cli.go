@@ -3,15 +3,16 @@ package cli
 import (
 	"os"
 
+	"github.com/n-loco/mcbuild/internal/projctx"
 	"github.com/n-loco/mcbuild/internal/terminal"
 )
 
 type TaskDefs struct {
-	Dependencies DependenciesFlags
-	Name         string
-	Aliases      []string
-	Doc          string
-	Execute      func(*EnvironmentDependencies)
+	Requires projctx.EnvRequireFlags
+	Name     string
+	Aliases  []string
+	Doc      string
+	Execute  func(*projctx.ProjectContext)
 }
 
 var taskMap = map[string]*TaskDefs{}

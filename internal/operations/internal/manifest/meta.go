@@ -1,4 +1,4 @@
-package mcmanifest
+package manifest
 
 type Meta struct {
 	Authors []string `json:"authors,omitempty,omitzero"`
