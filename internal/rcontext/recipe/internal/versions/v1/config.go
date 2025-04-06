@@ -27,6 +27,7 @@ func (recipeType RecipeType) String() string {
 
 type Config struct {
 	Type     RecipeType
+	MojangID string
 	Artifact string
 }
 
@@ -68,6 +69,7 @@ func (recipeConfig *Config) AllowedCategories() []Category {
 
 type rawConfig struct {
 	Type     string `json:"type"`
+	MojangID string `json:"mojang_id"`
 	Artifact string `json:"artifact"`
 }
 

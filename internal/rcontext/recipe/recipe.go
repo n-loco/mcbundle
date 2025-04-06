@@ -17,6 +17,7 @@ type UUIDPack struct {
 type Recipe struct {
 	/* Config */
 	Type     RecipeType
+	MojangID string
 	Artifact string
 
 	/* Header */
@@ -54,6 +55,7 @@ func loadV1(recipe *Recipe, data []byte) error {
 	}
 
 	recipe.Type = RecipeType(rawRecipe.Config.Type)
+	recipe.MojangID = rawRecipe.Config.MojangID
 	recipe.Artifact = rawRecipe.Config.Artifact
 
 	recipe.Version = rawRecipe.Header.Version
