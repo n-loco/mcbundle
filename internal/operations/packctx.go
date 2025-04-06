@@ -24,20 +24,18 @@ func createPackContext(projCtx *projctx.ProjectContext, packType recipe.PackType
 	packCtx.scriptDeps = make(map[string]manifest.Dependency)
 	packCtx.release = release
 
-	if len(projCtx.DistDir) > 0 {
-		baseDir := filepath.Join(projCtx.DistDir, "._obj")
+	baseDir := filepath.Join(projCtx.DistDir, "._obj")
 
-		if release {
-			baseDir = filepath.Join(baseDir, "release")
-		} else {
-			baseDir = filepath.Join(baseDir, "debug")
-		}
+	if release {
+		baseDir = filepath.Join(baseDir, "release")
+	} else {
+		baseDir = filepath.Join(baseDir, "debug")
+	}
 
-		if recipeType == recipe.RecipeTypeAddon {
-			packCtx.packDistDir = filepath.Join(baseDir, packType.Abbr())
-		} else {
-			packCtx.packDistDir = baseDir
-		}
+	if recipeType == recipe.RecipeTypeAddon {
+		packCtx.packDistDir = filepath.Join(baseDir, packType.Abbr())
+	} else {
+		packCtx.packDistDir = baseDir
 	}
 
 	return
