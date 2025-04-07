@@ -28,6 +28,7 @@ func registerTask(task *TaskDefs) {
 
 func SetupTasks() {
 	registerTask(&devTask)
+	registerTask(&packTask)
 	registerTask(&buildTask)
 
 	// special case

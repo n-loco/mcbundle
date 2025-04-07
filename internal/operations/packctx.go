@@ -14,6 +14,7 @@ type packContext struct {
 	release     bool
 	scriptDeps  map[string]manifest.Dependency
 	packDistDir string
+	packDirName string
 	packDevDir  string
 }
 
@@ -40,14 +41,14 @@ func createPackContext(projCtx *projctx.ProjectContext, packType recipe.PackType
 		packCtx.packDistDir = baseDir
 	}
 
+	packCtx.packDirName = projRecipe.MojangID
+
+	if recipeType == recipe.RecipeTypeAddon {
+		packCtx.packDirName += "_" + packType.Abbr()
+	}
+
 	if len(projCtx.ComMojangDir) > 0 {
-		baseDir := projRecipe.MojangID
-
-		if recipeType == recipe.RecipeTypeAddon {
-			baseDir += "_" + packType.Abbr()
-		}
-
-		packCtx.packDevDir = filepath.Join(packCtx.ComMojangDir, "development_"+packType.ComMojangID(), baseDir)
+		packCtx.packDevDir = filepath.Join(packCtx.ComMojangDir, "development_"+packType.ComMojangID(), packCtx.packDirName)
 	}
 
 	return
