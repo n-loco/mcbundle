@@ -16,7 +16,7 @@ func esbuild(modCtx *moduleContext) error {
 	} else if stat, err := os.Stat(mainFile + ".js"); err == nil && !stat.IsDir() {
 		mainFile += ".js"
 	} else {
-		return &MainFileNotFoundError{ExpectedFiles: []string{"main.ts", "main.ts"}, ModuleType: recipeModule.Type}
+		return &MainFileNotFoundError{ExpectedFiles: []string{"main.ts", "main.js"}, ModuleType: recipeModule.Type}
 	}
 
 	outFile := filepath.Join(modCtx.packDistDir, "scripts", recipeModule.Type.String()+".js")
