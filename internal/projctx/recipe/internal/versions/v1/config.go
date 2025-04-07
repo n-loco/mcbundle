@@ -51,6 +51,7 @@ func (recipeConfig *Config) UnmarshalJSON(data []byte) error {
 	}
 
 	recipeConfig.Artifact = rawRecipeConfig.Artifact
+	recipeConfig.MojangID = rawRecipeConfig.MojangID
 
 	return nil
 }

@@ -27,7 +27,10 @@ func registerTask(task *TaskDefs) {
 }
 
 func SetupTasks() {
-	registerTask(&getTreeTask)
+	registerTask(&devTask)
+	registerTask(&buildTask)
+
+	// special case
 	registerTask(&helpTask)
 	taskMap["-?"] = &helpTask
 	taskMap["/?"] = &helpTask

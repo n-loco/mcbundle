@@ -25,7 +25,7 @@ func (recipeModule RecipeModuleType) PackType() PackType {
 	case RecipeModuleTypeData:
 		fallthrough
 	case RecipeModuleTypeServer:
-		return PackTypeBehaviour
+		return PackTypeBehavior
 	case RecipeModuleTypeResources:
 		return PackTypeResource
 	}

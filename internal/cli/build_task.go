@@ -5,7 +5,7 @@ import (
 	"github.com/n-loco/mcbuild/internal/projctx"
 )
 
-var getTreeTask = TaskDefs{
+var buildTask = TaskDefs{
 	Requires: projctx.EnvRequireFlagRecipe,
 	Name:     "build",
 	Doc:      "bundles JS/TS and copies content (e. g: data or resources) files into the dist directory.",

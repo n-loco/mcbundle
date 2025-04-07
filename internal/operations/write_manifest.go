@@ -44,7 +44,7 @@ func setHeader(header *manifest.Header, packCtx *packContext) {
 
 	if projRecipe.Type == recipe.RecipeTypeAddon {
 		switch packType {
-		case recipe.PackTypeBehaviour:
+		case recipe.PackTypeBehavior:
 			header.UUID = projRecipe.UUIDs.BP
 		case recipe.PackTypeResource:
 			header.UUID = projRecipe.UUIDs.RP
@@ -67,7 +67,7 @@ func createAddonDependency(packCtx *packContext) (dependency manifest.Dependency
 	packType := packCtx.packType
 
 	switch packType {
-	case recipe.PackTypeBehaviour:
+	case recipe.PackTypeBehavior:
 		dependency.UUID = projRecipe.UUIDs.RP
 	case recipe.PackTypeResource:
 		dependency.UUID = projRecipe.UUIDs.BP

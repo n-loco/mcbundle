@@ -13,7 +13,7 @@ func BuildProject(projCtx *projctx.ProjectContext, release bool) {
 	projType := projCtx.Recipe.Type
 
 	if projType == recipe.RecipeTypeAddon {
-		bpCtx := createPackContext(projCtx, recipe.PackTypeBehaviour, release)
+		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, release)
 		buildPack(&bpCtx)
 
 		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, release)

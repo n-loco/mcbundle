@@ -3,23 +3,23 @@ package recipe
 type PackType byte
 
 const (
-	PackTypeBehaviour = iota + 1
+	PackTypeBehavior = iota + 1
 	PackTypeResource
 )
 
 func (packType PackType) ComMojangID() string {
 	switch packType {
-	case PackTypeBehaviour:
-		return "behaviour_pack"
+	case PackTypeBehavior:
+		return "behavior_packs"
 	case PackTypeResource:
-		return "resource_pack"
+		return "resource_packs"
 	}
 	return ""
 }
 
 func (packType PackType) Abbr() string {
 	switch packType {
-	case PackTypeBehaviour:
+	case PackTypeBehavior:
 		return "bp"
 	case PackTypeResource:
 		return "rp"
@@ -29,8 +29,8 @@ func (packType PackType) Abbr() string {
 
 func (packType PackType) String() string {
 	switch packType {
-	case PackTypeBehaviour:
-		return "behaviour"
+	case PackTypeBehavior:
+		return "behavior"
 	case PackTypeResource:
 		return "resource"
 	}
