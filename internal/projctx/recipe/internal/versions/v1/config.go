@@ -8,15 +8,15 @@ import (
 type RecipeType uint8
 
 const (
-	BehaviourPackRecipeType RecipeType = iota + 1
+	BehaviorPackRecipeType RecipeType = iota + 1
 	ResourcePackRecipeType
 	AddonRecipeType
 )
 
 func (recipeType RecipeType) String() string {
 	switch recipeType {
-	case BehaviourPackRecipeType:
-		return "Behaviour Pack"
+	case BehaviorPackRecipeType:
+		return "Behavior Pack"
 	case ResourcePackRecipeType:
 		return "Resource Pack"
 	case AddonRecipeType:
@@ -60,7 +60,7 @@ func (recipeConfig *Config) AllowedCategories() []Category {
 	switch recipeConfig.Type {
 	case ResourcePackRecipeType:
 		return []Category{ResourcesCategory}
-	case BehaviourPackRecipeType:
+	case BehaviorPackRecipeType:
 		return []Category{BehavioursCategory}
 	case AddonRecipeType:
 		return []Category{ResourcesCategory, BehavioursCategory}
@@ -80,8 +80,8 @@ func recipeTypeStringToEnum(s string) (RecipeType, error) {
 	}
 
 	switch s {
-	case "behaviour_pack":
-		return BehaviourPackRecipeType, nil
+	case "behavior_pack":
+		return BehaviorPackRecipeType, nil
 	case "resource_pack":
 		return ResourcePackRecipeType, nil
 	case "addon":

@@ -7,7 +7,7 @@ import (
 )
 
 type UUIDPair struct {
-	BP *jsonst.UUID `json:"behaviour_pack"`
+	BP *jsonst.UUID `json:"behavior_pack"`
 	RP *jsonst.UUID `json:"resource_pack"`
 }
 
