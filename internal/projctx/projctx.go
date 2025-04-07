@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/mcbuild/internal/projctx/commojang"
-	"github.com/n-loco/mcbuild/internal/projctx/recipe"
+	"github.com/n-loco/bpbuild/internal/projctx/commojang"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
 type EnvRequireFlags byte

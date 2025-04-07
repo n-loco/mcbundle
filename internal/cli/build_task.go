@@ -1,8 +1,8 @@
 package cli
 
 import (
-	"github.com/n-loco/mcbuild/internal/operations"
-	"github.com/n-loco/mcbuild/internal/projctx"
+	"github.com/n-loco/bpbuild/internal/operations"
+	"github.com/n-loco/bpbuild/internal/projctx"
 )
 
 var buildTask = TaskDefs{

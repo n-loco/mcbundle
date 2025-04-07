@@ -5,8 +5,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/n-loco/mcbuild/internal/projctx"
-	"github.com/n-loco/mcbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/n-loco/bpbuild/internal/terminal"
 )
 
 var helpTask = TaskDefs{
@@ -15,7 +15,7 @@ var helpTask = TaskDefs{
 	Doc:      "prints this message.",
 	Requires: 0,
 	Execute: func(*projctx.ProjectContext) {
-		terminal.Print("Usage: " + terminal.UnderlineWhite + "mcbuild [task]" + terminal.Reset + "\n\n")
+		terminal.Print("Usage: " + terminal.UnderlineWhite + "bpbuild [task]" + terminal.Reset + "\n\n")
 		terminal.Print("Tasks:\n")
 
 		for i, task := range taskList {

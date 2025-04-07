@@ -3,8 +3,8 @@ package manifest
 import (
 	"fmt"
 
-	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/projctx/recipe"
+	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
 type ModuleType byte

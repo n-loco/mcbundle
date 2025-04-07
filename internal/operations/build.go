@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/n-loco/mcbuild/internal/operations/internal/manifest"
-	"github.com/n-loco/mcbuild/internal/projctx"
-	"github.com/n-loco/mcbuild/internal/projctx/recipe"
+	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
+	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
 func BuildProject(projCtx *projctx.ProjectContext, release bool) {

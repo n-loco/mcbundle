@@ -3,7 +3,7 @@ package operations
 import (
 	"path/filepath"
 
-	"github.com/n-loco/mcbuild/internal/projctx/recipe"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
 type moduleContext struct {

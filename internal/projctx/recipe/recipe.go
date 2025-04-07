@@ -3,9 +3,9 @@ package recipe
 import (
 	"encoding/json"
 
-	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/projctx/recipe/internal/formatv"
-	v1 "github.com/n-loco/mcbuild/internal/projctx/recipe/internal/versions/v1"
+	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe/internal/formatv"
+	v1 "github.com/n-loco/bpbuild/internal/projctx/recipe/internal/versions/v1"
 )
 
 type UUIDPack struct {

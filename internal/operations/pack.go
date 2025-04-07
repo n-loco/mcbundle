@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/mcbuild/internal/projctx"
-	"github.com/n-loco/mcbuild/internal/projctx/recipe"
+	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
 func PackProject(projCtx *projctx.ProjectContext) {

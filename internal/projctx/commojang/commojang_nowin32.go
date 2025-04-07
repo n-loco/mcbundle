@@ -5,7 +5,7 @@ package commojang
 import (
 	"os"
 
-	"github.com/n-loco/mcbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/terminal"
 )
 
 func WarnComMojangPath(should bool) {

@@ -3,7 +3,7 @@ package manifest
 import (
 	"fmt"
 
-	"github.com/n-loco/mcbuild/internal/jsonst"
+	"github.com/n-loco/bpbuild/internal/jsonst"
 )
 
 type PackScope byte

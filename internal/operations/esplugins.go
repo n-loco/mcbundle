@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/n-loco/mcbuild/internal/jsonst"
-	"github.com/n-loco/mcbuild/internal/operations/internal/manifest"
+	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
 )
 
 type packageJSON struct {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/n-loco/mcbuild/internal/cli"
-	"github.com/n-loco/mcbuild/internal/projctx"
-	"github.com/n-loco/mcbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/cli"
+	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/n-loco/bpbuild/internal/terminal"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/n-loco/mcbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/terminal"
 )
 
 type SyntaxError struct {
