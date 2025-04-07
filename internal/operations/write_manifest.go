@@ -33,7 +33,7 @@ func createManifest(packCtx *packContext) (mcManifest *manifest.Manifest) {
 		mcManifest.Dependencies = append(mcManifest.Dependencies, createAddonDependency(packCtx))
 	}
 
-	setMeta(&mcManifest.Meta, packCtx)
+	setMeta(&mcManifest.MetaData, packCtx)
 
 	return
 }
@@ -80,7 +80,7 @@ func createAddonDependency(packCtx *packContext) (dependency manifest.Dependency
 	return
 }
 
-func setMeta(meta *manifest.Meta, packCtx *packContext) {
+func setMeta(meta *manifest.MetaData, packCtx *packContext) {
 	projRecipe := packCtx.Recipe
 
 	meta.Authors = projRecipe.Authors

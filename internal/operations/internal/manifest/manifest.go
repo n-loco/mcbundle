@@ -5,5 +5,5 @@ type Manifest struct {
 	Header        Header       `json:"header"`
 	Modules       []Module     `json:"modules"`
 	Dependencies  []Dependency `json:"dependencies,omitempty,omitzero"`
-	Meta          Meta         `json:"meta,omitempty,omitzero"`
+	MetaData      MetaData     `json:"metadata,omitempty,omitzero"`
 }

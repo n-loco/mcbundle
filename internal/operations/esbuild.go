@@ -42,10 +42,14 @@ func esbuild(modCtx *moduleContext) error {
 		Outfile:           outFile,
 		Platform:          api.PlatformNeutral,
 		Target:            api.ES2020,
-		Sourcemap:         sourcemap,
 		MinifyWhitespace:  modCtx.release,
 		MinifySyntax:      modCtx.release,
 		MinifyIdentifiers: modCtx.release,
+
+		// Debug
+		Sourcemap:      sourcemap,
+		SourceRoot:     filepath.Join(modCtx.packDistDir, "scripts"),
+		SourcesContent: api.SourcesContentExclude,
 	})
 
 	if len(result.Errors) > 0 {

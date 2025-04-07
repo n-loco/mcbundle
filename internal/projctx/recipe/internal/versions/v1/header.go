@@ -15,7 +15,7 @@ type Header struct {
 	Version          *jsonst.SemVer
 	UUID             *jsonst.UUID
 	UUIDs            *UUIDPair
-	MinEngineVersion *jsonst.SemVer
+	MinEngineVersion [3]uint8
 }
 
 func (recipeHeader *Header) UnmarshalJSON(data []byte) error {
@@ -41,5 +41,5 @@ type rawHeader struct {
 	Version          *jsonst.SemVer `json:"version"`
 	UUID             *jsonst.UUID   `json:"uuid"`
 	UUIDs            *UUIDPair      `json:"uuids"`
-	MinEngineVersion *jsonst.SemVer `json:"min_engine_version"`
+	MinEngineVersion [3]uint8       `json:"min_engine_version"`
 }

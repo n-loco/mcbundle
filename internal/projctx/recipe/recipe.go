@@ -23,7 +23,7 @@ type Recipe struct {
 	/* Header */
 	Version          *jsonst.SemVer
 	UUIDs            UUIDPack
-	MinEngineVersion *jsonst.SemVer
+	MinEngineVersion [3]uint8
 
 	/* Modules */
 	Modules []RecipeModule

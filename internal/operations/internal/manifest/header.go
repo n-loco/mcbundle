@@ -33,7 +33,7 @@ func (packScope PackScope) MarshalJSON() ([]byte, error) {
 
 type Header struct {
 	Description      string         `json:"description,omitempty"`
-	MinEngineVersion *jsonst.SemVer `json:"min_engine_version,omitempty"`
+	MinEngineVersion [3]uint8       `json:"min_engine_version,omitempty"`
 	Name             string         `json:"name"`
 	PackScope        PackScope      `json:"pack_scope,omitempty"`
 	UUID             *jsonst.UUID   `json:"uuid"`
