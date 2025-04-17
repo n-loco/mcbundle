@@ -30,6 +30,7 @@ func SetupTasks() {
 	registerTask(&devTask)
 	registerTask(&packTask)
 	registerTask(&buildTask)
+	registerTask(&versionTask)
 
 	// special case
 	registerTask(&helpTask)
