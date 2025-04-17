@@ -6,4 +6,7 @@
 *.ntvs*
 *.sw?
 
+# Node
+**/node_modules/
+
 /*[Uu][Ss][Ee][Rr]*
