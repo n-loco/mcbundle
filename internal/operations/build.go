@@ -3,7 +3,9 @@ package operations
 import (
 	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/n-loco/bpbuild/internal/assets"
 	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
 	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
@@ -54,6 +56,11 @@ func buildPack(packCtx *packContext) {
 	for _, dep := range packCtx.scriptDeps {
 		foundDeps = append(foundDeps, dep)
 	}
+
+	packIconFile, _ := os.Create(filepath.Join(packCtx.packDistDir, "pack_icon.png"))
+	defer packIconFile.Close()
+
+	packIconFile.Write(assets.DefaultPackIcon)
 
 	writeManifest(packCtx, builtModules, foundDeps)
 }

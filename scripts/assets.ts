@@ -12,7 +12,7 @@ const assetsToWrite: Map<string, string> = new Map();
 function goSource(varName: string, data: string | Buffer): string {
     const innerCode = (() => {
         if (data instanceof Buffer) {
-            return `var ${varName} = [${data.length}]byte{
+            return `var ${varName} = []byte{
 ${(() => {
     let fi = 0, li = 16;
     const arrayLines: string[] = [];
