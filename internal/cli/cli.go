@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/n-loco/bpbuild/internal/projctx"
-	"github.com/n-loco/bpbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
 type TaskDefs struct {
@@ -49,8 +49,8 @@ func GetTask() *TaskDefs {
 	taskDefs, exists := taskMap[taskName]
 
 	if !exists {
-		terminal.Eprintf("unknown task: %s;\n", taskName)
-		terminal.Eprint("use " + terminal.UnderlineWhite + "autocrafter help" + terminal.Reset + " to see a list of tasks.\n")
+		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "unknown task: %s;\n", taskName)
+		txtui.Printf(txtui.UIPartErr, "use "+txtui.EscapeItalic+"bpbuild help"+txtui.EscapeReset+" to see a list of tasks\n")
 		os.Exit(1)
 	}
 

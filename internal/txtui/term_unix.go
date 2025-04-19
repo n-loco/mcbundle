@@ -1,6 +1,6 @@
 //go:build unix
 
-package terminal
+package txtui
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func IsTerminal(file *os.File) bool {
+func isTerminal(file *os.File) bool {
 	_, err := unix.IoctlGetWinsize(int(file.Fd()), unix.TIOCGWINSZ)
 	return err == nil
 }

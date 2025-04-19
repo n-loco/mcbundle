@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/n-loco/bpbuild/internal/projctx"
-	"github.com/n-loco/bpbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
 var helpTask = TaskDefs{
@@ -15,13 +15,13 @@ var helpTask = TaskDefs{
 	Doc:      "prints this message.",
 	Requires: 0,
 	Execute: func(*projctx.ProjectContext) {
-		terminal.Print("Usage: " + terminal.UnderlineWhite + "bpbuild [task]" + terminal.Reset + "\n\n")
-		terminal.Print("Tasks:\n")
+		txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeUnderline+"bpbuild [task]"+txtui.EscapeReset+"\n\n")
+		txtui.Print(txtui.UIPartOut, "Tasks:\n")
 
 		for i, task := range taskList {
 			printTaskDoc(task)
 			if i < len(taskList)-1 {
-				terminal.Print("\n")
+				txtui.Print(txtui.UIPartOut, "\n")
 			}
 		}
 	},
@@ -39,9 +39,9 @@ func printTaskDoc(taskDefs *TaskDefs) {
 
 	for i, docLine := range docLines {
 		if i == 0 {
-			terminal.Printf("%s  %-30s\n", names, docLine)
+			txtui.Printf(txtui.UIPartOut, "%s  %-30s\n", names, docLine)
 		} else {
-			terminal.Printf("%22s  %-30s\n", "", docLine)
+			txtui.Printf(txtui.UIPartOut, "%22s  %-30s\n", "", docLine)
 		}
 	}
 }

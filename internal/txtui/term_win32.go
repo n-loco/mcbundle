@@ -1,6 +1,6 @@
 //go:build windows
 
-package terminal
+package txtui
 
 import (
 	"os"
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func IsTerminal(file *os.File) bool {
+func isTerminal(file *os.File) bool {
 	var _m uint32
 	err := windows.GetConsoleMode(windows.Handle(file.Fd()), &_m)
 	return err == nil

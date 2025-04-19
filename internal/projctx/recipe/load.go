@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/terminal"
+	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
 type SyntaxError struct {
@@ -38,7 +38,7 @@ func (syntaxError *SyntaxError) Error() string {
 func LoadRecipe() *Recipe {
 	data, fileErr := os.ReadFile("recipe.json")
 	if fileErr != nil {
-		terminal.Eprintf("%s\n", fileErr.Error())
+		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "%s\n", fileErr.Error())
 		os.Exit(1)
 	}
 
@@ -54,7 +54,7 @@ func LoadRecipe() *Recipe {
 			}
 		}
 
-		terminal.Eprintf("%s\n", jsonErr.Error())
+		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "%s\n", fileErr.Error())
 		os.Exit(1)
 	}
 

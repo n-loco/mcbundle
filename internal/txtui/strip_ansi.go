@@ -1,4 +1,4 @@
-package terminal
+package txtui
 
 import (
 	"regexp"
@@ -6,6 +6,6 @@ import (
 
 var stripANSIRegExp = regexp.MustCompile(`(\x{1b}\[.*?m)`)
 
-func StripANSI(str string) string {
+func stripANSI(str string) string {
 	return stripANSIRegExp.ReplaceAllLiteralString(str, "")
 }
