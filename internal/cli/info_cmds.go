@@ -9,7 +9,7 @@ import (
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
-type versionCommand struct{}
+type versionCommand empty
 
 var versionCmd = versionCommand{}
 
@@ -27,7 +27,7 @@ func (cmd versionCommand) execute([]string) {
 	txtui.Printf(txtui.UIPartOut, "%s\n", assets.ProgramVersion)
 }
 
-type helpCommand struct{}
+type helpCommand empty
 
 var helpCmd = helpCommand{}
 
