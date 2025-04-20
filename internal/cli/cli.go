@@ -3,56 +3,61 @@ package cli
 import (
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
-type TaskDefs struct {
-	Requires projctx.EnvRequireFlags
-	Name     string
-	Aliases  []string
-	Doc      string
-	Execute  func(*projctx.ProjectContext)
-}
+var cmdMap = map[string]*commandDefinitions{}
+var cmdList = []*commandDefinitions{}
 
-var taskMap = map[string]*TaskDefs{}
-var taskList = []*TaskDefs{}
-
-func registerTask(task *TaskDefs) {
-	taskList = append(taskList, task)
-	taskMap[task.Name] = task
-	for _, alias := range task.Aliases {
-		taskMap[alias] = task
+func registerCommand(cmdDefs *commandDefinitions) {
+	cmdList = append(cmdList, cmdDefs)
+	cmdMap[cmdDefs.name] = cmdDefs
+	for _, alias := range cmdDefs.aliases {
+		cmdMap[alias] = cmdDefs
 	}
 }
 
-func SetupTasks() {
-	registerTask(&devTask)
-	registerTask(&packTask)
-	registerTask(&buildTask)
-	registerTask(&versionTask)
+func setupCommands() {
+	registerCommand(&devCmd)
+	registerCommand(&packCmd)
+	registerCommand(&buildCmd)
+	registerCommand(&versionCmd)
 
 	// special case
-	registerTask(&helpTask)
-	taskMap["-?"] = &helpTask
-	taskMap["/?"] = &helpTask
-	taskMap["h"] = &helpTask
+	registerCommand(&helpCmd)
+	cmdMap["-?"] = &helpCmd
+	cmdMap["/?"] = &helpCmd
+	cmdMap["h"] = &helpCmd
 }
 
-func GetTask() *TaskDefs {
+func getCommand() *commandDefinitions {
 	if len(os.Args) < 2 {
-		return &helpTask
+		return &helpCmd
 	}
 
-	taskName := os.Args[1]
+	cmdName := os.Args[1]
 
-	taskDefs, exists := taskMap[taskName]
+	cmdDefs, exists := cmdMap[cmdName]
 
 	if !exists {
-		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "unknown task: %s;\n", taskName)
-		txtui.Printf(txtui.UIPartErr, "use "+txtui.EscapeItalic+"bpbuild help"+txtui.EscapeReset+" to see a list of tasks\n")
+		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "unknown command: %s\n", cmdName)
+		txtui.Printf(txtui.UIPartErr, "use "+txtui.EscapeItalic+"bpbuild help"+txtui.EscapeReset+" to see a list of commands\n")
 		os.Exit(1)
 	}
 
-	return taskDefs
+	return cmdDefs
+}
+
+func Entry() {
+	setupCommands()
+
+	cmdDefs := getCommand()
+
+	var optSlice []string
+
+	if len(os.Args) > 2 {
+		optSlice = os.Args[2:]
+	}
+
+	cmdDefs.execute(optSlice)
 }
