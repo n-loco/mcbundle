@@ -6,40 +6,58 @@ import (
 	"strings"
 
 	"github.com/n-loco/bpbuild/internal/assets"
-	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
-var versionCmd = commandDefinitions{
+type versionCommand struct{}
+
+var versionCmd = versionCommand{}
+
+var versionCmdInfo = commandInfo{
 	name:    "version",
 	aliases: []string{"--version", "-v"},
 	doc:     "...",
-	execCommand: func(*projctx.ProjectContext) {
-		txtui.Printf(txtui.UIPartOut, "%s\n", assets.ProgramVersion)
-	},
 }
 
-var helpCmd = commandDefinitions{
+func (cmd versionCommand) info() *commandInfo {
+	return &versionCmdInfo
+}
+
+func (cmd versionCommand) execute([]string) {
+	txtui.Printf(txtui.UIPartOut, "%s\n", assets.ProgramVersion)
+}
+
+type helpCommand struct{}
+
+var helpCmd = helpCommand{}
+
+var helpCmdInfo = commandInfo{
 	name:    "help",
 	aliases: []string{"--help", "-h"},
 	doc:     "...",
-	execCommand: func(*projctx.ProjectContext) {
-		txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"bpbuild [command] <options>"+txtui.EscapeReset+"\n\n")
-		txtui.Print(txtui.UIPartOut, "Commands:\n")
-
-		for i, cmd := range cmdList {
-			printCommandDoc(cmd)
-			if i < len(cmdList)-1 {
-				txtui.Print(txtui.UIPartOut, "\n")
-			}
-		}
-	},
 }
 
-func printCommandDoc(cmdDefs *commandDefinitions) {
-	name := cmdDefs.name
-	aliases := cmdDefs.aliases
-	tDoc := cmdDefs.doc
+func (cmd helpCommand) info() *commandInfo {
+	return &helpCmdInfo
+}
+
+func (cmd helpCommand) execute([]string) {
+	txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"bpbuild [command] <options>"+txtui.EscapeReset+"\n\n")
+	txtui.Print(txtui.UIPartOut, "Commands:\n")
+
+	for i, cmd := range cmdList {
+		printCommandDoc(cmd)
+		if i < len(cmdList)-1 {
+			txtui.Print(txtui.UIPartOut, "\n")
+		}
+	}
+}
+
+func printCommandDoc(cmdDefs command) {
+	cmdInfo := cmdDefs.info()
+	name := cmdInfo.name
+	aliases := cmdInfo.aliases
+	tDoc := cmdInfo.doc
 
 	names := strings.Join(slices.Concat([]string{name}, aliases), ", ")
 	names = fmt.Sprintf("  %-28s", names)

@@ -6,14 +6,15 @@ import (
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
-var cmdMap = map[string]*commandDefinitions{}
-var cmdList = []*commandDefinitions{}
+var cmdMap = map[string]command{}
+var cmdList = []command{}
 
-func registerCommand(cmdDefs *commandDefinitions) {
-	cmdList = append(cmdList, cmdDefs)
-	cmdMap[cmdDefs.name] = cmdDefs
-	for _, alias := range cmdDefs.aliases {
-		cmdMap[alias] = cmdDefs
+func registerCommand(cmd command) {
+	cmdInfo := cmd.info()
+	cmdList = append(cmdList, cmd)
+	cmdMap[cmdInfo.name] = cmd
+	for _, alias := range cmdInfo.aliases {
+		cmdMap[alias] = cmd
 	}
 }
 
@@ -30,14 +31,14 @@ func setupCommands() {
 	cmdMap["h"] = &helpCmd
 }
 
-func getCommand() *commandDefinitions {
+func getCommand() command {
 	if len(os.Args) < 2 {
 		return &helpCmd
 	}
 
 	cmdName := os.Args[1]
 
-	cmdDefs, exists := cmdMap[cmdName]
+	cmd, exists := cmdMap[cmdName]
 
 	if !exists {
 		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "unknown command: %s\n", cmdName)
@@ -45,13 +46,13 @@ func getCommand() *commandDefinitions {
 		os.Exit(1)
 	}
 
-	return cmdDefs
+	return cmd
 }
 
 func Entry() {
 	setupCommands()
 
-	cmdDefs := getCommand()
+	cmd := getCommand()
 
 	var optSlice []string
 
@@ -59,5 +60,5 @@ func Entry() {
 		optSlice = os.Args[2:]
 	}
 
-	cmdDefs.execute(optSlice)
+	cmd.execute(optSlice)
 }
