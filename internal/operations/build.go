@@ -15,24 +15,23 @@ func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *al
 	projType := projCtx.Recipe.Type
 
 	if projType == recipe.RecipeTypeAddon {
-		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, release)
-		diagnostic = diagnostic.Append(buildPack(&bpCtx))
+		bpCtx, rpCtx := projCtx.AddonContext(release)
 
-		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, release)
+		diagnostic = diagnostic.Append(buildPack(&bpCtx))
 		diagnostic = diagnostic.Append(buildPack(&rpCtx))
 	} else {
-		packCtx := createPackContext(projCtx, projType.PackType(), release)
+		packCtx := projCtx.PackContext(release)
 		diagnostic = diagnostic.Append(buildPack(&packCtx))
 	}
 
 	return
 }
 
-func buildPack(packCtx *packContext) (diagnostic *alert.Diagnostic) {
+func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	projRecipe := packCtx.Recipe
-	packType := packCtx.packType
+	packType := packCtx.PackType
 
-	buildPath := packCtx.packDistDir
+	buildPath := packCtx.PackDistDir
 	if _, err := os.Stat(buildPath); err == nil {
 		os.RemoveAll(buildPath)
 	}
@@ -45,7 +44,7 @@ func buildPack(packCtx *packContext) (diagnostic *alert.Diagnostic) {
 			continue
 		}
 
-		modCtx := createModuleContext(packCtx, &recipeModule)
+		modCtx := packCtx.ModuleContext(&recipeModule)
 
 		mod, buildModDiag := buildModule(&modCtx)
 
@@ -58,11 +57,14 @@ func buildPack(packCtx *packContext) (diagnostic *alert.Diagnostic) {
 		return
 	}
 
-	for _, dep := range packCtx.scriptDeps {
-		foundDeps = append(foundDeps, dep)
+	for _, dep := range packCtx.ScriptDependencies() {
+		foundDeps = append(foundDeps, manifest.Dependency{
+			ModuleName: dep.Name,
+			Version:    dep.Version,
+		})
 	}
 
-	packIconFile, _ := os.Create(filepath.Join(packCtx.packDistDir, "pack_icon.png"))
+	packIconFile, _ := os.Create(filepath.Join(packCtx.PackDistDir, "pack_icon.png"))
 	defer packIconFile.Close()
 
 	packIconFile.Write(assets.DefaultPackIcon)
@@ -72,15 +74,15 @@ func buildPack(packCtx *packContext) (diagnostic *alert.Diagnostic) {
 	return
 }
 
-func buildModule(modCtx *moduleContext) (mod manifest.Module, diagnostic *alert.Diagnostic) {
-	recipeModule := modCtx.recipeModule
+func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic *alert.Diagnostic) {
+	recipeModule := modCtx.RecipeModule
 
 	switch recipeModule.Type {
 	case recipe.RecipeModuleTypeData:
 		fallthrough
 	case recipe.RecipeModuleTypeResources:
 		{
-			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.modSourcePath, modCtx.packDistDir))
+			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.ModSourcePath, modCtx.PackDistDir))
 		}
 	case recipe.RecipeModuleTypeServer:
 		{

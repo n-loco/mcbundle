@@ -6,22 +6,23 @@ import (
 	"path/filepath"
 
 	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
+	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
-func writeManifest(packCtx *packContext, builtModules []manifest.Module, foundDeps []manifest.Dependency) {
+func writeManifest(packCtx *projctx.PackContext, builtModules []manifest.Module, foundDeps []manifest.Dependency) {
 	manifest := createManifest(packCtx)
 
 	manifest.Modules = builtModules
 	manifest.Dependencies = append(manifest.Dependencies, foundDeps...)
 
-	manifestPath := filepath.Join(packCtx.packDistDir, "manifest.json")
+	manifestPath := filepath.Join(packCtx.PackDistDir, "manifest.json")
 	manifestData, _ := json.MarshalIndent(&manifest, "", "  ")
 
 	os.WriteFile(manifestPath, manifestData, os.ModePerm)
 }
 
-func createManifest(packCtx *packContext) (mcManifest *manifest.Manifest) {
+func createManifest(packCtx *projctx.PackContext) (mcManifest *manifest.Manifest) {
 	recipeType := packCtx.Recipe.Type
 
 	mcManifest = new(manifest.Manifest)
@@ -38,9 +39,9 @@ func createManifest(packCtx *packContext) (mcManifest *manifest.Manifest) {
 	return
 }
 
-func setHeader(header *manifest.Header, packCtx *packContext) {
+func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
-	packType := packCtx.packType
+	packType := packCtx.PackType
 
 	if projRecipe.Type == recipe.RecipeTypeAddon {
 		switch packType {
@@ -62,9 +63,9 @@ func setHeader(header *manifest.Header, packCtx *packContext) {
 	header.MinEngineVersion = projRecipe.MinEngineVersion
 }
 
-func createAddonDependency(packCtx *packContext) (dependency manifest.Dependency) {
+func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.Dependency) {
 	projRecipe := packCtx.Recipe
-	packType := packCtx.packType
+	packType := packCtx.PackType
 
 	switch packType {
 	case recipe.PackTypeBehavior:
@@ -80,7 +81,7 @@ func createAddonDependency(packCtx *packContext) (dependency manifest.Dependency
 	return
 }
 
-func setMeta(meta *manifest.MetaData, packCtx *packContext) {
+func setMeta(meta *manifest.MetaData, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
 
 	meta.Authors = projRecipe.Authors

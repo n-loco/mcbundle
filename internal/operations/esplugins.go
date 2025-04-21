@@ -7,14 +7,14 @@ import (
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/n-loco/bpbuild/internal/jsonst"
-	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
+	"github.com/n-loco/bpbuild/internal/projctx"
 )
 
 type packageJSON struct {
 	Version *jsonst.SemVer `json:"version"`
 }
 
-func mcNativeModResolverPlugin(modCtx *moduleContext) api.Plugin {
+func mcNativeModResolverPlugin(modCtx *projctx.ModuleContext) api.Plugin {
 	return api.Plugin{
 		Name: "Minecraft Native Module Resolver",
 		Setup: func(build api.PluginBuild) {
@@ -37,9 +37,9 @@ func mcNativeModResolverPlugin(modCtx *moduleContext) api.Plugin {
 func findNativeModuleVersion(
 	build *api.PluginBuild,
 	args *api.OnResolveArgs,
-	modCtx *moduleContext,
+	modCtx *projctx.ModuleContext,
 ) error {
-	if _, ok := modCtx.scriptDeps[args.Path]; ok {
+	if hasDep := modCtx.HasScriptDependency(args.Path); hasDep {
 		return nil
 	}
 
@@ -64,10 +64,7 @@ func findNativeModuleVersion(
 		return &NativeModuleError{NativeModule: args.Path}
 	}
 
-	modCtx.scriptDeps[args.Path] = manifest.Dependency{
-		ModuleName: args.Path,
-		Version:    packageJSON.Version,
-	}
+	modCtx.AddScriptDependency(args.Path, packageJSON.Version)
 
 	return nil
 }

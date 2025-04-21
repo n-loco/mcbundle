@@ -49,13 +49,12 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 	defer os.RemoveAll(tmpDir)
 
 	if recipeType == recipe.RecipeTypeAddon {
-		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, !debugP)
-		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &bpCtx))
+		bpCtx, rpCtx := projCtx.AddonContext(!debugP)
 
-		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, !debugP)
+		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &bpCtx))
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &rpCtx))
 	} else {
-		packCtx := createPackContext(projCtx, recipeType.PackType(), !debugP)
+		packCtx := projCtx.PackContext(!debugP)
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &packCtx))
 	}
 
@@ -71,16 +70,16 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 	return
 }
 
-func copyPackToTempDir(tempDir string, packCtx *packContext) (diagnostic *alert.Diagnostic) {
+func copyPackToTempDir(tempDir string, packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	recipeType := packCtx.Recipe.Type
 
 	packDir := tempDir
 
 	if recipeType == recipe.RecipeTypeAddon {
-		packDir = filepath.Join(packDir, packCtx.packDirName)
+		packDir = filepath.Join(packDir, packCtx.PackDirName)
 	}
 
-	err := os.CopyFS(packDir, os.DirFS(packCtx.packDistDir))
+	err := os.CopyFS(packDir, os.DirFS(packCtx.PackDistDir))
 
 	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(err))
 

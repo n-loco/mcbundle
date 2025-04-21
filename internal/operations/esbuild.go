@@ -6,12 +6,13 @@ import (
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/n-loco/bpbuild/internal/alert"
+	"github.com/n-loco/bpbuild/internal/projctx"
 )
 
-func esbuild(modCtx *moduleContext) (diagnostic *alert.Diagnostic) {
-	recipeModule := modCtx.recipeModule
+func esbuild(modCtx *projctx.ModuleContext) (diagnostic *alert.Diagnostic) {
+	recipeModule := modCtx.RecipeModule
 
-	mainFile := filepath.Join(modCtx.modSourcePath, "main")
+	mainFile := filepath.Join(modCtx.ModSourcePath, "main")
 	if stat, err := os.Stat(mainFile + ".ts"); err == nil && !stat.IsDir() {
 		mainFile += ".ts"
 	} else if stat, err := os.Stat(mainFile + ".js"); err == nil && !stat.IsDir() {
@@ -24,10 +25,10 @@ func esbuild(modCtx *moduleContext) (diagnostic *alert.Diagnostic) {
 		return
 	}
 
-	outFile := filepath.Join(modCtx.packDistDir, "scripts", recipeModule.Type.String()+".js")
+	outFile := filepath.Join(modCtx.PackDistDir, "scripts", recipeModule.Type.String()+".js")
 
 	sourcemap := api.SourceMapNone
-	if !modCtx.release {
+	if !modCtx.Release {
 		sourcemap = api.SourceMapLinked
 	}
 
@@ -47,13 +48,13 @@ func esbuild(modCtx *moduleContext) (diagnostic *alert.Diagnostic) {
 		Outfile:           outFile,
 		Platform:          api.PlatformNeutral,
 		Target:            api.ES2020,
-		MinifyWhitespace:  modCtx.release,
-		MinifySyntax:      modCtx.release,
-		MinifyIdentifiers: modCtx.release,
+		MinifyWhitespace:  modCtx.Release,
+		MinifySyntax:      modCtx.Release,
+		MinifyIdentifiers: modCtx.Release,
 
 		// Debug
 		Sourcemap:      sourcemap,
-		SourceRoot:     filepath.Join(modCtx.packDistDir, "scripts"),
+		SourceRoot:     filepath.Join(modCtx.PackDistDir, "scripts"),
 		SourcesContent: api.SourcesContentExclude,
 	})
 
