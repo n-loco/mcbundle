@@ -3,32 +3,39 @@ package operations
 import (
 	"os"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
-func CopyToDev(projCtx *projctx.ProjectContext) {
+func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
 	recipeType := projCtx.Recipe.Type
 
-	BuildProject(projCtx, false)
+	diagnostic = diagnostic.Append(BuildProject(projCtx, false))
+
+	if diagnostic.HasErrors() {
+		return
+	}
 
 	if recipeType == recipe.RecipeTypeAddon {
 		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, false)
-		copyPackToDev(&bpCtx)
+		diagnostic = diagnostic.Append(copyPackToDev(&bpCtx))
 
 		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, false)
-		copyPackToDev(&rpCtx)
+		diagnostic = diagnostic.Append(copyPackToDev(&rpCtx))
 	} else {
 		packCtx := createPackContext(projCtx, recipeType.PackType(), false)
-		copyPackToDev(&packCtx)
+		diagnostic = diagnostic.Append(copyPackToDev(&packCtx))
 	}
+
+	return
 }
 
-func copyPackToDev(packCtx *packContext) {
+func copyPackToDev(packCtx *packContext) (diagnostic *alert.Diagnostic) {
 	os.RemoveAll(packCtx.packDevDir)
 	err := os.CopyFS(packCtx.packDevDir, os.DirFS(packCtx.packDistDir))
 
-	if err != nil {
-		panic("TODO ERR HANDLING: " + err.Error())
-	}
+	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(err))
+
+	return
 }

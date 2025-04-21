@@ -3,8 +3,21 @@ package cli
 import (
 	"os"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
+
+type UnknownCommandErrorAlert struct {
+	CommandName string
+}
+
+func (errAlert UnknownCommandErrorAlert) Display() string {
+	return "unknown command: " + errAlert.CommandName
+}
+
+func (errAlert UnknownCommandErrorAlert) Tip() string {
+	return "use " + txtui.EscapeItalic + "bpbuild help" + txtui.EscapeReset + " to see a list of commands"
+}
 
 var cmdMap = map[string]command{}
 var cmdList = []command{}
@@ -31,28 +44,31 @@ func setupCommands() {
 	cmdMap["h"] = &helpCmd
 }
 
-func getCommand() command {
+func getCommand() (cmd command, diagnostic *alert.Diagnostic) {
 	if len(os.Args) < 2 {
-		return &helpCmd
+		cmd = &helpCmd
+		return
 	}
 
 	cmdName := os.Args[1]
-
 	cmd, exists := cmdMap[cmdName]
 
 	if !exists {
-		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "unknown command: %s\n", cmdName)
-		txtui.Printf(txtui.UIPartErr, "use "+txtui.EscapeItalic+"bpbuild help"+txtui.EscapeReset+" to see a list of commands\n")
-		os.Exit(1)
+		diagnostic = diagnostic.AppendError(&UnknownCommandErrorAlert{CommandName: cmdName})
 	}
 
-	return cmd
+	return
 }
 
-func Entry() {
+func Entry() (diagnostic *alert.Diagnostic) {
 	setupCommands()
 
-	cmd := getCommand()
+	cmd, getCmdDiag := getCommand()
+
+	diagnostic = diagnostic.Append(getCmdDiag)
+	if diagnostic.HasErrors() {
+		return
+	}
 
 	var optSlice []string
 
@@ -60,5 +76,7 @@ func Entry() {
 		optSlice = os.Args[2:]
 	}
 
-	cmd.execute(optSlice)
+	diagnostic = diagnostic.Append(cmd.execute(optSlice))
+
+	return
 }

@@ -5,15 +5,20 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
-func PackProject(projCtx *projctx.ProjectContext) {
+func PackProject(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
 	projRecipe := projCtx.Recipe
 	recipeType := projRecipe.Type
 
-	BuildProject(projCtx, true)
+	diagnostic = diagnostic.Append(BuildProject(projCtx, true))
+
+	if diagnostic.HasErrors() {
+		return
+	}
 
 	packFilePath := filepath.Join(projCtx.DistDir, projRecipe.Artifact)
 
@@ -23,37 +28,46 @@ func PackProject(projCtx *projctx.ProjectContext) {
 		packFilePath += ".mcpack"
 	}
 
-	packFile, cFErr := os.Create(packFilePath)
-	if cFErr != nil {
-		panic("TODO EERH CREATING PACK: " + cFErr.Error())
+	packFile, packFileErr := os.Create(packFilePath)
+	if packFileErr != nil {
+		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(packFileErr))
+		return
 	}
 
 	zipW := zip.NewWriter(packFile)
 	defer zipW.Close()
 
-	tmpDir, tdErr := os.MkdirTemp(os.TempDir(), "_mcbpacking")
-	if tdErr != nil {
-		panic("TODO EERH CREATING PACK: " + tdErr.Error())
+	tmpDir, tmpDirErr := os.MkdirTemp(os.TempDir(), "_mcbpacking")
+	if tmpDirErr != nil {
+		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(tmpDirErr))
+		return
 	}
 	defer os.RemoveAll(tmpDir)
 
 	if recipeType == recipe.RecipeTypeAddon {
 		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, true)
-		copyPackToTempDir(tmpDir, &bpCtx)
+		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &bpCtx))
 
 		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, true)
-		copyPackToTempDir(tmpDir, &rpCtx)
+		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &rpCtx))
 	} else {
 		packCtx := createPackContext(projCtx, recipeType.PackType(), true)
-		copyPackToTempDir(tmpDir, &packCtx)
+		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &packCtx))
+	}
+
+	if diagnostic.HasErrors() {
+		return
 	}
 
 	tmpFS := os.DirFS(tmpDir)
 
-	zipW.AddFS(tmpFS)
+	zipErr := zipW.AddFS(tmpFS)
+	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(zipErr))
+
+	return
 }
 
-func copyPackToTempDir(tempDir string, packCtx *packContext) {
+func copyPackToTempDir(tempDir string, packCtx *packContext) (diagnostic *alert.Diagnostic) {
 	recipeType := packCtx.Recipe.Type
 
 	packDir := tempDir
@@ -62,5 +76,9 @@ func copyPackToTempDir(tempDir string, packCtx *packContext) {
 		packDir = filepath.Join(packDir, packCtx.packDirName)
 	}
 
-	os.CopyFS(packDir, os.DirFS(packCtx.packDistDir))
+	err := os.CopyFS(packDir, os.DirFS(packCtx.packDistDir))
+
+	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(err))
+
+	return
 }

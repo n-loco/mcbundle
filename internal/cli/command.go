@@ -1,5 +1,7 @@
 package cli
 
+import "github.com/n-loco/bpbuild/internal/alert"
+
 type empty = struct{}
 
 type commandInfo struct {
@@ -11,7 +13,7 @@ type commandInfo struct {
 
 type command interface {
 	info() *commandInfo
-	execute([]string)
+	execute([]string) *alert.Diagnostic
 }
 
 type optionInfo struct {

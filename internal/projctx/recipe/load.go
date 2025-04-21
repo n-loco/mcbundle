@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/txtui"
+	"github.com/n-loco/bpbuild/internal/alert"
 )
 
 type SyntaxError struct {
@@ -35,28 +36,31 @@ func (syntaxError *SyntaxError) Error() string {
 	return fmt.Sprintf("%s:%d:%d: %s", syntaxError.File, line, col, syntaxError.prevMsg)
 }
 
-func LoadRecipe() *Recipe {
-	data, fileErr := os.ReadFile("recipe.json")
+func LoadRecipe(workingDir string) (projRecipe *Recipe, diagnostic *alert.Diagnostic) {
+	fileData, fileErr := os.ReadFile(filepath.Join(workingDir, "recipe.json"))
+
 	if fileErr != nil {
-		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "%s\n", fileErr.Error())
-		os.Exit(1)
+		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(fileErr))
+		return
 	}
 
-	recipe := new(Recipe)
-	if jsonErr := json.Unmarshal(data, recipe); jsonErr != nil {
+	vRecipe := new(Recipe)
+
+	if jsonErr := json.Unmarshal(fileData, vRecipe); jsonErr != nil {
 		switch err := jsonErr.(type) {
 		case *json.SyntaxError:
 			jsonErr = &SyntaxError{
 				Offset:  err.Offset,
 				File:    "recipe.json",
-				Data:    data,
+				Data:    fileData,
 				prevMsg: err.Error(),
 			}
 		}
 
-		txtui.PrePrintf(txtui.UIPartErr, txtui.ErrPrefix, "%s\n", fileErr.Error())
-		os.Exit(1)
+		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(jsonErr))
 	}
 
-	return recipe
+	projRecipe = vRecipe
+
+	return
 }

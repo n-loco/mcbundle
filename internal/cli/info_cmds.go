@@ -5,6 +5,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/assets"
 	"github.com/n-loco/bpbuild/internal/txtui"
 )
@@ -23,8 +24,9 @@ func (cmd versionCommand) info() *commandInfo {
 	return &versionCmdInfo
 }
 
-func (cmd versionCommand) execute([]string) {
+func (cmd versionCommand) execute([]string) (d *alert.Diagnostic) {
 	txtui.Printf(txtui.UIPartOut, "%s\n", assets.ProgramVersion)
+	return
 }
 
 type helpCommand empty
@@ -41,7 +43,7 @@ func (cmd helpCommand) info() *commandInfo {
 	return &helpCmdInfo
 }
 
-func (cmd helpCommand) execute([]string) {
+func (cmd helpCommand) execute([]string) (d *alert.Diagnostic) {
 	txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"bpbuild [command] <options>"+txtui.EscapeReset+"\n\n")
 	txtui.Print(txtui.UIPartOut, "Commands:\n")
 
@@ -51,6 +53,8 @@ func (cmd helpCommand) execute([]string) {
 			txtui.Print(txtui.UIPartOut, "\n")
 		}
 	}
+
+	return
 }
 
 func printCommandDoc(cmdDefs command) {

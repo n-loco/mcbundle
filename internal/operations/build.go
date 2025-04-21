@@ -1,32 +1,34 @@
 package operations
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/assets"
 	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
 	"github.com/n-loco/bpbuild/internal/projctx"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
-func BuildProject(projCtx *projctx.ProjectContext, release bool) {
+func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *alert.Diagnostic) {
 	projType := projCtx.Recipe.Type
 
 	if projType == recipe.RecipeTypeAddon {
 		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, release)
-		buildPack(&bpCtx)
+		diagnostic = diagnostic.Append(buildPack(&bpCtx))
 
 		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, release)
-		buildPack(&rpCtx)
+		diagnostic = diagnostic.Append(buildPack(&rpCtx))
 	} else {
 		packCtx := createPackContext(projCtx, projType.PackType(), release)
-		buildPack(&packCtx)
+		diagnostic = diagnostic.Append(buildPack(&packCtx))
 	}
+
+	return
 }
 
-func buildPack(packCtx *packContext) {
+func buildPack(packCtx *packContext) (diagnostic *alert.Diagnostic) {
 	projRecipe := packCtx.Recipe
 	packType := packCtx.packType
 
@@ -45,12 +47,15 @@ func buildPack(packCtx *packContext) {
 
 		modCtx := createModuleContext(packCtx, &recipeModule)
 
-		mod, err := buildModule(&modCtx)
-		if err != nil {
-			log.Print("TODO! error handling buildModule: " + err.Error())
-		}
+		mod, buildModDiag := buildModule(&modCtx)
+
+		diagnostic = diagnostic.Append(buildModDiag)
 
 		builtModules = append(builtModules, mod)
+	}
+
+	if diagnostic.HasErrors() {
+		return
 	}
 
 	for _, dep := range packCtx.scriptDeps {
@@ -63,9 +68,11 @@ func buildPack(packCtx *packContext) {
 	packIconFile.Write(assets.DefaultPackIcon)
 
 	writeManifest(packCtx, builtModules, foundDeps)
+
+	return
 }
 
-func buildModule(modCtx *moduleContext) (mod manifest.Module, err error) {
+func buildModule(modCtx *moduleContext) (mod manifest.Module, diagnostic *alert.Diagnostic) {
 	recipeModule := modCtx.recipeModule
 
 	switch recipeModule.Type {
@@ -73,12 +80,12 @@ func buildModule(modCtx *moduleContext) (mod manifest.Module, err error) {
 		fallthrough
 	case recipe.RecipeModuleTypeResources:
 		{
-			err = copyDataToBuild(modCtx.modSourcePath, modCtx.packDistDir)
+			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.modSourcePath, modCtx.packDistDir))
 		}
 	case recipe.RecipeModuleTypeServer:
 		{
-			err = esbuild(modCtx)
-			if err == nil {
+			diagnostic = diagnostic.Append(esbuild(modCtx))
+			if !diagnostic.HasErrors() {
 				mod.Entry = "scripts/server.js"
 				mod.Language = "javascript"
 			}
@@ -87,16 +94,18 @@ func buildModule(modCtx *moduleContext) (mod manifest.Module, err error) {
 		panic("invalid module")
 	}
 
-	if err == nil {
-		mod.Description = recipeModule.Description
-		mod.UUID = recipeModule.UUID
-		mod.Version = recipeModule.Version
-		mod.Type = manifest.ModuleTypeFromRecipeModuleType(recipeModule.Type)
+	if diagnostic.HasErrors() {
+		return
 	}
+
+	mod.Description = recipeModule.Description
+	mod.UUID = recipeModule.UUID
+	mod.Version = recipeModule.Version
+	mod.Type = manifest.ModuleTypeFromRecipeModuleType(recipeModule.Type)
 
 	return
 }
 
-func copyDataToBuild(from string, to string) error {
-	return os.CopyFS(to, os.DirFS(from))
+func copyDataToBuild(from string, to string) (diagnostic *alert.Diagnostic) {
+	return diagnostic.AppendError(alert.NewGoErrWrapperAlert(os.CopyFS(to, os.DirFS(from))))
 }

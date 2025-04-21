@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/projctx/commojang"
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
@@ -23,28 +24,33 @@ type ProjectContext struct {
 	SourceDir    string
 }
 
-func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext) {
+func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext, diagnostic *alert.Diagnostic) {
 	var needsRecipe = (flags & EnvRequireFlagRecipe) > 0
 	var needsComMojangPath = (flags & EnvRequireFlagComMojang) > 0
 
-	if needsRecipe {
-		projCtx.Recipe = recipe.LoadRecipe()
-
-		workDir, wdErr := os.Getwd()
-
-		if wdErr != nil {
-			panic("TODO ERRH: " + wdErr.Error())
-		}
-
-		projCtx.WorkDir = workDir
-
-		projCtx.DistDir = filepath.Join(workDir, "dist")
-		projCtx.SourceDir = filepath.Join(workDir, "source")
+	workDir, getwdErr := os.Getwd()
+	if getwdErr != nil {
+		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(getwdErr))
+		return
 	}
 
-	commojang.WarnComMojangPath(!needsComMojangPath)
+	projCtx.WorkDir = workDir
+	projCtx.DistDir = filepath.Join(workDir, "dist")
+	projCtx.SourceDir = filepath.Join(workDir, "source")
+
+	if needsRecipe {
+		loadedRecipe, loadRecipeDiag := recipe.LoadRecipe(workDir)
+
+		diagnostic = diagnostic.Append(loadRecipeDiag)
+		projCtx.Recipe = loadedRecipe
+	}
+
+	diagnostic = diagnostic.Append(commojang.WarnComMojangPath(!needsComMojangPath))
 	if needsComMojangPath {
-		projCtx.ComMojangDir = commojang.ComMojangPath()
+		dir, comMojangDiag := commojang.ComMojangPath()
+
+		projCtx.ComMojangDir = dir
+		diagnostic = diagnostic.Append(comMojangDiag)
 	}
 
 	return

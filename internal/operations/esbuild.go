@@ -5,9 +5,10 @@ import (
 	"path/filepath"
 
 	"github.com/evanw/esbuild/pkg/api"
+	"github.com/n-loco/bpbuild/internal/alert"
 )
 
-func esbuild(modCtx *moduleContext) error {
+func esbuild(modCtx *moduleContext) (diagnostic *alert.Diagnostic) {
 	recipeModule := modCtx.recipeModule
 
 	mainFile := filepath.Join(modCtx.modSourcePath, "main")
@@ -16,7 +17,11 @@ func esbuild(modCtx *moduleContext) error {
 	} else if stat, err := os.Stat(mainFile + ".js"); err == nil && !stat.IsDir() {
 		mainFile += ".js"
 	} else {
-		return &MainFileNotFoundError{ExpectedFiles: []string{"main.ts", "main.js"}, ModuleType: recipeModule.Type}
+		diagnostic = diagnostic.AppendError(&MainFileNotFoundErrAlert{
+			ExpectedFiles: []string{"main.ts", "main.js"},
+			ModuleType:    recipeModule.Type,
+		})
+		return
 	}
 
 	outFile := filepath.Join(modCtx.packDistDir, "scripts", recipeModule.Type.String()+".js")
@@ -52,9 +57,15 @@ func esbuild(modCtx *moduleContext) error {
 		SourcesContent: api.SourcesContentExclude,
 	})
 
-	if len(result.Errors) > 0 {
-		return &ESBuildErrorWrapper{Messages: result.Errors}
+	for _, eswarn := range result.Warnings {
+		wwarn := ESBuildWrapperAlert(eswarn)
+		diagnostic = diagnostic.AppendError(&wwarn)
 	}
 
-	return nil
+	for _, eserror := range result.Errors {
+		werror := ESBuildWrapperAlert(eserror)
+		diagnostic = diagnostic.AppendError(&werror)
+	}
+
+	return
 }

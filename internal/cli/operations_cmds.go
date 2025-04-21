@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/operations"
 	"github.com/n-loco/bpbuild/internal/projctx"
 )
@@ -18,8 +19,9 @@ var buildCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe,
-	func(obj *buildOptsObj, projCtx *projctx.ProjectContext) {
-		operations.BuildProject(projCtx, obj.release)
+	func(obj *buildOptsObj, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
+		diagnostic = diagnostic.Append(operations.BuildProject(projCtx, obj.release))
+		return
 	},
 	[]*operationOption[buildOptsObj]{
 		{
@@ -40,8 +42,9 @@ var devCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe|projctx.EnvRequireFlagComMojang,
-	func(obj *empty, projCtx *projctx.ProjectContext) {
-		operations.CopyToDev(projCtx)
+	func(obj *empty, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
+		diagnostic = diagnostic.Append(operations.CopyToDev(projCtx))
+		return
 	},
 	nil,
 )
@@ -52,8 +55,9 @@ var packCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe,
-	func(obj *packOptsObj, projCtx *projctx.ProjectContext) {
-		operations.PackProject(projCtx)
+	func(obj *packOptsObj, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
+		diagnostic = diagnostic.Append(operations.PackProject(projCtx))
+		return
 	},
 	nil,
 )

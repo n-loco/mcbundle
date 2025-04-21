@@ -1,20 +1,33 @@
 package cli
 
 import (
+	"github.com/n-loco/bpbuild/internal/alert"
 	"github.com/n-loco/bpbuild/internal/projctx"
 )
+
+type UnknownOptionWarnAlert struct {
+	OptionName string
+}
+
+func (warnAlert UnknownOptionWarnAlert) Display() string {
+	return "ignored unknown option: " + warnAlert.OptionName
+}
+
+func (warnAlert UnknownOptionWarnAlert) Tip() string {
+	return ""
+}
 
 type operationCommand[T any] struct {
 	commandInfo
 	optionMap    map[string]*operationOption[T]
 	requirements projctx.EnvRequireFlags
-	execCommand  func(*T, *projctx.ProjectContext)
+	execCommand  func(*T, *projctx.ProjectContext) *alert.Diagnostic
 }
 
 func createOperationCommand[T any](
 	cmdInfo commandInfo,
 	requirements projctx.EnvRequireFlags,
-	execCommand func(*T, *projctx.ProjectContext),
+	execCommand func(*T, *projctx.ProjectContext) *alert.Diagnostic,
 	options []*operationOption[T],
 ) operationCommand[T] {
 	cmdInfo.options = make([]option, 0, len(options))
@@ -40,7 +53,7 @@ func (cmd *operationCommand[T]) info() *commandInfo {
 	return &cmd.commandInfo
 }
 
-func (cmd *operationCommand[T]) execute(optList []string) {
+func (cmd *operationCommand[T]) execute(optList []string) (diagnostic *alert.Diagnostic) {
 	var o T
 
 	for i := 0; i < len(optList); i++ {
@@ -50,11 +63,22 @@ func (cmd *operationCommand[T]) execute(optList []string) {
 		if ok {
 			optSlice := optList[i+1:]
 			i += opt.process(&o, optSlice)
+		} else {
+			diagnostic = diagnostic.AppendWarning(&UnknownOptionWarnAlert{OptionName: optName})
 		}
 	}
 
-	projCtx := projctx.CreateProjectContext(cmd.requirements)
-	cmd.execCommand(&o, &projCtx)
+	projCtx, createCtxDiag := projctx.CreateProjectContext(cmd.requirements)
+
+	diagnostic = diagnostic.Append(createCtxDiag)
+
+	if diagnostic.HasErrors() {
+		return
+	}
+
+	diagnostic = diagnostic.Append(cmd.execCommand(&o, &projCtx))
+
+	return
 }
 
 type operationOption[T any] struct {

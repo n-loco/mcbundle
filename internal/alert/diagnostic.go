@@ -1,5 +1,9 @@
 package alert
 
+import (
+	"reflect"
+)
+
 type Diagnostic struct {
 	Warnings []Alert
 	Errors   []Alert
@@ -21,7 +25,7 @@ func (diagnostic *Diagnostic) Append(other *Diagnostic) *Diagnostic {
 }
 
 func (diagnostic *Diagnostic) AppendWarning(warning Alert) *Diagnostic {
-	if warning == nil {
+	if reflect.ValueOf(warning).IsNil() {
 		return diagnostic
 	}
 
@@ -35,7 +39,7 @@ func (diagnostic *Diagnostic) AppendWarning(warning Alert) *Diagnostic {
 }
 
 func (diagnostic *Diagnostic) AppendError(err Alert) *Diagnostic {
-	if err == nil {
+	if reflect.ValueOf(err).IsNil() {
 		return diagnostic
 	}
 

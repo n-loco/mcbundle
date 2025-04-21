@@ -1,9 +1,18 @@
 package main
 
 import (
+	"os"
+
 	"github.com/n-loco/bpbuild/internal/cli"
+	"github.com/n-loco/bpbuild/internal/txtui"
 )
 
 func main() {
-	cli.Entry()
+	diagnostic := cli.Entry()
+
+	txtui.ShowDiagnostic(diagnostic)
+
+	if diagnostic.HasErrors() {
+		os.Exit(-1)
+	}
 }
