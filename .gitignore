@@ -9,4 +9,8 @@
 # Node
 **/node_modules/
 
+# Python
+*.pyc
+
+# User ignored files
 /*[Uu][Ss][Ee][Rr]*
