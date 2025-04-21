@@ -1,0 +1,10 @@
+{
+  "name": "bpbuild",
+  "version": "0.1.0-indev",
+  "description": "...",
+  "scripts": {},
+  "keywords": [],
+  "author": "...",
+  "license": "MIT",
+  "packageManager": "pnpm@10.8.1"
+}
