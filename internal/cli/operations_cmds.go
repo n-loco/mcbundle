@@ -11,6 +11,7 @@ type buildOptsObj struct {
 }
 
 type packOptsObj struct {
+	debug bool
 }
 
 var buildCmd = createOperationCommand(
@@ -56,8 +57,18 @@ var packCmd = createOperationCommand(
 	},
 	projctx.EnvRequireFlagRecipe,
 	func(obj *packOptsObj, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
-		diagnostic = diagnostic.Append(operations.PackProject(projCtx))
+		diagnostic = diagnostic.Append(operations.PackProject(projCtx, obj.debug))
 		return
 	},
-	nil,
+	[]*operationOption[packOptsObj]{
+		{
+			optionInfo: optionInfo{
+				name: "--debug",
+			},
+			process: func(o *packOptsObj, optSlice []string) int {
+				o.debug = true
+				return 0
+			},
+		},
+	},
 )

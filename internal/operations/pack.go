@@ -10,17 +10,21 @@ import (
 	"github.com/n-loco/bpbuild/internal/projctx/recipe"
 )
 
-func PackProject(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
+func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *alert.Diagnostic) {
 	projRecipe := projCtx.Recipe
 	recipeType := projRecipe.Type
 
-	diagnostic = diagnostic.Append(BuildProject(projCtx, true))
+	diagnostic = diagnostic.Append(BuildProject(projCtx, !debugP))
 
 	if diagnostic.HasErrors() {
 		return
 	}
 
 	packFilePath := filepath.Join(projCtx.DistDir, projRecipe.Artifact)
+
+	if debugP {
+		packFilePath += ".debug"
+	}
 
 	if recipeType == recipe.RecipeTypeAddon {
 		packFilePath += ".mcaddon"
@@ -45,13 +49,13 @@ func PackProject(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic)
 	defer os.RemoveAll(tmpDir)
 
 	if recipeType == recipe.RecipeTypeAddon {
-		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, true)
+		bpCtx := createPackContext(projCtx, recipe.PackTypeBehavior, !debugP)
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &bpCtx))
 
-		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, true)
+		rpCtx := createPackContext(projCtx, recipe.PackTypeResource, !debugP)
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &rpCtx))
 	} else {
-		packCtx := createPackContext(projCtx, recipeType.PackType(), true)
+		packCtx := createPackContext(projCtx, recipeType.PackType(), !debugP)
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &packCtx))
 	}
 
