@@ -8,4 +8,45 @@ importers:
 
   .: {}
 
-  bpbuild: {}
+  '@bpbuild/darwin-arm64': {}
+
+  '@bpbuild/darwin-x64': {}
+
+  '@bpbuild/linux-arm64': {}
+
+  '@bpbuild/linux-ia32': {}
+
+  '@bpbuild/linux-x64': {}
+
+  '@bpbuild/win32-arm64': {}
+
+  '@bpbuild/win32-ia32': {}
+
+  '@bpbuild/win32-x64': {}
+
+  bpbuild:
+    optionalDependencies:
+      '@bpbuild/darwin-arm64':
+        specifier: workspace:../@bpbuild/darwin-arm64
+        version: link:../@bpbuild/darwin-arm64
+      '@bpbuild/darwin-x64':
+        specifier: workspace:../@bpbuild/darwin-x64
+        version: link:../@bpbuild/darwin-x64
+      '@bpbuild/linux-arm64':
+        specifier: workspace:../@bpbuild/linux-arm64
+        version: link:../@bpbuild/linux-arm64
+      '@bpbuild/linux-ia32':
+        specifier: workspace:../@bpbuild/linux-ia32
+        version: link:../@bpbuild/linux-ia32
+      '@bpbuild/linux-x64':
+        specifier: workspace:../@bpbuild/linux-x64
+        version: link:../@bpbuild/linux-x64
+      '@bpbuild/win32-arm64':
+        specifier: workspace:../@bpbuild/win32-arm64
+        version: link:../@bpbuild/win32-arm64
+      '@bpbuild/win32-ia32':
+        specifier: workspace:../@bpbuild/win32-ia32
+        version: link:../@bpbuild/win32-ia32
+      '@bpbuild/win32-x64':
+        specifier: workspace:../@bpbuild/win32-x64
+        version: link:../@bpbuild/win32-x64

@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from builtins import tuple
-import shutil
 import os.path as path
 import os
+import sys
 
 SOURCE_ASSETS = "assets"
 OUT_ASSETS = path.join("internal", "assets")
@@ -78,11 +78,9 @@ def gen_go_source(file_name: str) -> None:
 
 
 if __name__ == "__main__":
-    shutil.rmtree(OUT_ASSETS, True)
-    os.mkdir(OUT_ASSETS)
+    try:
+        os.mkdir(OUT_ASSETS)
+    except:
+        pass
 
-    with open(path.join(OUT_ASSETS, ".gitignore"), "w") as gitignore:
-        gitignore.write("*")
-
-    for file_name in os.listdir(SOURCE_ASSETS):
-        gen_go_source(file_name)
+    gen_go_source(sys.argv[1])

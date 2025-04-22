@@ -1,7 +1,6 @@
 {
   "type": "module",
   "private": true,
-  "scripts": {
-  },
+  "scripts": {},
   "packageManager": "pnpm@10.8.1"
 }

@@ -1,10 +1,20 @@
 {
   "name": "bpbuild",
-  "version": "0.1.0-indev",
+  "version": "1.0.0-indev",
   "description": "...",
   "scripts": {},
   "keywords": [],
   "author": "...",
   "license": "MIT",
-  "packageManager": "pnpm@10.8.1"
+  "packageManager": "pnpm@10.8.1",
+  "optionalDependencies": {
+    "@bpbuild/win32-x64": "workspace:../@bpbuild/win32-x64",
+    "@bpbuild/win32-ia32": "workspace:../@bpbuild/win32-ia32",
+    "@bpbuild/win32-arm64": "workspace:../@bpbuild/win32-arm64",
+    "@bpbuild/linux-x64": "workspace:../@bpbuild/linux-x64",
+    "@bpbuild/linux-ia32": "workspace:../@bpbuild/linux-ia32",
+    "@bpbuild/linux-arm64": "workspace:../@bpbuild/linux-arm64",
+    "@bpbuild/darwin-x64": "workspace:../@bpbuild/darwin-x64",
+    "@bpbuild/darwin-arm64": "workspace:../@bpbuild/darwin-arm64"
+  }
 }

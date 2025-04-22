@@ -8,9 +8,16 @@
 
 # Node
 **/node_modules/
+*.tgz
 
 # Python
 *.pyc
+**/__pycache__/
+
+# Build
+npm/@bpbuild/*
+!npm/@bpbuild/README.md
+internal/assets/
 
 # User ignored files
 /*[Uu][Ss][Ee][Rr]*
