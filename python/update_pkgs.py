@@ -15,7 +15,10 @@ def executable(os: str, cpu: str):
     package_json_obj = {
         "name": f"@bpbuild/{target_double}",
         "description": f"{target_double} binary for bpbuild",
-        "version": get_version()
+        "version": get_version(),
+        "files": ["bpbuild.exe" if os == "win32" else "bpbuild"],
+        "os": [os],
+        "cpu": [cpu]
     }
 
     with open(package_path, "w") as package_json:
