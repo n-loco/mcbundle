@@ -13,12 +13,12 @@ SHELL := sh
 endif
 
 GO_SOURCES = $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./... 2> $(NULL))
-ASSETS_SOURCE = $(wildcard assets/*)
+SOURCE_ASSETS = $(wildcard assets/*)
 
 PYTHON ?= python3
 
 GEN_ASSET_DEPS = python/assets.py
-PLATFORM_DEPS = python/platform.py python/compat.py
+PLATFORM_HELPER_DEPS = python/platform.py python/compat.py
 UPDATE_PKGS_DEPS = python/update_pkgs.py python/compat.py
 
 GEN_ASSET = $(PYTHON) $(PYTHON_FLAGS) python/assets.py
@@ -26,18 +26,19 @@ PLATFORM_HELPER = $(PYTHON) $(PYTHON_FLAGS) python/platform.py
 UPDATE_PKGS = $(PYTHON) $(PYTHON_FLAGS) python/update_pkgs.py
 RM = $(PYTHON) $(PYTHON_FLAGS) python/rm.py
 
-TARGET_PLATFORMS = $(foreach p,$(shell $(PLATFORM_HELPER) --platform-wildcard),npm/@bpbuild/$(p)/)
-PLATFORM_PACKAGES = $(foreach p,$(TARGET_PLATFORMS),$(p)package.json)
-TARGET_ASSETS = $(foreach a,$(ASSETS_SOURCE),internal/$(a).go)
+PLATFORMS = $(shell $(PLATFORM_HELPER) --platform-wildcard)
 
-CLEAN_BUILDS = $(foreach b,$(shell $(PLATFORM_HELPER) --platform-wildcard),clean-build-$(b))
+TARGET_PLATFORMS = $(foreach p,$(PLATFORMS),npm/@bpbuild/$(p)/)
+TARGET_PLATFORMS_PACKAGES = $(foreach p,$(TARGET_PLATFORMS),$(p)package.json)
+TARGET_ASSETS = $(foreach a,$(SOURCE_ASSETS),internal/$(a).go)
 
-build:	gen-assets $(TARGET_PLATFORMS) update-packages
-	@$(RM) --unused-builds
+CLEAN_BUILDS = $(foreach b,$(PLATFORMS),clean-build-$(b))
 
-update-packages:	$(PLATFORM_PACKAGES) npm/bpbuild/package.json
-	@cd npm &&	\
-	pnpm install > $(NULL)
+build:	update-packages gen-assets $(TARGET_PLATFORMS)
+	@cd npm && cd bpbuild && pnpm run build > $(NULL)
+
+update-packages:	clean-unused-builds $(TARGET_PLATFORMS_PACKAGES) npm/bpbuild/package.json
+	@cd npm && pnpm install > $(NULL)
 
 gen-assets:	$(TARGET_ASSETS)
 
@@ -49,12 +50,18 @@ setup:	gen-assets
 	golang.org/x/sys@v0.31.0	\
 	github.com/evanw/esbuild@v0.25.2
 
-clean:	clean-assets clean-builds
+clean:	clean-assets clean-builds clean-build-js clean-unused-builds
 
 clean-assets:
 	@$(RM) ./internal/assets
 
 clean-builds:	$(CLEAN_BUILDS)
+
+clean-build-js:
+	@$(RM) ./npm/bpbuild/dist
+
+clean-unused-builds:
+	@$(RM) --unused-builds
 
 # ========================== #
 
@@ -62,7 +69,7 @@ internal/assets/%.go:	assets/% $(GEN_ASSET_DEPS)
 	@$(GEN_ASSET) $*
 	@go fmt ./$@
 
-npm/@bpbuild/%/:	$(GO_SOURCES) $(PLATFORM_DEPS)
+npm/@bpbuild/%/:	$(GO_SOURCES) $(PLATFORM_HELPER_DEPS)
 	@GOOS=$(shell $(PLATFORM_HELPER) --node-os-to-goos $(word 1, $(subst -, ,$*)))	\
 	GOARCH=$(shell $(PLATFORM_HELPER) --node-cpu-to-goarch $(word 2, $(subst -, ,$*)))	\
 	go build -o $@ ./...

@@ -7,20 +7,21 @@ COMPATIBILITY_MATRIX: dict[str, list[str]] = {
 }
 
 def target_double_tuples() -> list[tuple[str, str]]:
-    pairs: list[tuple[str, str]] = []
+    doubles: list[tuple[str, str]] = []
 
     for os in COMPATIBILITY_MATRIX:
         for cpu in COMPATIBILITY_MATRIX[os]:
-            pairs.append((os, cpu))
+            doubles.append((os, cpu))
 
-    return pairs
+    return doubles
 
 def target_doubles() -> list[str]:
-    pairs = target_double_tuples()
-    pairs_names: list[str] = []
+    double_tuples = target_double_tuples()
+    target_doubles: list[str] = []
 
-    for pair in pairs:
-        (os, cpu) = pair
-        pairs_names.append(f"{os}-{cpu}")
+    for double_tuple in double_tuples:
+        (os, cpu) = double_tuple
+        target_doubles.append(f"{os}-{cpu}")
 
-    return pairs_names
+    target_doubles.sort()
+    return target_doubles

@@ -2,24 +2,31 @@ import os.path as path
 import compat
 import json
 import sys
+import os
 
 def get_version() -> str:
     with open("assets/program_version.txt", "r") as program_version:
         content = program_version.read()
     return content.strip()
 
-def executable(os: str, cpu: str):
-    target_double = f"{os}-{cpu}"
-    package_path = path.join("npm", "@bpbuild", target_double, "package.json")
+def executable(node_os: str, node_cpu: str):
+    target_double = f"{node_os}-{node_cpu}"
+    package_dir = path.join("npm", "@bpbuild", target_double)
+    package_path = path.join(package_dir, "package.json")
 
     package_json_obj = {
         "name": f"@bpbuild/{target_double}",
         "description": f"{target_double} binary for bpbuild",
         "version": get_version(),
-        "files": ["bpbuild.exe" if os == "win32" else "bpbuild"],
-        "os": [os],
-        "cpu": [cpu]
+        "files": ["bpbuild.exe" if node_os == "win32" else "bpbuild"],
+        "os": [node_os],
+        "cpu": [node_cpu]
     }
+
+    try:
+        os.mkdir(package_dir)
+    except:
+        pass
 
     with open(package_path, "w") as package_json:
         package_json_obj["version"] = get_version()

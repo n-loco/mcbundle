@@ -18,6 +18,7 @@
 npm/@bpbuild/*
 !npm/@bpbuild/README.md
 internal/assets/
+**/dist/
 
 # User ignored files
 /*[Uu][Ss][Ee][Rr]*
