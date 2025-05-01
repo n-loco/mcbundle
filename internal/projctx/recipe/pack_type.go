@@ -3,7 +3,7 @@ package recipe
 type PackType byte
 
 const (
-	PackTypeBehavior = iota + 1
+	PackTypeBehavior PackType = iota + 1
 	PackTypeResource
 )
 
