@@ -35,9 +35,10 @@ TARGET_ASSETS = $(foreach a,$(SOURCE_ASSETS),internal/$(a).go)
 CLEAN_BUILDS = $(foreach b,$(PLATFORMS),clean-build-$(b))
 
 build:	update-packages gen-assets $(TARGET_PLATFORMS)
-	@cd npm && cd bpbuild && pnpm run build > $(NULL)
+	@cd npm && cd bpbuild && pnpm build > $(NULL)
+	@cd npm && cd create && pnpm build > $(NULL)
 
-update-packages:	clean-unused-builds $(TARGET_PLATFORMS_PACKAGES) npm/bpbuild/package.json
+update-packages:	clean-unused-builds $(TARGET_PLATFORMS_PACKAGES) npm/bpbuild/package.json npm/create/package.json
 	@cd npm && pnpm install > $(NULL)
 
 gen-assets:	$(TARGET_ASSETS)
@@ -59,6 +60,7 @@ clean-builds:	$(CLEAN_BUILDS)
 
 clean-build-js:
 	@$(RM) ./npm/bpbuild/dist
+	@$(RM) ./npm/create/dist
 
 clean-unused-builds:
 	@$(RM) --unused-builds
@@ -79,6 +81,9 @@ npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 
 npm/bpbuild/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --main-package
+
+npm/create/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
+	@$(UPDATE_PKGS) --create-package
 
 clean-build-%:
 	@$(RM) ./npm/@bpbuild/$*

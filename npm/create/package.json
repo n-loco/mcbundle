@@ -1,0 +1,21 @@
+{
+  "name": "create-bpbuild",
+  "description": "...",
+  "version": "1.0.0-indev",
+  "type": "module",
+  "files": [
+    "dist/create.mjs"
+  ],
+  "bin": "dist/create.mjs",
+  "scripts": {
+    "build": "node esbuild.js"
+  },
+  "keywords": [],
+  "author": "...",
+  "license": "MIT",
+  "packageManager": "pnpm@10.8.1",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "esbuild": "^0.25.3"
+  }
+}

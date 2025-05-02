@@ -58,6 +58,15 @@ importers:
         specifier: workspace:../@bpbuild/win32-x64
         version: link:../@bpbuild/win32-x64
 
+  create:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.1
+        version: 22.14.1
+      esbuild:
+        specifier: ^0.25.3
+        version: 0.25.3
+
 packages:
 
   '@esbuild/aix-ppc64@0.25.3':
