@@ -1,3 +1,3 @@
-// This file only contains representations `define`s from `esbuild.js`
+// This file only contains representations of `define`s from `esbuild.js`
 
 declare const BPBuildSpecifier: string
