@@ -79,10 +79,11 @@ internal/assets/%.go:	assets/% $(GEN_ASSET_DEPS)
 # % here must follow the format "{os}-{arch}"
 # {os} and {arch} corresponds to `process.platform` and `process.arch` in Node.js respectively
 # examples: win32-x64, linux-ia32, darwin-arm64, etc
+npm/@bpbuild/%/:
+export GOOS = $(call target-to-goos,$*)
+export GOARCH = $(call target-to-goarch,$*)
 npm/@bpbuild/%/:	$(GO_SOURCES) $(PLATFORM_HELPER_DEPS)
-	@GOOS=$(call target-to-goos,$*)	\
-	GOARCH=$(call target-to-goarch,$*)	\
-	go build -o $@ ./...
+	@go build -o $@ ./...
 
 # the same rules as above apply here
 npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)

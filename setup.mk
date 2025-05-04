@@ -11,7 +11,7 @@ endif
 
 -include config.mk
 
-PYTHON ?= python3
+PYTHON ?= $(if $(WIN32),python,python3)
 PYTHON_RT := $(PYTHON) $(PYTHON_FLAGS)
 
 include scripts/inc.mk

@@ -29,9 +29,15 @@ if __name__ == "__main__":
 
     match op:
         case "--node-os-to-goos":
-            print(node_os_to_goos(sys.argv[2]))
+            try:
+                print(node_os_to_goos(sys.argv[2]))
+            except:
+                pass
         case "--node-cpu-to-goarch":
-            print(node_cpu_to_goarch(sys.argv[2]))
+            try:
+                print(node_cpu_to_goarch(sys.argv[2]))
+            except:
+                pass
         case "--platform-wildcard":
             print(platform_wildcard())
         case _:

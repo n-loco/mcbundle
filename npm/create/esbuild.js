@@ -1,7 +1,7 @@
 import esbuild from "esbuild";
 import path from "node:path";
 
-const bpbuildPath = path.join(path.resolve(import.meta.dirname), "..", "bpbuild");
+const bpbuildPath = path.join(path.resolve(import.meta.dirname), "..", "bpbuild").replaceAll("\\", "\\\\");
 const bpbuildSpecifier = `file:${bpbuildPath}`;
 
 esbuild.buildSync({
