@@ -33,16 +33,17 @@ def target(target_double: str):
     except:
         pass
 
-    with open(package_path, "w") as package_json:
+    with open(package_path, "wb") as package_json:
         package_json_obj["version"] = get_version()
-        json.dump(package_json_obj, package_json, indent="  ")
+        content = json.dumps(package_json_obj, indent="  ")
+        package_json.write(bytes(content, "UTF-8"))
     
 
 def main_package():
     package_path = path.join("npm", "bpbuild", "package.json")
     with open(package_path, "r") as package_json:
         package_json_obj = json.load(package_json)
-    with open(package_path, "w") as package_json:
+    with open(package_path, "wb") as package_json:
         package_json_obj["version"] = get_version()
 
         target_doubles = compat.target_doubles()
@@ -54,16 +55,18 @@ def main_package():
         
         package_json_obj["optionalDependencies"] = optional_dependencies
 
-        json.dump(package_json_obj, package_json, indent="  ")
+        content = json.dumps(package_json_obj, indent="  ")
+        package_json.write(bytes(content, "UTF-8"))
 
 def create_package():
     package_path = path.join("npm", "create", "package.json")
     with open(package_path, "r") as package_json:
         package_json_obj = json.load(package_json)
-    with open(package_path, "w") as package_json:
+    with open(package_path, "wb") as package_json:
         package_json_obj["version"] = get_version()
 
-        json.dump(package_json_obj, package_json, indent="  ")
+        content = json.dumps(package_json_obj, indent="  ")
+        package_json.write(bytes(content, "UTF-8"))
 
 if __name__ == "__main__":
     op = sys.argv[1]

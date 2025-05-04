@@ -73,8 +73,8 @@ def gen_go_source(file_name: str) -> None:
 
     go_source_file_path = path.join(OUT_ASSETS, file_name + ".go")
 
-    with open(go_source_file_path, "w") as go_source_file:
-        go_source_file.write(go_source_content)
+    with open(go_source_file_path, "wb") as go_source_file:
+        go_source_file.write(bytes(go_source_content, "UTF-8"))
 
 
 if __name__ == "__main__":
