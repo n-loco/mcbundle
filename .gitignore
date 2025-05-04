@@ -21,4 +21,5 @@ internal/assets/
 **/dist/
 
 # User ignored files
+config.mk
 /*[Uu][Ss][Ee][Rr]*

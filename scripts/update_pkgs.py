@@ -9,7 +9,12 @@ def get_version() -> str:
         content = program_version.read()
     return content.strip()
 
-def executable(node_os: str, node_cpu: str):
+def target(target_double: str):
+    target_as_list = target_double.split("-")
+
+    node_os = target_as_list[0]
+    node_cpu = target_as_list[1]
+
     target_double = f"{node_os}-{node_cpu}"
     package_dir = path.join("npm", "@bpbuild", target_double)
     package_path = path.join(package_dir, "package.json")
@@ -67,8 +72,8 @@ if __name__ == "__main__":
             main_package()
         case "--create-package":
             create_package()
-        case "--executable":
-            executable(sys.argv[2], sys.argv[3])
+        case "--target":
+            target(sys.argv[2])
         case _:
             raise Exception(f"unknown op: {op}")
     

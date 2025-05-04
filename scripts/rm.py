@@ -23,4 +23,5 @@ if __name__ == "__main__":
         case "--unused-builds":
             rm_unused_builds()
         case _:
-            shutil.rmtree(op_or_fd, True)
+            for fd in sys.argv[1:]:
+                shutil.rmtree(fd, True)

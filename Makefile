@@ -1,89 +1,95 @@
-# Env variables:
+# Configurable variables:
 #	PYTHON:
 #		Python runtime
 #	PYTHON_FLAGS:
 #		Flags for python's runtime
 
-ifeq ($(shell go env GOHOSTOS),windows)
-NULL = NUL
-SHELL := cmd
-else
-NULL = /dev/null
-SHELL := sh
-endif
+include setup.mk
 
-GO_SOURCES = $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./... 2> $(NULL))
-SOURCE_ASSETS = $(wildcard assets/*)
+# ========== variables =========== #
 
-PYTHON ?= python3
+GO_SOURCES := $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./... 2> $(NULL))
+SOURCE_ASSETS := $(wildcard assets/*)
 
-GEN_ASSET_DEPS = python/assets.py
-PLATFORM_HELPER_DEPS = python/platform.py python/compat.py
-UPDATE_PKGS_DEPS = python/update_pkgs.py python/compat.py
+DEFAULT_EXECUTABLE_TARGET := npm/@bpbuild/$(DEFAULT_PLATFORM)/
 
-GEN_ASSET = $(PYTHON) $(PYTHON_FLAGS) python/assets.py
-PLATFORM_HELPER = $(PYTHON) $(PYTHON_FLAGS) python/platform.py
-UPDATE_PKGS = $(PYTHON) $(PYTHON_FLAGS) python/update_pkgs.py
-RM = $(PYTHON) $(PYTHON_FLAGS) python/rm.py
+ALL_EXECUTABLE_TARGETS := $(foreach p,$(ALL_PLATFORMS),npm/@bpbuild/$(p)/)
+ALL_EXECUTABLE_TARGETS_PACKAGES := $(foreach p,$(ALL_EXECUTABLE_TARGETS),$(p)package.json)
 
-PLATFORMS = $(shell $(PLATFORM_HELPER) --platform-wildcard)
+TARGET_ASSETS := $(foreach a,$(SOURCE_ASSETS),internal/$(a).go)
 
-TARGET_PLATFORMS = $(foreach p,$(PLATFORMS),npm/@bpbuild/$(p)/)
-TARGET_PLATFORMS_PACKAGES = $(foreach p,$(TARGET_PLATFORMS),$(p)package.json)
-TARGET_ASSETS = $(foreach a,$(SOURCE_ASSETS),internal/$(a).go)
+# ======== helper targets ======== #
 
-CLEAN_BUILDS = $(foreach b,$(PLATFORMS),clean-build-$(b))
-
-build:	update-packages gen-assets $(TARGET_PLATFORMS)
+.PHONY::	build-default
+build-default:	gen-assets $(DEFAULT_EXECUTABLE_TARGET) update-packages
 	@cd npm && cd bpbuild && pnpm build > $(NULL)
 	@cd npm && cd create && pnpm build > $(NULL)
 
-update-packages:	clean-unused-builds $(TARGET_PLATFORMS_PACKAGES) npm/bpbuild/package.json npm/create/package.json
+.PHONY::	build-all
+build-all:	gen-assets $(ALL_EXECUTABLE_TARGETS) update-packages
+	@cd npm && cd bpbuild && pnpm build > $(NULL)
+	@cd npm && cd create && pnpm build > $(NULL)
+
+.PHONY::	update-packages
+update-packages:	clean-ghost-builds $(ALL_EXECUTABLE_TARGETS_PACKAGES) npm/bpbuild/package.json npm/create/package.json
 	@cd npm && pnpm install > $(NULL)
 
+.PHONY::	gen-assets
 gen-assets:	$(TARGET_ASSETS)
 
+.PHONY::	fmt
 fmt:
 	@go fmt ./...
 
+.PHONY::	setup
 setup:	gen-assets
 	@go get	\
 	golang.org/x/sys@v0.31.0	\
 	github.com/evanw/esbuild@v0.25.2
 
-clean:	clean-assets clean-builds clean-build-js clean-unused-builds
+.PHONY::	clean
+clean:	clean-assets clean-builds clean-builds-js clean-node-modules clean-ghost-builds
 
+.PHONY::	clean-assets
 clean-assets:
 	@$(RM) ./internal/assets
 
-clean-builds:	$(CLEAN_BUILDS)
+.PHONY::	clean-builds
+clean-builds:
+	@$(RM) $(ALL_EXECUTABLE_TARGETS)
 
-clean-build-js:
-	@$(RM) ./npm/bpbuild/dist
-	@$(RM) ./npm/create/dist
+.PHONY::	clean-build-js
+clean-builds-js:
+	@$(RM) ./npm/bpbuild/dist ./npm/create/dist
 
-clean-unused-builds:
+.PHONY::	clean-node-modules
+clean-node-modules:
+	@$(RM) ./npm/node_modules ./npm/bpbuild/node_modules ./npm/create/node_modules
+
+.PHONY::	clean-ghost-builds
+clean-ghost-builds:
 	@$(RM) --unused-builds
 
-# ========================== #
+# ========= true targets ========= #
 
 internal/assets/%.go:	assets/% $(GEN_ASSET_DEPS)
 	@$(GEN_ASSET) $*
 	@go fmt ./$@
 
+# % here must follow the format "{os}-{arch}"
+# {os} and {arch} corresponds to `process.platform` and `process.arch` in Node.js respectively
+# examples: win32-x64, linux-ia32, darwin-arm64, etc
 npm/@bpbuild/%/:	$(GO_SOURCES) $(PLATFORM_HELPER_DEPS)
-	@GOOS=$(shell $(PLATFORM_HELPER) --node-os-to-goos $(word 1, $(subst -, ,$*)))	\
-	GOARCH=$(shell $(PLATFORM_HELPER) --node-cpu-to-goarch $(word 2, $(subst -, ,$*)))	\
+	@GOOS=$(call target-to-goos,$*)	\
+	GOARCH=$(call target-to-goarch,$*)	\
 	go build -o $@ ./...
 
+# the same rules as above apply here
 npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
-	@$(UPDATE_PKGS) --executable $(word 1, $(subst -, ,$*)) $(word 2, $(subst -, ,$*))
+	@$(UPDATE_PKGS) --target $*
 
 npm/bpbuild/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --main-package
 
 npm/create/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --create-package
-
-clean-build-%:
-	@$(RM) ./npm/@bpbuild/$*
