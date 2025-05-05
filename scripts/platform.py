@@ -24,6 +24,9 @@ def node_cpu_to_goarch(node_cpu: str) -> str:
 def platform_wildcard() -> str:
     return " ".join(compat.target_doubles())
 
+def exe_suffix(target_double: str) -> str | None:
+    return ".exe" if target_double.startswith("win32-") else None
+
 if __name__ == "__main__":
     op = sys.argv[1]
 
@@ -40,5 +43,9 @@ if __name__ == "__main__":
                 pass
         case "--platform-wildcard":
             print(platform_wildcard())
+        case "--exe-suffix":
+            suffix = exe_suffix(sys.argv[2])
+            if suffix != None:
+                print(suffix)
         case _:
             raise Exception(f"unknown op: {op}")

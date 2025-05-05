@@ -33,5 +33,5 @@ undefine NOT_FOUND_PROGRAMS
 
 # ========== variables =========== #
 
-DEFAULT_PLATFORM := $(shell node -e "process.stdout.write(process.platform + '-' + process.arch)")
+DEFAULT_PLATFORM := $(shell node -e "process.stdout.write(process.platform+'-'+process.arch)")
 ALL_PLATFORMS := $(platform-wildcard)

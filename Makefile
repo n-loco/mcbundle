@@ -6,57 +6,73 @@
 
 include setup.mk
 
+# ========== functions =========== #
+
+# param $(1): target
+native-package-path = npm/@bpbuild/$(1)/
+
+# param $(1): target list
+native-package-paths = $(strip $(foreach target,$(1), $(call native-package-path,$(target))))
+
+# param $(1): target list
+native-packagejson-paths = $(strip $(foreach target,$(1), $(call native-package-path,$(target))package.json))
+
+# param $(1): target
+target-binary-path = $(call native-package-path,$(1))bpbuild$(call exe-suffix,$(1))
+
+# param $(1): target list
+cross-binary-target-paths = $(strip $(foreach target,$(1), $(call target-binary-path,$(target))))
+
 # ========== variables =========== #
 
 GO_SOURCES := $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./... 2> $(NULL))
+
+TARGET_BINARY := $(call target-binary-path,$(DEFAULT_PLATFORM))
+CROSS_BINARY_TARGETS := $(call cross-binary-target-paths,$(ALL_PLATFORMS))
+NATIVE_PACKAGEJSON_PATHS := $(call native-packagejson-paths,$(ALL_PLATFORMS))
+
 SOURCE_ASSETS := $(wildcard assets/*)
-
-DEFAULT_EXECUTABLE_TARGET := npm/@bpbuild/$(DEFAULT_PLATFORM)/
-
-ALL_EXECUTABLE_TARGETS := $(foreach p,$(ALL_PLATFORMS),npm/@bpbuild/$(p)/)
-ALL_EXECUTABLE_TARGETS_PACKAGES := $(foreach p,$(ALL_EXECUTABLE_TARGETS),$(p)package.json)
-
-TARGET_ASSETS := $(foreach a,$(SOURCE_ASSETS),internal/$(a).go)
+IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
 
 # ======== helper targets ======== #
 
-.PHONY::	build-default
-build-default:	gen-assets $(DEFAULT_EXECUTABLE_TARGET) update-packages
+.PHONY::	build
+build:	import-assets $(TARGET_BINARY) update-packages
 	@cd npm && cd bpbuild && pnpm build > $(NULL)
 	@cd npm && cd create && pnpm build > $(NULL)
 
-.PHONY::	build-all
-build-all:	gen-assets $(ALL_EXECUTABLE_TARGETS) update-packages
+.PHONY::	build-cross
+build-cross:	import-assets $(CROSS_BINARY_TARGETS) update-packages
 	@cd npm && cd bpbuild && pnpm build > $(NULL)
 	@cd npm && cd create && pnpm build > $(NULL)
 
 .PHONY::	update-packages
-update-packages:	clean-ghost-builds $(ALL_EXECUTABLE_TARGETS_PACKAGES) npm/bpbuild/package.json npm/create/package.json
+update-packages:	clean-ghost-builds $(NATIVE_PACKAGEJSON_PATHS) npm/bpbuild/package.json npm/create/package.json
 	@cd npm && pnpm install > $(NULL)
 
-.PHONY::	gen-assets
-gen-assets:	$(TARGET_ASSETS)
+.PHONY::	import-assets
+import-assets:	$(IMPORTED_ASSETS)
 
 .PHONY::	fmt
 fmt:
 	@go fmt ./...
 
 .PHONY::	setup
-setup:	gen-assets
+setup:	import-assets
 	@go get	\
 	golang.org/x/sys@v0.31.0	\
 	github.com/evanw/esbuild@v0.25.2
 
 .PHONY::	clean
-clean:	clean-assets clean-builds clean-builds-js clean-node-modules clean-ghost-builds
+clean:	clean-imported-assets clean-builds clean-builds-js clean-node-modules clean-ghost-builds
 
-.PHONY::	clean-assets
-clean-assets:
+.PHONY::	clean-imported-assets
+clean-imported-assets:
 	@$(RM) ./internal/assets
 
 .PHONY::	clean-builds
 clean-builds:
-	@$(RM) $(ALL_EXECUTABLE_TARGETS)
+	@$(RM) $(call native-package-paths,$(ALL_PLATFORMS))
 
 .PHONY::	clean-build-js
 clean-builds-js:
@@ -72,20 +88,21 @@ clean-ghost-builds:
 
 # ========= true targets ========= #
 
-internal/assets/%.go:	assets/% $(GEN_ASSET_DEPS)
-	@$(GEN_ASSET) $*
+internal/assets/%.go:	assets/% $(IMPORT_ASSET_DEPS)
+	@$(IMPORT_ASSET) $*
 	@go fmt ./$@
 
-# % here must follow the format "{os}-{arch}"
-# {os} and {arch} corresponds to `process.platform` and `process.arch` in Node.js respectively
-# examples: win32-x64, linux-ia32, darwin-arm64, etc
-npm/@bpbuild/%/:
-export GOOS = $(call target-to-goos,$*)
-export GOARCH = $(call target-to-goarch,$*)
-npm/@bpbuild/%/:	$(GO_SOURCES) $(PLATFORM_HELPER_DEPS)
-	@go build -o $@ ./...
+# param $(1): target
+define bpbuild-binary-template
+npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):
+  export GOOS = $(call target-to-goos,$(1))
+  export GOARCH = $(call target-to-goarch,$(1))
+npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):	$(GO_SOURCES)
+	@go build -o $$@ ./main.go
+endef
+$(foreach platform,$(ALL_PLATFORMS),$(eval $(call bpbuild-binary-template,$(platform))))
+undefine bpbuild-binary-template
 
-# the same rules as above apply here
 npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --target $*
 
