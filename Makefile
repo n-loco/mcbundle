@@ -25,7 +25,7 @@ cross-binary-target-paths = $(strip $(foreach target,$(1), $(call target-binary-
 
 # ========== variables =========== #
 
-GO_SOURCES := $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./... 2> $(NULL))
+GO_SOURCES := $(call rwildcard,**/*.go)
 
 TARGET_BINARY := $(call target-binary-path,$(DEFAULT_PLATFORM))
 CROSS_BINARY_TARGETS := $(call cross-binary-target-paths,$(ALL_PLATFORMS))

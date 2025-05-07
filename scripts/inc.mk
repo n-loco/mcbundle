@@ -10,11 +10,15 @@ FINDEXEC := $(if $(WIN32),$(subst /,\,$(FINDEXEC)),$(FINDEXEC))
 IMPORT_ASSET := $(PYTHON_RT) scripts/assets.py
 UPDATE_PKGS := $(PYTHON_RT) scripts/update_pkgs.py
 
+RWILDCARD := $(PYTHON_RT) scripts/rwildcard.py
 RM := $(PYTHON_RT) scripts/rm.py
 
 PLATFORM_HELPER := $(PYTHON_RT) scripts/platform.py
 
 # ========== functions =========== #
+
+# param $(1): pattern
+rwildcard = $(shell $(RWILDCARD) $(1))
 
 # param $(1): executable
 findexec = $(if $(shell $(FINDEXEC) $(1)),,$(1))
