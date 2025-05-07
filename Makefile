@@ -88,7 +88,7 @@ define bpbuild-binary-template
 npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):
   export GOOS = $(call target-to-goos,$(1))
   export GOARCH = $(call target-to-goarch,$(1))
-npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):	$(GO_SOURCES)
+npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):	go.mod go.sum $(GO_SOURCES)
 	@go build -o $$@ ./main.go
 endef
 $(foreach platform,$(ALL_PLATFORMS),$(eval $(call bpbuild-binary-template,$(platform))))
