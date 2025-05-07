@@ -13,6 +13,7 @@ func setupANSICodes(part uiPart) {
 
 	var handle windows.Handle = windows.Handle(part.Fd())
 	var mode uint32
+	windows.GetConsoleMode(handle, &mode)
 
 	mode |= windows.ENABLE_VIRTUAL_TERMINAL_PROCESSING
 	windows.SetConsoleMode(handle, mode)
