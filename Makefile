@@ -18,17 +18,20 @@ native-package-paths = $(strip $(foreach target,$(1), $(call native-package-path
 native-packagejson-paths = $(strip $(foreach target,$(1), $(call native-package-path,$(target))package.json))
 
 # param $(1): target
-target-binary-path = $(call native-package-path,$(1))bpbuild$(call exe-suffix,$(1))
+native-target-path = $(call native-package-path,$(1))bpbuild$(call exe-suffix,$(1))
 
 # param $(1): target list
-cross-binary-target-paths = $(strip $(foreach target,$(1), $(call target-binary-path,$(target))))
+cross-native-target-paths = $(strip $(foreach target,$(1), $(call native-target-path,$(target))))
 
 # ========== variables =========== #
 
 GO_SOURCES := $(call rwildcard,**/*.go)
+BPBUILD_TS_SOURCES := $(call rwildcard,npm/bpbuild/source/**/*.ts)
+CREATE_TS_SOURCES := $(call rwildcard,npm/create/source/**/*.ts)
 
-TARGET_BINARY := $(call target-binary-path,$(DEFAULT_PLATFORM))
-CROSS_BINARY_TARGETS := $(call cross-binary-target-paths,$(ALL_PLATFORMS))
+NATIVE_TARGET := $(call native-target-path,$(DEFAULT_PLATFORM))
+CROSS_NATIVE_TARGETS := $(call cross-native-target-paths,$(ALL_PLATFORMS))
+JS_TARGETS := npm/bpbuild/dist/bpbuild.mjs npm/create/dist/create.mjs
 
 SOURCE_ASSETS := $(wildcard assets/*)
 IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
@@ -36,14 +39,10 @@ IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
 # ======== helper targets ======== #
 
 .PHONY::	build
-build:	import-assets npm/pnpm-lock.yaml $(TARGET_BINARY)
-	@cd npm && cd bpbuild && pnpm --silent build
-	@cd npm && cd create && pnpm --silent build
+build:	import-assets npm/pnpm-lock.yaml $(NATIVE_TARGET) $(JS_TARGETS)
 
 .PHONY::	build-cross
-build-cross:	import-assets npm/pnpm-lock.yaml $(CROSS_BINARY_TARGETS)
-	@cd npm && cd bpbuild && pnpm --silent build
-	@cd npm && cd create && pnpm --silent build
+build-cross:	import-assets npm/pnpm-lock.yaml $(CROSS_NATIVE_TARGETS) $(JS_TARGETS)
 
 .PHONY::	import-assets
 import-assets:	$(IMPORTED_ASSETS)
@@ -58,7 +57,7 @@ setup:	import-assets npm/pnpm-lock.yaml
 	@cd npm && pnpm --silent install
 
 .PHONY::	clean
-clean:	clean-imported-assets clean-native-builds clean-js-builds clean-node-modules
+clean:	clean-imported-assets clean-native-builds clean-js-builds
 
 .PHONY::	clean-imported-assets
 clean-imported-assets:
@@ -93,6 +92,12 @@ npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):	go.mod go.sum $(GO_SOURCES)
 endef
 $(foreach platform,$(ALL_PLATFORMS),$(eval $(call bpbuild-binary-template,$(platform))))
 undefine bpbuild-binary-template
+
+npm/bpbuild/dist/bpbuild.mjs:	npm/bpbuild/esbuild.js $(BPBUILD_TS_SOURCES)
+	@cd npm && cd bpbuild && pnpm --silent build
+
+npm/create/dist/create.mjs:	npm/create/esbuild.js $(CREATE_TS_SOURCES)
+	@cd npm && cd create && pnpm --silent build
 
 # native package.json
 npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
