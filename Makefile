@@ -29,7 +29,6 @@ GO_SOURCES := $(shell go list -f '{{range .GoFiles}}{{$$.Dir}}/{{.}} {{end}}' ./
 
 TARGET_BINARY := $(call target-binary-path,$(DEFAULT_PLATFORM))
 CROSS_BINARY_TARGETS := $(call cross-binary-target-paths,$(ALL_PLATFORMS))
-NATIVE_PACKAGEJSON_PATHS := $(call native-packagejson-paths,$(ALL_PLATFORMS))
 
 SOURCE_ASSETS := $(wildcard assets/*)
 IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
@@ -37,18 +36,14 @@ IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
 # ======== helper targets ======== #
 
 .PHONY::	build
-build:	import-assets $(TARGET_BINARY) update-packages
-	@cd npm && cd bpbuild && pnpm build > $(NULL)
-	@cd npm && cd create && pnpm build > $(NULL)
+build:	import-assets npm/pnpm-lock.yaml $(TARGET_BINARY)
+	@cd npm && cd bpbuild && pnpm --silent build
+	@cd npm && cd create && pnpm --silent build
 
 .PHONY::	build-cross
-build-cross:	import-assets $(CROSS_BINARY_TARGETS) update-packages
-	@cd npm && cd bpbuild && pnpm build > $(NULL)
-	@cd npm && cd create && pnpm build > $(NULL)
-
-.PHONY::	update-packages
-update-packages:	clean-ghost-builds $(NATIVE_PACKAGEJSON_PATHS) npm/bpbuild/package.json npm/create/package.json
-	@cd npm && pnpm install > $(NULL)
+build-cross:	import-assets npm/pnpm-lock.yaml $(CROSS_BINARY_TARGETS)
+	@cd npm && cd bpbuild && pnpm --silent build
+	@cd npm && cd create && pnpm --silent build
 
 .PHONY::	import-assets
 import-assets:	$(IMPORTED_ASSETS)
@@ -58,33 +53,29 @@ fmt:
 	@go fmt ./...
 
 .PHONY::	setup
-setup:	import-assets
-	@go get	\
-	golang.org/x/sys@v0.31.0	\
-	github.com/evanw/esbuild@v0.25.2
+setup:	import-assets npm/pnpm-lock.yaml
+	@go get golang.org/x/sys@v0.31.0 github.com/evanw/esbuild@v0.25.2
+	@cd npm && pnpm --silent install
 
 .PHONY::	clean
-clean:	clean-imported-assets clean-builds clean-builds-js clean-node-modules clean-ghost-builds
+clean:	clean-imported-assets clean-native-builds clean-js-builds clean-node-modules
 
 .PHONY::	clean-imported-assets
 clean-imported-assets:
 	@$(RM) ./internal/assets
 
-.PHONY::	clean-builds
-clean-builds:
+.PHONY::	clean-native-builds
+clean-native-builds:
+	@$(RM) --unused-builds
 	@$(RM) $(call native-package-paths,$(ALL_PLATFORMS))
 
-.PHONY::	clean-build-js
-clean-builds-js:
+.PHONY::	clean-js-builds
+clean-js-builds:
 	@$(RM) ./npm/bpbuild/dist ./npm/create/dist
 
 .PHONY::	clean-node-modules
 clean-node-modules:
 	@$(RM) ./npm/node_modules ./npm/bpbuild/node_modules ./npm/create/node_modules
-
-.PHONY::	clean-ghost-builds
-clean-ghost-builds:
-	@$(RM) --unused-builds
 
 # ========= true targets ========= #
 
@@ -103,6 +94,7 @@ endef
 $(foreach platform,$(ALL_PLATFORMS),$(eval $(call bpbuild-binary-template,$(platform))))
 undefine bpbuild-binary-template
 
+# native package.json
 npm/@bpbuild/%/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --target $*
 
@@ -111,3 +103,10 @@ npm/bpbuild/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 
 npm/create/package.json:	assets/program_version.txt $(UPDATE_PKGS_DEPS)
 	@$(UPDATE_PKGS) --create-package
+
+npm/pnpm-lock.yaml::
+  NATIVE_PACKAGEJSON_PATHS := $(call native-packagejson-paths,$(ALL_PLATFORMS))
+npm/pnpm-lock.yaml::	$(UPDATE_PKGS_DEPS) npm/pnpm-workspace.yaml npm/package.json
+npm/pnpm-lock.yaml::	$(NATIVE_PACKAGEJSON_PATHS) npm/bpbuild/package.json npm/create/package.json
+	@$(RM) --unused-builds
+	@cd npm && pnpm --silent install --lockfile-only
