@@ -28,6 +28,9 @@ esbuild.buildSync({
     sourcemap: IsDebug && "linked",
     sourcesContent: false,
     sourceRoot: import.meta.dirname,
+    define: { // defines.d.ts
+        "Debug": `${IsDebug}`,
+    },
 });
 
 if (IsDebug) {

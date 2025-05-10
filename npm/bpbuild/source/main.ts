@@ -5,7 +5,7 @@ import childProcess from "node:child_process";
 
 function findExecutable(): string {
     let suffix = process.platform == "win32" ? ".exe" : "";
-    let exeName = `bpbuild${suffix}`;
+    let exeName = (Debug && `debug/bpbuild${suffix}`) || `bpbuild${suffix}`;
     let packageName = `@bpbuild/${process.platform}-${process.arch}`;
     let fileURL = import.meta.resolve(`${packageName}/${exeName}`);
     return url.fileURLToPath(fileURL);
