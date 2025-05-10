@@ -87,9 +87,8 @@ internal/assets/%.go:	assets/% $(IMPORT_ASSET_DEPS)
 
 # param $(1): target
 define bpbuild-binary-template
-npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)):
-  export GOOS = $(call target-to-goos,$(1))
-  export GOARCH = $(call target-to-goarch,$(1))
+npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)): export GOOS = $(call target-to-goos,$(1))
+npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)): export GOARCH = $(call target-to-goarch,$(1))
 npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)):	go.mod go.sum $(GO_SOURCES)
 	@go build -o $$@ -ldflags="$(GO_LINKER_FLAGS)" ./main.go
 endef
