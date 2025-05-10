@@ -11,6 +11,16 @@ endif
 
 -include config.mk
 
+BUILD_MODE ?= debug
+
+ifeq ($(BUILD_MODE),release)
+else ifeq ($(BUILD_MODE),debug)
+else
+$(error Unknown build mode: $(BUILD_MODE))
+endif
+
+export BUILD_MODE
+
 PYTHON ?= $(if $(WIN32),python,python3)
 PYTHON_RT := $(PYTHON) $(PYTHON_FLAGS)
 
@@ -35,3 +45,8 @@ undefine NOT_FOUND_PROGRAMS
 
 DEFAULT_PLATFORM := $(shell node -e "process.stdout.write(process.platform+'-'+process.arch)")
 ALL_PLATFORMS := $(platform-wildcard)
+
+IS_DEBUG := $(filter debug,$(BUILD_MODE))
+IS_RELEASE := $(filter release,$(BUILD_MODE))
+
+DBGPATH := $(if $(IS_DEBUG),debug/)

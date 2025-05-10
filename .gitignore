@@ -19,6 +19,7 @@ npm/@bpbuild/*
 !npm/@bpbuild/README.md
 internal/assets/
 **/dist/
+**/debug/
 
 # User ignored files
 config.mk

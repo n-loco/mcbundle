@@ -18,7 +18,7 @@ native-package-paths = $(strip $(foreach target,$(1), $(call native-package-path
 native-packagejson-paths = $(strip $(foreach target,$(1), $(call native-package-path,$(target))package.json))
 
 # param $(1): target
-native-target-path = $(call native-package-path,$(1))bpbuild$(call exe-suffix,$(1))
+native-target-path = $(call native-package-path,$(1))$(DBGPATH)bpbuild$(call exe-suffix,$(1))
 
 # param $(1): target list
 cross-native-target-paths = $(strip $(foreach target,$(1), $(call native-target-path,$(target))))
@@ -29,9 +29,11 @@ GO_SOURCES := $(call rwildcard,**/*.go)
 BPBUILD_TS_SOURCES := $(call rwildcard,npm/bpbuild/source/**/*.ts)
 CREATE_TS_SOURCES := $(call rwildcard,npm/create/source/**/*.ts)
 
+GO_LINKER_FLAGS := $(if $(IS_RELEASE),-s -w,)
+
 NATIVE_TARGET := $(call native-target-path,$(DEFAULT_PLATFORM))
 CROSS_NATIVE_TARGETS := $(call cross-native-target-paths,$(ALL_PLATFORMS))
-JS_TARGETS := npm/bpbuild/dist/bpbuild.mjs npm/create/dist/create.mjs
+JS_TARGETS := npm/bpbuild/$(DBGPATH)dist/bpbuild.mjs npm/create/$(DBGPATH)dist/create.mjs
 
 SOURCE_ASSETS := $(wildcard assets/*)
 IMPORTED_ASSETS := $(SOURCE_ASSETS:%=internal/%.go)
@@ -71,6 +73,7 @@ clean-native-builds:
 .PHONY::	clean-js-builds
 clean-js-builds:
 	@$(RM) ./npm/bpbuild/dist ./npm/create/dist
+	@$(RM) ./npm/bpbuild/debug/dist ./npm/create/debug/dist
 
 .PHONY::	clean-node-modules
 clean-node-modules:
@@ -84,19 +87,19 @@ internal/assets/%.go:	assets/% $(IMPORT_ASSET_DEPS)
 
 # param $(1): target
 define bpbuild-binary-template
-npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):
+npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)):
   export GOOS = $(call target-to-goos,$(1))
   export GOARCH = $(call target-to-goarch,$(1))
-npm/@bpbuild/$(1)/bpbuild$(call exe-suffix,$(1)):	go.mod go.sum $(GO_SOURCES)
-	@go build -o $$@ ./main.go
+npm/@bpbuild/$(1)/$(DBGPATH)bpbuild$(call exe-suffix,$(1)):	go.mod go.sum $(GO_SOURCES)
+	@go build -o $$@ -ldflags="$(GO_LINKER_FLAGS)" ./main.go
 endef
 $(foreach platform,$(ALL_PLATFORMS),$(eval $(call bpbuild-binary-template,$(platform))))
 undefine bpbuild-binary-template
 
-npm/bpbuild/dist/bpbuild.mjs:	npm/bpbuild/esbuild.js $(BPBUILD_TS_SOURCES)
+npm/bpbuild/$(DBGPATH)dist/bpbuild.mjs:	npm/bpbuild/package.json npm/bpbuild/esbuild.js $(BPBUILD_TS_SOURCES)
 	@cd npm && cd bpbuild && pnpm --silent build
 
-npm/create/dist/create.mjs:	npm/create/esbuild.js $(CREATE_TS_SOURCES)
+npm/create/$(DBGPATH)dist/create.mjs:	npm/create/package.json npm/create/esbuild.js $(CREATE_TS_SOURCES)
 	@cd npm && cd create && pnpm --silent build
 
 # native package.json
