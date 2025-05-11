@@ -15,9 +15,11 @@ def target(target_double: str):
     node_os = target_as_list[0]
     node_cpu = target_as_list[1]
 
-    target_double = f"{node_os}-{node_cpu}"
     package_dir = path.join("npm", "@bpbuild", target_double)
     package_path = path.join(package_dir, "package.json")
+
+    debug_package_dir = path.join(package_dir, "debug")
+    debug_package_path = path.join(debug_package_dir, "package.json")
 
     package_json_obj = {
         "name": f"@bpbuild/{target_double}",
@@ -33,9 +35,18 @@ def target(target_double: str):
     except:
         pass
 
+    try:
+        os.mkdir(debug_package_dir)
+    except:
+        pass
+
+    package_json_obj["version"] = get_version()
+    content = json.dumps(package_json_obj, indent="  ")
+
     with open(package_path, "wb") as package_json:
-        package_json_obj["version"] = get_version()
-        content = json.dumps(package_json_obj, indent="  ")
+        package_json.write(bytes(content, "UTF-8"))
+
+    with open(debug_package_path, "wb") as package_json:
         package_json.write(bytes(content, "UTF-8"))
     
 

@@ -28,19 +28,25 @@ esbuild.buildSync({
     sourcemap: IsDebug && "linked",
     sourcesContent: false,
     sourceRoot: import.meta.dirname,
-    define: { // defines.d.ts
-        "Debug": `${IsDebug}`,
-    },
 });
 
 if (IsDebug) {
     const packageJsonContent = fs.readFileSync("package.json", "utf-8");
     const packageJsonObj = JSON.parse(packageJsonContent);
 
+    const bpBuildNodeModules = path.join("debug", "node_modules", "@bpbuild");
+
+    fs.mkdirSync(bpBuildNodeModules, { recursive: true });
+
     for (const dep of Object.getOwnPropertyNames(packageJsonObj.optionalDependencies)) {
-        const depPath = path.dirname((url.fileURLToPath(import.meta.resolve(`${dep}/package.json`))));
+        const taget_double = dep.split("/")[1];
+        const depPath = path.join(url.fileURLToPath(import.meta.resolve(`${dep}/package.json`)), "..", "debug");
+        const nodeModPath = path.join(bpBuildNodeModules, taget_double);
+
         packageJsonObj.optionalDependencies[dep] = `file:${depPath.replaceAll("\\", "\\\\")}`;
+        fs.rmSync(nodeModPath, { force: true });
+        fs.symlinkSync(depPath, nodeModPath);
     }
 
-    fs.writeFileSync("./debug/package.json", JSON.stringify(packageJsonObj, null, "  "), "utf-8");
+    fs.writeFileSync(path.join("debug", "package.json"), JSON.stringify(packageJsonObj, null, "  "), "utf-8");
 }
