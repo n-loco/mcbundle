@@ -18,7 +18,8 @@ PLATFORM_HELPER := $(PYTHON_RT) scripts/platform.py
 # ========== functions =========== #
 
 # param $(1): pattern
-rwildcard = $(shell $(RWILDCARD) $(1))
+# param $(2): root dir
+rwildcard = $(shell $(RWILDCARD) $(1) $(2))
 
 # param $(1): executable
 findexec = $(if $(shell $(FINDEXEC) $(1)),,$(1))

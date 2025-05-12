@@ -26,8 +26,8 @@ cross-native-target-paths = $(strip $(foreach target,$(1), $(call native-target-
 # ========== variables =========== #
 
 GO_SOURCES := $(call rwildcard,**/*.go)
-BPBUILD_TS_SOURCES := $(call rwildcard,npm/bpbuild/source/**/*.ts)
-CREATE_TS_SOURCES := $(call rwildcard,npm/create/source/**/*.ts)
+BPBUILD_TS_SOURCES := $(call rwildcard,**/*.ts,npm/bpbuild/source)
+CREATE_TS_SOURCES := $(call rwildcard,**/*.ts,npm/create/source)
 
 GO_LINKER_FLAGS := $(if $(IS_RELEASE),-s -w,)
 
