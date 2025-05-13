@@ -1,27 +1,38 @@
 #!/usr/bin/env node
 
-import { stdout } from "node:process";
 import { getPackageManager, PackageManagerName } from "./package_manager.js";
+import { print, prompt } from "./txtui/index.js";
 
-const packageManager = getPackageManager();
+const projTypes = ["behavior_pack", "resource_pack", "addon"];
 
-if (packageManager.name == PackageManagerName.Unknown) {
-    stdout.write(`No package manager was detected\n`);
-} else {
-    stdout.write(`Using ${packageManager.name} - v${packageManager.version}\n`);
-}
+const projTypeIndex = prompt.selectionMenu("🧩 ● Project type", [
+    "Behavior Pack",
+    "Resource Pack",
+    "Add-On",
+]);
 
-const packageJson = {
+print("\nrecipe.json:\n" + JSON.stringify({
+    config: {
+        type: projTypes[projTypeIndex],
+    },
+    header: {
+        uuid: projTypes[projTypeIndex] !== "addon" ? crypto.randomUUID() : undefined,
+        uuids: projTypes[projTypeIndex] === "addon" ? [crypto.randomUUID(), crypto.randomUUID()] : undefined,
+        version: "0.1.0",
+    }
+}, null, "  "));
+
+print("\npackage.json:\n" + JSON.stringify({
+    type: "module",
+    private: true,
     packageManager: (() => {
-        if (packageManager.name === PackageManagerName.Unknown
-            || packageManager.name === PackageManagerName.Bun) {
-            return undefined;
+        const pkgManager = getPackageManager();
+        if (pkgManager.name !== PackageManagerName.Unknown && pkgManager.name !== PackageManagerName.Bun) {
+            return `${pkgManager.name}@${pkgManager.version}`;
         }
-        return `${packageManager.name}@${packageManager.version}`;
+        return undefined;
     })(),
     devDependencies: {
         "bpbuild": BPBuildSpecifier,
-    }
-};
-
-stdout.write(`${JSON.stringify(packageJson, null, "  ")}\n`);
+    },
+}, null, "  "));
