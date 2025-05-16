@@ -40,3 +40,4 @@ export function moveCursorH(chars: number): string {
 }
 
 export const ereaseFromCursorToEOE = `${ESC}[0J`;
+export const ereaseFromCursorToEOL = `${ESC}[0K`;

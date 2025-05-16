@@ -1,12 +1,45 @@
 import { stdout } from "node:process";
 import { Arrow, handleArrow, handleEnter, interact } from "./in_ansi.js";
-import { bold, colorIndex, ereaseFromCursorToEOE, moveCursorH, moveCursorV, reset } from "./out_ansi.js";
+import { bold, colorIndex, ereaseFromCursorToEOE, ereaseFromCursorToEOL, italic, moveCursorH, moveCursorV, reset } from "./out_ansi.js";
+import { isEmpty } from "../utils.js";
 
 export function print(str: string, newLine = true) {
     stdout.write(str + (newLine ? "\n" : ""));
 }
 
-export namespace prompt {
+export namespace Prompt {
+    export function stringInput(title: string): string {
+        print(bold + title + reset + ": ", false);
+
+        let userStr = "";
+        const decoder = new TextDecoder("utf-8");
+
+        const render = (preview = true) => {
+            stdout.write("\r" + moveCursorH(title.length + 2));
+            stdout.write(ereaseFromCursorToEOL);
+            stdout.write(userStr.replaceAll(/§./g, ssCode => ssCodeToAnsi(ssCode, preview)) + reset);
+        }
+
+        interact((data) => {
+            if (handleArrow(data) != null) {
+                return;
+            }
+
+            if (data.length === 1 && data[0] == 0x7f) {
+                userStr = userStr.slice(0, userStr.length - 1);
+            } else {
+                userStr += decoder.decode(data);
+            }
+
+            render();
+        });
+
+        render(false);
+        stdout.write("\n");
+
+        return userStr;
+    }
+
     export function selectionMenu(title: string, options: string[]): number {
         print(bold + title + reset);
 
@@ -25,16 +58,7 @@ export namespace prompt {
 
         render();
 
-        interact((data, done) => {
-            if (handleEnter(data)) {
-                stdout.write(moveCursorV(-options.length - 1) + "\r");
-                stdout.write(moveCursorH(title.length) + ": ");
-                stdout.write(ereaseFromCursorToEOE);
-                stdout.write(colorIndex(0x6bceff) + options[pointer] + reset + "\n");
-                done();
-                return;
-            }
-
+        interact((data) => {
             const arrow = handleArrow(data);
 
             if (arrow != null) {
@@ -42,8 +66,64 @@ export namespace prompt {
             }
 
             render(true);
-        }, false);
+        });
+
+        stdout.write(moveCursorV(-options.length - 1) + "\r");
+        stdout.write(moveCursorH(title.length) + ": ");
+        stdout.write(ereaseFromCursorToEOE);
+        stdout.write(colorIndex(0x6bceff) + options[pointer] + reset + "\n");
 
         return pointer;
     }
+}
+
+const ssColorIndexMap = new Map<string, number>([
+    ["§0", 0x000000],
+    ["§1", 0x0000aa],
+    ["§2", 0x00aa00],
+    ["§3", 0x00aaaa],
+    ["§4", 0xaa0000],
+    ["§5", 0xaa00aa],
+    ["§6", 0xffaa00],
+    ["§7", 0xc5c5c5],
+    ["§8", 0x545454],
+    ["§9", 0x5454ff],
+    ["§a", 0x54ff54],
+    ["§b", 0x54ffff],
+    ["§c", 0xff5454],
+    ["§d", 0xff54ff],
+    ["§e", 0xffff54],
+    ["§f", 0xffffff],
+    ["§g", 0xefce16],
+    ["§h", 0xe2d3d1],
+    ["§i", 0xcec9c9],
+    ["§j", 0x44393a],
+    ["§m", 0x961506],
+    ["§n", 0xb4684d],
+    ["§p", 0xdeb02c],
+    ["§q", 0x119f36],
+    ["§s", 0x2cb9a8],
+    ["§t", 0x20487a],
+    ["§u", 0x9a5cc5],
+    ["§v", 0xea7113],
+]);
+
+function ssCodeToAnsi(ssCode: string, preview: boolean): string {
+    switch (ssCode) {
+        case "§r":
+            return preview ? `${reset}§r` : `${reset}`;
+        case "§l":
+            return preview ? `${bold}§l` : `${bold}`;
+        case "§o":
+            return preview ? `${italic}§o` : `${italic}`;
+        // case "§k": TODO!
+    }
+
+    const colorI = ssColorIndexMap.get(ssCode);
+    if (!isEmpty(colorI)) {
+        const ansiColor = colorIndex(colorI);
+        return preview ? `${ansiColor}${ssCode}` : ansiColor;
+    }
+
+    return preview ? ssCode : "";
 }

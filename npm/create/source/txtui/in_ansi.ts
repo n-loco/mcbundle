@@ -79,7 +79,8 @@ export function interact(react: (data: Uint8Array, done: () => void) => void, au
     const ogMode = stdin.isRaw;
     stdin.setRawMode(true);
 
-    const buffer = Buffer.alloc(3);
+    const bufferSize = 24;
+    const buffer = Buffer.alloc(bufferSize);
 
     let keepInteracting = true;
     const done = () => {
@@ -87,7 +88,7 @@ export function interact(react: (data: Uint8Array, done: () => void) => void, au
     }
 
     while (keepInteracting) {
-        const bytesRead = fs.readSync(fd, buffer, 0, 3, null);
+        const bytesRead = fs.readSync(fd, buffer, 0, bufferSize, null);
         const data = new Uint8Array(buffer.subarray(0, bytesRead));
 
         if (data.length === 1) {
