@@ -75,6 +75,49 @@ export namespace Prompt {
 
         return pointer;
     }
+
+    export function checkMenu(title: string, options: string[]): boolean[] {
+        print(bold + title + reset);
+
+        let pointer = 0;
+        let checkedOpts = new Array<boolean>(options.length).fill(false);
+
+        const render = (rerendering = false) => {
+            if (rerendering) {
+                stdout.write(moveCursorV(-options.length) + "\r");
+                stdout.write(ereaseFromCursorToEOE);
+            }
+            options.forEach((option, i) => {
+                const checkSStr = checkedOpts[i] ? "◼" : "◻"
+                const ptr = i === pointer ? "▶" : " ";
+                const prefix = `  ${ptr} ${checkSStr} ${i === pointer ? bold : ""}`;
+                stdout.write(prefix + option + reset + "\n");
+            });
+        }
+
+        render();
+
+        interact((data) => {
+            const arrow = handleArrow(data);
+
+            if (arrow != null) {
+                pointer = (options.length + pointer + Arrow.y(arrow)) % options.length;
+            }
+
+            if (data.length === 1 && data[0] === 0x20) {
+                checkedOpts[pointer] = !checkedOpts[pointer];
+            }
+            
+            render(true);
+        });
+
+        stdout.write(moveCursorV(-options.length - 1) + "\r");
+        stdout.write(moveCursorH(title.length) + ": ");
+        stdout.write(ereaseFromCursorToEOE);
+        stdout.write(colorIndex(0x6bceff) + options.filter((_, i) => checkedOpts[i]).join(", ") + reset + "\n");
+
+        return checkedOpts;
+    }
 }
 
 const ssColorIndexMap = new Map<string, number>([
