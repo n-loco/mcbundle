@@ -107,7 +107,7 @@ export namespace Prompt {
             if (data.length === 1 && data[0] === 0x20) {
                 checkedOpts[pointer] = !checkedOpts[pointer];
             }
-            
+
             render(true);
         });
 
@@ -117,6 +117,46 @@ export namespace Prompt {
         stdout.write(colorIndex(0x6bceff) + options.filter((_, i) => checkedOpts[i]).join(", ") + reset + "\n");
 
         return checkedOpts;
+    }
+
+    export function confirmDialog(title: string): boolean {
+        print(bold + title + reset + ": ", false);
+
+        let choice = true;
+
+        const yesDisplay = `${colorIndex(0x38e578)}Yes${reset}`;
+        const noDisplay = `${colorIndex(0x535de9)}No ${reset}`;
+
+        const render = (result = false) => {
+            stdout.write("\r" + moveCursorH(title.length + 2));
+
+            if (result) {
+                stdout.write(ereaseFromCursorToEOL);
+                const finalChoiceStr = choice ? "Yes" : "No";
+                stdout.write(`${colorIndex(0x6bceff)}${finalChoiceStr}${reset}`)
+                return;
+            }
+
+            const choiceDisplay = choice ? yesDisplay : noDisplay;
+            stdout.write(`${bold}< ${choiceDisplay}${bold} >${reset}`);
+        }
+
+        render();
+
+        interact(data => {
+            const arrow = handleArrow(data);
+
+            if (arrow != null) {
+                choice = Boolean((2 + Number(choice) + Arrow.x(arrow)) % 2);
+            }
+
+            render();
+        });
+
+        render(true);
+        stdout.write("\n");
+
+        return choice;
     }
 }
 
