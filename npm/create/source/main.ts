@@ -1,115 +1,82 @@
 #!/usr/bin/env node
 
-import { getPackageManager, PackageManagerName } from "./package_manager.js";
+import { createPackageJSON, Language, PackageJSON, PackageManager } from "./projfiles/package.js";
+import {
+    availableModules,
+    createRecipe,
+    createRecipeConfig,
+    createRecipeHeader,
+    createRecipeModule,
+    displayStrRecipeMod,
+    displayStrRecipeType,
+    Recipe,
+    RecipeConfig,
+    RecipeModuleType,
+    RecipeType,
+} from "./projfiles/recipe.js";
 import { print, Prompt } from "./txtui/index.js";
+import { MetaData } from "./utils.js";
 
-const pkgManager = getPackageManager();
-const isPkgManager = pkgManager.name !== PackageManagerName.Unknown && pkgManager.name !== PackageManagerName.Bun;
+function askProjectType(): RecipeType {
+    const options = [
+        RecipeType.BEHAVIOR_PACK,
+        RecipeType.RESOURCE_PACK,
+        RecipeType.ADDON,
+    ];
 
-const projTypes = ["behavior_pack", "resource_pack", "addon"];
+    const menuDisplayOptions = options.map(displayStrRecipeType);
+    const choice = Prompt.selectionMenu("● Project type", menuDisplayOptions);
 
-const projTypeIndex = Prompt.selectionMenu("● Project type", [
-    "Behavior Pack",
-    "Resource Pack",
-    "Add-On",
-]);
-
-const sProjT = projTypes[projTypeIndex];
-const isAddon = sProjT === "addon";
-
-const projName = Prompt.stringInput(`● ${isAddon ? "Add-On" : "Pack"} name`);
-
-const modules = (() => {
-    if (isAddon) {
-        const addonModules = [
-            {
-                type: "resources",
-                version: "0.1.0",
-                uuid: crypto.randomUUID(),
-            },
-            {
-                type: "data",
-                version: "0.1.0",
-                uuid: crypto.randomUUID(),
-            },
-            {
-                type: "server",
-                version: "0.1.0",
-                uuid: crypto.randomUUID(),
-            },
-        ];
-        const opts = Prompt.checkMenu("● Start with modules", [
-            "Resources",
-            "Data",
-            "Server",
-        ]);
-
-        return addonModules.filter((_, i) => opts[i]);
-    }
-
-    if (sProjT === "behavior_pack") {
-        const bpModules = [
-            {
-                type: "data",
-                version: "0.1.0",
-                uuid: crypto.randomUUID(),
-            },
-            {
-                type: "server",
-                version: "0.1.0",
-                uuid: crypto.randomUUID(),
-            },
-        ];
-
-        const opts = Prompt.checkMenu("● Start with modules", [
-            "Data",
-            "Server",
-        ]);
-
-        return bpModules.filter((_, i) => opts[i]);
-    }
-
-    if (sProjT === "resource_pack") {
-        return [{
-            type: "resources",
-            version: "0.1.0",
-            uuid: crypto.randomUUID(),
-        }];
-    }
-})();
-
-const installPkgs = (() => {
-    if (pkgManager.name === PackageManagerName.Unknown) return false;
-    return Prompt.confirmDialog(`● Install packages (${pkgManager.name})`);
-})();
-
-if (installPkgs) {
-    print(`\ninstalling with ${pkgManager.name}...\n`);
+    return options[choice];
 }
 
-print("\nrecipe.json:\n" + JSON.stringify({
-    config: {
-        type: projTypes[projTypeIndex],
-    },
-    header: {
-        name: projName,
-        uuid: !isAddon ? crypto.randomUUID() : undefined,
-        uuids: isAddon ? [crypto.randomUUID(), crypto.randomUUID()] : undefined,
-        version: "0.1.0",
-    },
-    modules,
-}, null, "  "));
+function askProjectName(): string {
+    const recipeTypeStr = displayStrRecipeType(config.type);
+    const projName = Prompt.stringInput(`● ${recipeTypeStr} name`);
+    return projName;
+}
 
-print("\npackage.json:\n" + JSON.stringify({
-    type: "module",
-    private: true,
-    packageManager: (() => {
-        if (isPkgManager) {
-            return `${pkgManager.name}@${pkgManager.version}`;
-        }
-        return undefined;
-    })(),
-    devDependencies: {
-        "bpbuild": BPBuildSpecifier,
-    },
-}, null, "  "));
+function askInitialModules(config: RecipeConfig): RecipeModuleType[] {
+    const options = availableModules(config.type);
+
+    if (options.length === 1) {
+        return [options[0]];
+    }
+
+    const menuDisplayOptions = options.map(displayStrRecipeMod);
+    const choices = Prompt.checkMenu("● Initial modules", menuDisplayOptions);
+
+    return options.filter((_, i) => choices[i]);
+}
+
+function askLanguage(recipe: Recipe): Language | null {
+    if (!recipe[MetaData].scripting) return null
+
+    const options = [Language.JAVASCRIPT, Language.TYPESCRIPT];
+    const choice = Prompt.selectionMenu("● Language", options);
+
+    return options[choice];
+}
+
+function askInsallPkgs(packageJSON: PackageJSON): boolean {
+    const pmName = packageJSON[MetaData].packageManaer;
+
+    if (pmName === PackageManager.UNKNOWN) {
+        return false;
+    }
+
+    return Prompt.confirmDialog(`● Install packages (${pmName})`);
+}
+
+const config = createRecipeConfig(askProjectType());
+const header = createRecipeHeader(config, askProjectName());
+const modules = askInitialModules(config).map(createRecipeModule);
+
+const recipe = createRecipe(config, header, modules);
+const packageJSON = createPackageJSON(recipe);
+
+askLanguage(recipe);
+askInsallPkgs(packageJSON);
+
+print("\n" + JSON.stringify(recipe, null, "  "));
+print("\n" + JSON.stringify(packageJSON, null, "  "));
