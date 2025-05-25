@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 
-import { createPackageJSON, Language, PackageJSON, PackageManager } from "./projfiles/package.js";
+import { createDirNode, createFileNode, FSNode, writeFS } from "./mktree.js";
 import {
+    createPackageJSON,
+    Language,
+    PackageJSON,
+    PackageManager,
+    serverMainScript,
     availableModules,
     createRecipe,
     createRecipeConfig,
@@ -13,9 +18,13 @@ import {
     RecipeConfig,
     RecipeModuleType,
     RecipeType,
-} from "./projfiles/recipe.js";
-import { print, Prompt } from "./txtui/index.js";
+    gitattributes,
+    gitignoreLines,
+    createTSConfig,
+} from "./projfiles/index.js";
+import { Prompt } from "./txtui/index.js";
 import { MetaData } from "./utils.js";
+import childProcess from "node:child_process";
 
 function askProjectType(): RecipeType {
     const options = [
@@ -75,8 +84,45 @@ const modules = askInitialModules(config).map(createRecipeModule);
 const recipe = createRecipe(config, header, modules);
 const packageJSON = createPackageJSON(recipe);
 
-askLanguage(recipe);
-askInsallPkgs(packageJSON);
+const language = askLanguage(recipe);
+const installPkgs = askInsallPkgs(packageJSON);
 
-print("\n" + JSON.stringify(recipe, null, "  "));
-print("\n" + JSON.stringify(packageJSON, null, "  "));
+const sourceDirNodes: FSNode[] = [];
+
+
+for (const mod of modules) {
+    if (mod[MetaData] === "scripting") {
+        const ext = (() => {
+            switch (language) {
+                case Language.JAVASCRIPT:
+                    return ".js";
+                case Language.TYPESCRIPT:
+                    return ".ts";
+            }
+        })();
+
+        sourceDirNodes.push(createDirNode(mod.type, [
+            createFileNode(`main${ext}`, serverMainScript),
+        ]));
+    } else {
+        sourceDirNodes.push(createDirNode(mod.type, []));
+    }
+}
+
+const projFS = createDirNode(".", [
+    createDirNode("source", sourceDirNodes),
+    createFileNode("package.json", JSON.stringify(packageJSON, null, "  ")),
+    createFileNode("recipe.json", JSON.stringify(recipe, null, "  ")),
+    createFileNode(".gitattributes", gitattributes),
+    createFileNode(".gitignore", gitignoreLines(packageJSON[MetaData].packageManaer).join("\n")),
+]);
+
+if (language === Language.TYPESCRIPT) {
+    projFS.nodes.push(createFileNode("tsconfig.json", JSON.stringify(createTSConfig(), null, "  ")));
+}
+
+writeFS(projFS);
+
+if (installPkgs) {
+    childProcess.spawnSync(packageJSON[MetaData].packageManaer, ["install"], { stdio: "inherit" });
+}

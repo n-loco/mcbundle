@@ -8,6 +8,9 @@ export interface PackageJSON {
     packageManager: string | undefined,
     devDependencies: { [key: string]: string },
     dependencies: { [key: string]: string } | undefined,
+    scripts: {
+        [key: string]: string,
+    },
     [MetaData]: {
         packageManaer: PackageManager,
     },
@@ -37,11 +40,16 @@ export function createPackageJSON(recipe: Recipe): PackageJSON {
         private: true,
         packageManager: isNodePM ? `${pmName}@${pmVersion}` : undefined,
         dependencies: recipe[MetaData].scripting ? { 
-            "@minecraft/server": "^1.9.0",
+            "@minecraft/server": "^1.19.0",
             "@minecraft/vanilla-data": "^1.21.0",
          } : undefined,
         devDependencies: {
             "bpbuild": BPBuildSpecifier,
+        },
+        scripts: {
+            "build": "bpbuild build",
+            "dev": "bpbuild dev",
+            "dist": "bpbuild dist",
         },
         [MetaData]: {
             packageManaer: pmName,
