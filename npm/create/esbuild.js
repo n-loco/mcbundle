@@ -31,9 +31,8 @@ esbuild.buildSync({
     outfile: `./${DbgPath}dist/create.mjs`,
     target: "node22",
     minify: IsRelease,
-    sourcemap: IsDebug && "linked",
+    sourcemap: IsDebug && "inline",
     sourcesContent: false,
-    sourceRoot: import.meta.dirname,
     define: { // ./defines.d.ts
         "BPBuildSpecifier": `"${BpBuildSpecifier}"`,
     },

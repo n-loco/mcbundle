@@ -25,9 +25,8 @@ esbuild.buildSync({
     outfile: `./${DbgPath}dist/bpbuild.mjs`,
     target: "node22",
     minifyWhitespace: IsRelease,
-    sourcemap: IsDebug && "linked",
+    sourcemap: IsDebug && "inline",
     sourcesContent: false,
-    sourceRoot: import.meta.dirname,
 });
 
 if (IsDebug) {
