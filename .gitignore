@@ -15,8 +15,8 @@
 **/__pycache__/
 
 # Build
-npm/@bpbuild/*
-!npm/@bpbuild/README.md
+npm/@mcbundle/*
+!npm/@mcbundle/README.md
 internal/assets/
 **/dist/
 **/debug/

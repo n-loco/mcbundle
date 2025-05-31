@@ -15,17 +15,17 @@ def target(target_double: str):
     node_os = target_as_list[0]
     node_cpu = target_as_list[1]
 
-    package_dir = path.join("npm", "@bpbuild", target_double)
+    package_dir = path.join("npm", "@mcbundle", target_double)
     package_path = path.join(package_dir, "package.json")
 
     debug_package_dir = path.join(package_dir, "debug")
     debug_package_path = path.join(debug_package_dir, "package.json")
 
     package_json_obj = {
-        "name": f"@bpbuild/{target_double}",
-        "description": f"{target_double} binary for bpbuild",
+        "name": f"@mcbundle/{target_double}",
+        "description": f"{target_double} binary for mcbundle",
         "version": get_version(),
-        "files": ["bpbuild.exe" if node_os == "win32" else "bpbuild"],
+        "files": ["mcbundle.exe" if node_os == "win32" else "mcbundle"],
         "os": [node_os],
         "cpu": [node_cpu]
     }
@@ -51,7 +51,7 @@ def target(target_double: str):
     
 
 def main_package():
-    package_path = path.join("npm", "bpbuild", "package.json")
+    package_path = path.join("npm", "mcbundle", "package.json")
     with open(package_path, "r") as package_json:
         package_json_obj = json.load(package_json)
     with open(package_path, "wb") as package_json:
@@ -62,7 +62,7 @@ def main_package():
         optional_dependencies: dict = {}
 
         for target_double in target_doubles:
-            optional_dependencies[f"@bpbuild/{target_double}"] = f"workspace:../@bpbuild/{target_double}"
+            optional_dependencies[f"@mcbundle/{target_double}"] = f"workspace:../@mcbundle/{target_double}"
         
         package_json_obj["optionalDependencies"] = optional_dependencies
 

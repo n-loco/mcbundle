@@ -1,4 +1,4 @@
-module github.com/n-loco/bpbuild
+module github.com/mcbundle/mcbundle
 
 go 1.23.0
 

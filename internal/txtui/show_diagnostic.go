@@ -3,7 +3,7 @@ package txtui
 import (
 	"fmt"
 
-	"github.com/n-loco/bpbuild/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/alert"
 )
 
 var (

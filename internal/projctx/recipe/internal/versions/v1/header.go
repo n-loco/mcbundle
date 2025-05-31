@@ -3,7 +3,7 @@ package v1
 import (
 	"encoding/json"
 
-	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/mcbundle/mcbundle/internal/jsonst"
 )
 
 type UUIDPair struct {

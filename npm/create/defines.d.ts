@@ -1,3 +1,3 @@
 // This file only contains representations of `define`s from `esbuild.js`
 
-declare const BPBuildSpecifier: string
+declare const mcbundleSpecifier: string

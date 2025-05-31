@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/mcbundle/mcbundle/internal/jsonst"
 )
 
 type ModuleType uint8

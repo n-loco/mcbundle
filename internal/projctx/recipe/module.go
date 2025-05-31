@@ -1,7 +1,7 @@
 package recipe
 
 import (
-	"github.com/n-loco/bpbuild/internal/jsonst"
+	"github.com/mcbundle/mcbundle/internal/jsonst"
 )
 
 type RecipeModule struct {

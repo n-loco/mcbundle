@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/projctx"
 )
 
 func esbuild(modCtx *projctx.ModuleContext) (diagnostic *alert.Diagnostic) {

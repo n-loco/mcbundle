@@ -8,55 +8,21 @@ importers:
 
   .: {}
 
-  '@bpbuild/darwin-arm64': {}
+  '@mcbundle/darwin-arm64': {}
 
-  '@bpbuild/darwin-x64': {}
+  '@mcbundle/darwin-x64': {}
 
-  '@bpbuild/linux-arm64': {}
+  '@mcbundle/linux-arm64': {}
 
-  '@bpbuild/linux-ia32': {}
+  '@mcbundle/linux-ia32': {}
 
-  '@bpbuild/linux-x64': {}
+  '@mcbundle/linux-x64': {}
 
-  '@bpbuild/win32-arm64': {}
+  '@mcbundle/win32-arm64': {}
 
-  '@bpbuild/win32-ia32': {}
+  '@mcbundle/win32-ia32': {}
 
-  '@bpbuild/win32-x64': {}
-
-  bpbuild:
-    devDependencies:
-      '@types/node':
-        specifier: ^22.14.1
-        version: 22.14.1
-      esbuild:
-        specifier: ^0.25.3
-        version: 0.25.3
-    optionalDependencies:
-      '@bpbuild/darwin-arm64':
-        specifier: workspace:../@bpbuild/darwin-arm64
-        version: link:../@bpbuild/darwin-arm64
-      '@bpbuild/darwin-x64':
-        specifier: workspace:../@bpbuild/darwin-x64
-        version: link:../@bpbuild/darwin-x64
-      '@bpbuild/linux-arm64':
-        specifier: workspace:../@bpbuild/linux-arm64
-        version: link:../@bpbuild/linux-arm64
-      '@bpbuild/linux-ia32':
-        specifier: workspace:../@bpbuild/linux-ia32
-        version: link:../@bpbuild/linux-ia32
-      '@bpbuild/linux-x64':
-        specifier: workspace:../@bpbuild/linux-x64
-        version: link:../@bpbuild/linux-x64
-      '@bpbuild/win32-arm64':
-        specifier: workspace:../@bpbuild/win32-arm64
-        version: link:../@bpbuild/win32-arm64
-      '@bpbuild/win32-ia32':
-        specifier: workspace:../@bpbuild/win32-ia32
-        version: link:../@bpbuild/win32-ia32
-      '@bpbuild/win32-x64':
-        specifier: workspace:../@bpbuild/win32-x64
-        version: link:../@bpbuild/win32-x64
+  '@mcbundle/win32-x64': {}
 
   create:
     devDependencies:
@@ -66,6 +32,40 @@ importers:
       esbuild:
         specifier: ^0.25.3
         version: 0.25.3
+
+  mcbundle:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.1
+        version: 22.14.1
+      esbuild:
+        specifier: ^0.25.3
+        version: 0.25.3
+    optionalDependencies:
+      '@mcbundle/darwin-arm64':
+        specifier: workspace:../@mcbundle/darwin-arm64
+        version: link:../@mcbundle/darwin-arm64
+      '@mcbundle/darwin-x64':
+        specifier: workspace:../@mcbundle/darwin-x64
+        version: link:../@mcbundle/darwin-x64
+      '@mcbundle/linux-arm64':
+        specifier: workspace:../@mcbundle/linux-arm64
+        version: link:../@mcbundle/linux-arm64
+      '@mcbundle/linux-ia32':
+        specifier: workspace:../@mcbundle/linux-ia32
+        version: link:../@mcbundle/linux-ia32
+      '@mcbundle/linux-x64':
+        specifier: workspace:../@mcbundle/linux-x64
+        version: link:../@mcbundle/linux-x64
+      '@mcbundle/win32-arm64':
+        specifier: workspace:../@mcbundle/win32-arm64
+        version: link:../@mcbundle/win32-arm64
+      '@mcbundle/win32-ia32':
+        specifier: workspace:../@mcbundle/win32-ia32
+        version: link:../@mcbundle/win32-ia32
+      '@mcbundle/win32-x64':
+        specifier: workspace:../@mcbundle/win32-x64
+        version: link:../@mcbundle/win32-x64
 
 packages:
 

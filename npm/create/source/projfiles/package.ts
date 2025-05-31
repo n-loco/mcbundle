@@ -44,12 +44,12 @@ export function createPackageJSON(recipe: Recipe): PackageJSON {
             "@minecraft/vanilla-data": "^1.21.0",
          } : undefined,
         devDependencies: {
-            "bpbuild": BPBuildSpecifier,
+            "mcbundle": mcbundleSpecifier,
         },
         scripts: {
-            "build": "bpbuild build",
-            "dev": "bpbuild dev",
-            "dist": "bpbuild dist",
+            "build": "mcbundle build",
+            "dev": "mcbundle dev",
+            "dist": "mcbundle dist",
         },
         [MetaData]: {
             packageManaer: pmName,

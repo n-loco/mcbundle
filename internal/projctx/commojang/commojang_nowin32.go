@@ -5,8 +5,8 @@ package commojang
 import (
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/txtui"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
 type ComMojangWarnAndErrAlert struct{}

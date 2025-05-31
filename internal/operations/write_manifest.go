@@ -5,9 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
-	"github.com/n-loco/bpbuild/internal/projctx"
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
+	"github.com/mcbundle/mcbundle/internal/projctx"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 func writeManifest(packCtx *projctx.PackContext, builtModules []manifest.Module, foundDeps []manifest.Dependency) {

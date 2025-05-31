@@ -1,6 +1,6 @@
 package cli
 
-import "github.com/n-loco/bpbuild/internal/alert"
+import "github.com/mcbundle/mcbundle/internal/alert"
 
 type empty = struct{}
 

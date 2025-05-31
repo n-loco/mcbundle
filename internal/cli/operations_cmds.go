@@ -1,9 +1,9 @@
 package cli
 
 import (
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/operations"
-	"github.com/n-loco/bpbuild/internal/projctx"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/operations"
+	"github.com/mcbundle/mcbundle/internal/projctx"
 )
 
 type buildOptsObj struct {

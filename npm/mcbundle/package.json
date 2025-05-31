@@ -1,0 +1,31 @@
+{
+  "name": "mcbundle",
+  "version": "1.0.0-indev",
+  "description": "...",
+  "type": "module",
+  "files": [
+    "dist/"
+  ],
+  "bin": "dist/mcbundle.mjs",
+  "scripts": {
+    "build": "node esbuild.js"
+  },
+  "keywords": [],
+  "author": "...",
+  "license": "MIT",
+  "packageManager": "pnpm@10.8.1",
+  "optionalDependencies": {
+    "@mcbundle/darwin-arm64": "workspace:../@mcbundle/darwin-arm64",
+    "@mcbundle/darwin-x64": "workspace:../@mcbundle/darwin-x64",
+    "@mcbundle/linux-arm64": "workspace:../@mcbundle/linux-arm64",
+    "@mcbundle/linux-ia32": "workspace:../@mcbundle/linux-ia32",
+    "@mcbundle/linux-x64": "workspace:../@mcbundle/linux-x64",
+    "@mcbundle/win32-arm64": "workspace:../@mcbundle/win32-arm64",
+    "@mcbundle/win32-ia32": "workspace:../@mcbundle/win32-ia32",
+    "@mcbundle/win32-x64": "workspace:../@mcbundle/win32-x64"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "esbuild": "^0.25.3"
+  }
+}

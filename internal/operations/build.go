@@ -4,11 +4,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/assets"
-	"github.com/n-loco/bpbuild/internal/operations/internal/manifest"
-	"github.com/n-loco/bpbuild/internal/projctx"
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/assets"
+	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
+	"github.com/mcbundle/mcbundle/internal/projctx"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *alert.Diagnostic) {

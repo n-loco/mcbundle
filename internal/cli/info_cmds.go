@@ -5,9 +5,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/assets"
-	"github.com/n-loco/bpbuild/internal/txtui"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/assets"
+	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
 type versionCommand empty
@@ -44,7 +44,7 @@ func (cmd helpCommand) info() *commandInfo {
 }
 
 func (cmd helpCommand) execute([]string) (d *alert.Diagnostic) {
-	txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"bpbuild [command] <options>"+txtui.EscapeReset+"\n\n")
+	txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"mcbundle [command] <options>"+txtui.EscapeReset+"\n\n")
 	txtui.Print(txtui.UIPartOut, "Commands:\n")
 
 	for i, cmd := range cmdList {

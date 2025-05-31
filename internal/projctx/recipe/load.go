@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/alert"
 )
 
 type SyntaxError struct {

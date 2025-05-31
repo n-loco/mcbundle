@@ -3,8 +3,8 @@ package cli
 import (
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/txtui"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
 type UnknownCommandErrorAlert struct {
@@ -16,7 +16,7 @@ func (errAlert UnknownCommandErrorAlert) Display() string {
 }
 
 func (errAlert UnknownCommandErrorAlert) Tip() string {
-	return "use " + txtui.EscapeItalic + "bpbuild help" + txtui.EscapeReset + " to see a list of commands"
+	return "use " + txtui.EscapeItalic + "mcbundle help" + txtui.EscapeReset + " to see a list of commands"
 }
 
 var cmdMap = map[string]command{}

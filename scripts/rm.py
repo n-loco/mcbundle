@@ -5,7 +5,7 @@ import sys
 import os
 
 def rm_unused_builds():
-    builds_dir = path.join("npm", "@bpbuild")
+    builds_dir = path.join("npm", "@mcbundle")
 
     builds = filter(lambda b: path.isdir(path.join(builds_dir, b)), os.listdir(builds_dir))
 

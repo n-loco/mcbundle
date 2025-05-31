@@ -22,10 +22,11 @@ esbuild.buildSync({
     platform: "node",
     format: "esm",
     entryPoints: ["./source/main.ts"],
-    outfile: `./${DbgPath}dist/bpbuild.mjs`,
+    outfile: `./${DbgPath}dist/mcbundle.mjs`,
     target: "node22",
     minifyWhitespace: IsRelease,
     sourcemap: IsDebug && "inline",
+    sourceRoot: path.join(import.meta.dirname, "debug", "dist"),
     sourcesContent: false,
 });
 
@@ -33,14 +34,14 @@ if (IsDebug) {
     const packageJsonContent = fs.readFileSync("package.json", "utf-8");
     const packageJsonObj = JSON.parse(packageJsonContent);
 
-    const bpBuildNodeModules = path.join("debug", "node_modules", "@bpbuild");
+    const mcbundleNodeModules = path.join("debug", "node_modules", "@mcbundle");
 
-    fs.mkdirSync(bpBuildNodeModules, { recursive: true });
+    fs.mkdirSync(mcbundleNodeModules, { recursive: true });
 
     for (const dep of Object.getOwnPropertyNames(packageJsonObj.optionalDependencies)) {
         const taget_double = dep.split("/")[1];
         const depPath = path.join(url.fileURLToPath(import.meta.resolve(`${dep}/package.json`)), "..", "debug");
-        const nodeModPath = path.join(bpBuildNodeModules, taget_double);
+        const nodeModPath = path.join(mcbundleNodeModules, taget_double);
 
         packageJsonObj.optionalDependencies[dep] = `file:${depPath.replaceAll("\\", "\\\\")}`;
         fs.rmSync(nodeModPath, { force: true });

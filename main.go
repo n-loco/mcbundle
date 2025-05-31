@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/cli"
-	"github.com/n-loco/bpbuild/internal/txtui"
+	"github.com/mcbundle/mcbundle/internal/cli"
+	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
 func main() {

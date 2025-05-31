@@ -3,7 +3,7 @@ package projctx
 import (
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 func (packCtx *PackContext) ModuleContext(recipeModule *recipe.RecipeModule) (modCtx ModuleContext) {

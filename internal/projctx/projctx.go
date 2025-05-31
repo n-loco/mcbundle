@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/projctx/commojang"
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/projctx/commojang"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 type EnvRequireFlags byte

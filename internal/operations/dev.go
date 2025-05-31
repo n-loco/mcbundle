@@ -3,9 +3,9 @@ package operations
 import (
 	"os"
 
-	"github.com/n-loco/bpbuild/internal/alert"
-	"github.com/n-loco/bpbuild/internal/projctx"
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/projctx"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {

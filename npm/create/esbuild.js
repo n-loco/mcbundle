@@ -15,12 +15,12 @@ const IsRelease = BuildMode == "release";
 
 const DbgPath = IsDebug ? "debug/" : "";
 
-const DebugBpBuildPath = path.join(path.resolve(import.meta.dirname), "..", "bpbuild", "debug");
-const BpBuildVersion = JSON.parse(fs.readFileSync("package.json", "utf-8")).version;
+const DebugMcbundlePath = path.join(path.resolve(import.meta.dirname), "..", "mcbundle", "debug");
+const mcbundleVersion = JSON.parse(fs.readFileSync("package.json", "utf-8")).version;
 
-const BpBuildSpecifier = BuildMode == "debug"
-    ? `file:${DebugBpBuildPath.replaceAll("\\", "\\\\")}`
-    : `^${BpBuildVersion}`;
+const mcbundleSpecVal = BuildMode == "debug"
+    ? `file:${DebugMcbundlePath.replaceAll("\\", "\\\\")}`
+    : `^${mcbundleVersion}`;
 
 esbuild.buildSync({
     bundle: true,
@@ -33,8 +33,9 @@ esbuild.buildSync({
     minify: IsRelease,
     sourcemap: IsDebug && "inline",
     sourcesContent: false,
+    sourceRoot: path.join(import.meta.dirname, "debug", "dist"),
     define: { // ./defines.d.ts
-        "BPBuildSpecifier": `"${BpBuildSpecifier}"`,
+        "mcbundleSpecifier": `"${mcbundleSpecVal}"`,
     },
 });
 

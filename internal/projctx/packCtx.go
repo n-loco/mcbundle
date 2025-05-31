@@ -3,8 +3,8 @@ package projctx
 import (
 	"path/filepath"
 
-	"github.com/n-loco/bpbuild/internal/jsonst"
-	"github.com/n-loco/bpbuild/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/jsonst"
+	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
 )
 
 func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool) (packCtx PackContext) {
