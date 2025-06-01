@@ -15,7 +15,7 @@ func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool
 	packCtx.scriptDependencies = make(map[string]*ScriptDependency)
 	packCtx.Release = release
 
-	baseDir := filepath.Join(projCtx.DistDir, "._obj")
+	baseDir := filepath.Join(projCtx.DistDir, "build")
 
 	if release {
 		baseDir = filepath.Join(baseDir, "release")
