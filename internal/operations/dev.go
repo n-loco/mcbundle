@@ -17,7 +17,7 @@ func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
 		return
 	}
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if recipeType == recipe.RecipeTypeAddOn {
 		bpCtx, rpCtx := projCtx.AddonContext(false)
 
 		diagnostic = diagnostic.Append(copyPackToDev(&bpCtx))

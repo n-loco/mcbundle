@@ -40,13 +40,13 @@ type Module struct {
 	Entry       string         `json:"entry,omitempty,omitzero"`
 }
 
-func ModuleTypeFromRecipeModuleType(recipeModType recipe.RecipeModuleType) ModuleType {
+func ModuleTypeFromRecipeModuleType(recipeModType recipe.ModuleType) ModuleType {
 	switch recipeModType {
-	case recipe.RecipeModuleTypeData:
+	case recipe.ModuleTypeData:
 		return ModuleTypeData
-	case recipe.RecipeModuleTypeResources:
+	case recipe.ModuleTypeResources:
 		return ModuleTypeResources
-	case recipe.RecipeModuleTypeServer:
+	case recipe.ModuleTypeServer:
 		return ModuleTypeScript
 	}
 	panic("invalid RecipeModuleType")

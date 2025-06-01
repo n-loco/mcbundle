@@ -14,7 +14,7 @@ import (
 func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *alert.Diagnostic) {
 	projType := projCtx.Recipe.Type
 
-	if projType == recipe.RecipeTypeAddon {
+	if projType == recipe.RecipeTypeAddOn {
 		bpCtx, rpCtx := projCtx.AddonContext(release)
 
 		diagnostic = diagnostic.Append(buildPack(&bpCtx))
@@ -40,7 +40,7 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	var builtModules []manifest.Module
 
 	for _, recipeModule := range projRecipe.Modules {
-		if recipeModule.Type.PackType() != packType {
+		if recipeModule.BelongsTo() != packType {
 			continue
 		}
 
@@ -78,13 +78,13 @@ func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic
 	recipeModule := modCtx.RecipeModule
 
 	switch recipeModule.Type {
-	case recipe.RecipeModuleTypeData:
+	case recipe.ModuleTypeData:
 		fallthrough
-	case recipe.RecipeModuleTypeResources:
+	case recipe.ModuleTypeResources:
 		{
 			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.ModSourcePath, modCtx.PackDistDir))
 		}
-	case recipe.RecipeModuleTypeServer:
+	case recipe.ModuleTypeServer:
 		{
 			diagnostic = diagnostic.Append(esbuild(modCtx))
 			if !diagnostic.HasErrors() {
@@ -100,7 +100,6 @@ func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic
 		return
 	}
 
-	mod.Description = recipeModule.Description
 	mod.UUID = recipeModule.UUID
 	mod.Version = recipeModule.Version
 	mod.Type = manifest.ModuleTypeFromRecipeModuleType(recipeModule.Type)

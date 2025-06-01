@@ -17,7 +17,7 @@ const (
 )
 
 type ProjectContext struct {
-	Recipe       *recipe.Recipe
+	Recipe       recipe.Recipe
 	ComMojangDir string
 	WorkDir      string
 	DistDir      string
@@ -39,10 +39,16 @@ func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext, diagno
 	projCtx.SourceDir = filepath.Join(workDir, "source")
 
 	if needsRecipe {
-		loadedRecipe, loadRecipeDiag := recipe.LoadRecipe(workDir)
+		var recipeFile, err = os.Open("recipe.json")
+		defer recipeFile.Close()
 
-		diagnostic = diagnostic.Append(loadRecipeDiag)
-		projCtx.Recipe = loadedRecipe
+		if err == nil {
+			err = projCtx.Recipe.Load(recipeFile)
+		}
+
+		if err != nil {
+			diagnostic = diagnostic.Append(diagnostic.AppendError(alert.NewGoErrWrapperAlert(err)))
+		}
 	}
 
 	diagnostic = diagnostic.Append(commojang.WarnComMojangPath(!needsComMojangPath))

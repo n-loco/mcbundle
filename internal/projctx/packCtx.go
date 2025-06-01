@@ -9,7 +9,6 @@ import (
 
 func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool) (packCtx PackContext) {
 	projRecipe := projCtx.Recipe
-	recipeType := projRecipe.Type
 
 	packCtx.ProjectContext = projCtx
 	packCtx.PackType = packType
@@ -24,33 +23,33 @@ func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool
 		baseDir = filepath.Join(baseDir, "debug")
 	}
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if projRecipe.Type == recipe.RecipeTypeAddOn {
 		packCtx.PackDistDir = filepath.Join(baseDir, packType.Abbr())
 	} else {
 		packCtx.PackDistDir = baseDir
 	}
 
-	packCtx.PackDirName = projRecipe.MojangID
+	packCtx.PackDirName = projRecipe.DirName()
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if projRecipe.Type == recipe.RecipeTypeAddOn {
 		packCtx.PackDirName += "_" + packType.Abbr()
 	}
 
 	if len(projCtx.ComMojangDir) > 0 {
-		packCtx.PackDevDir = filepath.Join(packCtx.ComMojangDir, "development_"+packType.ComMojangID(), packCtx.PackDirName)
+		packCtx.PackDevDir = filepath.Join(packCtx.ComMojangDir, "development_"+packType.ComMojangDirName(), packCtx.PackDirName)
 	}
 
 	return
 }
 
 func (projCtx *ProjectContext) PackContext(release bool) (packCtx PackContext) {
-	packCtx = packContext(projCtx, projCtx.Recipe.Type.PackType(), release)
+	packCtx = packContext(projCtx, projCtx.Recipe.PackType(), release)
 	return
 }
 
 func (projCtx *ProjectContext) AddonContext(release bool) (bpCtx PackContext, rpCtx PackContext) {
 	bpCtx = packContext(projCtx, recipe.PackTypeBehavior, release)
-	rpCtx = packContext(projCtx, recipe.PackTypeResource, release)
+	rpCtx = packContext(projCtx, recipe.PackTypeResources, release)
 	return
 }
 

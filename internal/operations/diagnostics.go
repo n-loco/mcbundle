@@ -25,7 +25,7 @@ func (alertW *ESBuildWrapperAlert) Tip() string {
 
 type MainFileNotFoundErrAlert struct {
 	ExpectedFiles []string
-	ModuleType    recipe.RecipeModuleType
+	ModuleType    recipe.ModuleType
 }
 
 func (errAlert MainFileNotFoundErrAlert) Display() string {

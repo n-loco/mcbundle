@@ -26,7 +26,7 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 		packFilePath += ".debug"
 	}
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if recipeType == recipe.RecipeTypeAddOn {
 		packFilePath += ".mcaddon"
 	} else {
 		packFilePath += ".mcpack"
@@ -48,7 +48,7 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 	}
 	defer os.RemoveAll(tmpDir)
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if recipeType == recipe.RecipeTypeAddOn {
 		bpCtx, rpCtx := projCtx.AddonContext(!debugP)
 
 		diagnostic = diagnostic.Append(copyPackToTempDir(tmpDir, &bpCtx))
@@ -75,7 +75,7 @@ func copyPackToTempDir(tempDir string, packCtx *projctx.PackContext) (diagnostic
 
 	packDir := tempDir
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if recipeType == recipe.RecipeTypeAddOn {
 		packDir = filepath.Join(packDir, packCtx.PackDirName)
 	}
 

@@ -30,7 +30,7 @@ func createManifest(packCtx *projctx.PackContext) (mcManifest *manifest.Manifest
 
 	setHeader(&mcManifest.Header, packCtx)
 
-	if recipeType == recipe.RecipeTypeAddon {
+	if recipeType == recipe.RecipeTypeAddOn {
 		mcManifest.Dependencies = append(mcManifest.Dependencies, createAddonDependency(packCtx))
 	}
 
@@ -43,24 +43,23 @@ func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
 	packType := packCtx.PackType
 
-	if projRecipe.Type == recipe.RecipeTypeAddon {
+	if projRecipe.Type == recipe.RecipeTypeAddOn {
 		switch packType {
 		case recipe.PackTypeBehavior:
-			header.UUID = projRecipe.UUIDs.BP
-		case recipe.PackTypeResource:
-			header.UUID = projRecipe.UUIDs.RP
+			header.UUID = projRecipe.UUIDs[0]
+		case recipe.PackTypeResources:
+			header.UUID = projRecipe.UUIDs[1]
 			header.PackScope = manifest.PackScopeWorld
 		default:
 			panic("💀")
 		}
 	} else {
-		header.UUID = packCtx.Recipe.UUIDs.Single
+		header.UUID = packCtx.Recipe.UUID
 	}
 
-	header.Description = "pack.description"
-	header.Name = "pack.name"
+	header.Name = projRecipe.Name
 	header.Version = projRecipe.Version
-	header.MinEngineVersion = projRecipe.MinEngineVersion
+	header.MinEngineVersion = [3]uint8{1, 21, 0}
 }
 
 func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.Dependency) {
@@ -69,9 +68,9 @@ func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.De
 
 	switch packType {
 	case recipe.PackTypeBehavior:
-		dependency.UUID = projRecipe.UUIDs.RP
-	case recipe.PackTypeResource:
-		dependency.UUID = projRecipe.UUIDs.BP
+		dependency.UUID = projRecipe.UUIDs[1]
+	case recipe.PackTypeResources:
+		dependency.UUID = projRecipe.UUIDs[0]
 	default:
 		panic("💀")
 	}

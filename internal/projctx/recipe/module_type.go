@@ -1,33 +1,61 @@
 package recipe
 
-type RecipeModuleType byte
-
-const (
-	RecipeModuleTypeData RecipeModuleType = iota + 1
-	RecipeModuleTypeServer
-	RecipeModuleTypeResources
+import (
+	"encoding/json"
+	"fmt"
 )
 
-func (moduleType RecipeModuleType) String() string {
+type ModuleType byte
+
+const (
+	ModuleTypeData ModuleType = iota + 1
+	ModuleTypeServer
+	ModuleTypeResources
+)
+
+func (moduleType *ModuleType) UnmarshalJSON(data []byte) (err error) {
+	var val string
+	err = json.Unmarshal(data, &val)
+	if err != nil {
+		return
+	}
+
+	switch val {
+	case "data":
+		*moduleType = ModuleTypeData
+	case "script":
+		fallthrough
+	case "server":
+		*moduleType = ModuleTypeServer
+	case "resources":
+		*moduleType = ModuleTypeResources
+	default:
+		err = fmt.Errorf("unknown module type: \"%s\"", val)
+	}
+
+	return
+}
+
+func (moduleType ModuleType) String() string {
 	switch moduleType {
-	case RecipeModuleTypeData:
+	case ModuleTypeData:
 		return "data"
-	case RecipeModuleTypeServer:
+	case ModuleTypeServer:
 		return "server"
-	case RecipeModuleTypeResources:
+	case ModuleTypeResources:
 		return "resources"
 	}
 	return ""
 }
 
-func (recipeModule RecipeModuleType) PackType() PackType {
+func (recipeModule ModuleType) BelongsTo() PackType {
 	switch recipeModule {
-	case RecipeModuleTypeData:
+	case ModuleTypeData:
 		fallthrough
-	case RecipeModuleTypeServer:
+	case ModuleTypeServer:
 		return PackTypeBehavior
-	case RecipeModuleTypeResources:
-		return PackTypeResource
+	case ModuleTypeResources:
+		return PackTypeResources
 	}
-	panic("unknown RecipeModuleType value")
+	panic("unknown ModuleType value")
 }
