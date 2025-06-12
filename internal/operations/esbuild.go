@@ -32,6 +32,8 @@ func esbuild(modCtx *projctx.ModuleContext) (diagnostic *alert.Diagnostic) {
 		sourcemap = api.SourceMapLinked
 	}
 
+	var sourcemapPath, _ = filepath.Rel(modCtx.WorkDir, filepath.Join(modCtx.PackDistDir, "scripts"))
+
 	result := api.Build(api.BuildOptions{
 		// General
 		Plugins: []api.Plugin{
@@ -54,7 +56,7 @@ func esbuild(modCtx *projctx.ModuleContext) (diagnostic *alert.Diagnostic) {
 
 		// Debug
 		Sourcemap:      sourcemap,
-		SourceRoot:     filepath.Join(modCtx.PackDistDir, "scripts"),
+		SourceRoot:     sourcemapPath,
 		SourcesContent: api.SourcesContentExclude,
 	})
 
