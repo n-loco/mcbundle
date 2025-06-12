@@ -51,7 +51,7 @@ def binary_importer(file_name: str) -> str:
 
     array_content = ",\n".join(array_lines)
 
-    array_def = "[]byte{\n" + array_content + ",\n}"
+    array_def = "[" + str(len(content)) + "]byte{\n" + array_content + ",\n}"
 
     return array_def
 

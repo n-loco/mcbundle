@@ -34,7 +34,7 @@ func copyPackToDev(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) 
 	os.RemoveAll(packCtx.PackDevDir)
 	err := os.CopyFS(packCtx.PackDevDir, os.DirFS(packCtx.PackDistDir))
 
-	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(err))
+	diagnostic = diagnostic.AppendError(alert.WrappGoError(err))
 
 	return
 }

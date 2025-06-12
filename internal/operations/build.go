@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/mcbundle/mcbundle/internal/alert"
-	"github.com/mcbundle/mcbundle/internal/assets"
 	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
@@ -64,10 +63,16 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 		})
 	}
 
-	packIconFile, _ := os.Create(filepath.Join(packCtx.PackDistDir, "pack_icon.png"))
-	defer packIconFile.Close()
+	var packIconPath = filepath.Join(packCtx.PackDistDir, "pack_icon.png")
+	packIconPath, _ = filepath.Rel(packCtx.WorkDir, packIconPath)
 
-	packIconFile.Write(assets.DefaultPackIcon)
+	var packIconFile, packIconErr = os.Create(packIconPath)
+	if packIconErr != nil {
+		diagnostic.AppendError(alert.WrappGoError(packIconErr))
+	} else {
+		packIconFile.Write(packCtx.PackIcon)
+		packIconFile.Close()
+	}
 
 	writeManifest(packCtx, builtModules, foundDeps)
 
@@ -108,5 +113,5 @@ func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic
 }
 
 func copyDataToBuild(from string, to string) (diagnostic *alert.Diagnostic) {
-	return diagnostic.AppendError(alert.NewGoErrWrapperAlert(os.CopyFS(to, os.DirFS(from))))
+	return diagnostic.AppendError(alert.WrappGoError(os.CopyFS(to, os.DirFS(from))))
 }

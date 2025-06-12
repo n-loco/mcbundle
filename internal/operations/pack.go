@@ -34,7 +34,7 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 
 	packFile, packFileErr := os.Create(packFilePath)
 	if packFileErr != nil {
-		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(packFileErr))
+		diagnostic = diagnostic.AppendError(alert.WrappGoError(packFileErr))
 		return
 	}
 
@@ -43,7 +43,7 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 
 	tmpDir, tmpDirErr := os.MkdirTemp(os.TempDir(), "_mcbpacking")
 	if tmpDirErr != nil {
-		diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(tmpDirErr))
+		diagnostic = diagnostic.AppendError(alert.WrappGoError(tmpDirErr))
 		return
 	}
 	defer os.RemoveAll(tmpDir)
@@ -65,7 +65,7 @@ func PackProject(projCtx *projctx.ProjectContext, debugP bool) (diagnostic *aler
 	tmpFS := os.DirFS(tmpDir)
 
 	zipErr := zipW.AddFS(tmpFS)
-	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(zipErr))
+	diagnostic = diagnostic.AppendError(alert.WrappGoError(zipErr))
 
 	return
 }
@@ -81,7 +81,7 @@ func copyPackToTempDir(tempDir string, packCtx *projctx.PackContext) (diagnostic
 
 	err := os.CopyFS(packDir, os.DirFS(packCtx.PackDistDir))
 
-	diagnostic = diagnostic.AppendError(alert.NewGoErrWrapperAlert(err))
+	diagnostic = diagnostic.AppendError(alert.WrappGoError(err))
 
 	return
 }

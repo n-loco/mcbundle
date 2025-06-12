@@ -39,7 +39,7 @@ func (diagnostic *Diagnostic) AppendWarning(warning Alert) *Diagnostic {
 }
 
 func (diagnostic *Diagnostic) AppendError(err Alert) *Diagnostic {
-	if reflect.ValueOf(err).IsNil() {
+	if err == nil || reflect.ValueOf(err).IsNil() {
 		return diagnostic
 	}
 
