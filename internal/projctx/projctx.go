@@ -25,6 +25,10 @@ type ProjectContext struct {
 	SourceDir    string
 }
 
+func (projCtx *ProjectContext) Rel(path string) (string, error) {
+	return filepath.Rel(projCtx.WorkDir, path)
+}
+
 func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext, diagnostic *alert.Diagnostic) {
 	var needsRecipe = (flags & EnvRequireFlagRecipe) > 0
 	var needsComMojangPath = (flags & EnvRequireFlagComMojang) > 0

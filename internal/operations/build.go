@@ -58,8 +58,9 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 
 	foundDeps = packCtx.ScriptDependencies()
 
-	var packIconPath = filepath.Join(packCtx.PackDistDir, "pack_icon.png")
-	packIconPath, _ = filepath.Rel(packCtx.WorkDir, packIconPath)
+	var packIconPath, _ = packCtx.Rel(
+		filepath.Join(packCtx.PackDistDir, "pack_icon.png"),
+	)
 
 	var packIconFile, packIconErr = os.Create(packIconPath)
 	if packIconErr != nil {
