@@ -5,7 +5,7 @@ import (
 
 	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/projctx"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
 func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
@@ -17,7 +17,7 @@ func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
 		return
 	}
 
-	if recipeType == recipe.RecipeTypeAddOn {
+	if recipeType == projfiles.RecipeTypeAddOn {
 		bpCtx, rpCtx := projCtx.AddonContext(false)
 
 		diagnostic = diagnostic.Append(copyPackToDev(&bpCtx))

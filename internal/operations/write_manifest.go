@@ -7,7 +7,7 @@ import (
 
 	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
 	"github.com/mcbundle/mcbundle/internal/projctx"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
 func writeManifest(packCtx *projctx.PackContext, builtModules []manifest.Module, foundDeps []manifest.Dependency) {
@@ -30,7 +30,7 @@ func createManifest(packCtx *projctx.PackContext) (mcManifest *manifest.Manifest
 
 	setHeader(&mcManifest.Header, packCtx)
 
-	if recipeType == recipe.RecipeTypeAddOn {
+	if recipeType == projfiles.RecipeTypeAddOn {
 		mcManifest.Dependencies = append(mcManifest.Dependencies, createAddonDependency(packCtx))
 	}
 
@@ -43,11 +43,11 @@ func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
 	packType := packCtx.PackType
 
-	if projRecipe.Type == recipe.RecipeTypeAddOn {
+	if projRecipe.Type == projfiles.RecipeTypeAddOn {
 		switch packType {
-		case recipe.PackTypeBehavior:
+		case projfiles.PackTypeBehavior:
 			header.UUID = projRecipe.UUIDs[0]
-		case recipe.PackTypeResources:
+		case projfiles.PackTypeResources:
 			header.UUID = projRecipe.UUIDs[1]
 			header.PackScope = manifest.PackScopeWorld
 		default:
@@ -67,9 +67,9 @@ func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.De
 	packType := packCtx.PackType
 
 	switch packType {
-	case recipe.PackTypeBehavior:
+	case projfiles.PackTypeBehavior:
 		dependency.UUID = projRecipe.UUIDs[1]
-	case recipe.PackTypeResources:
+	case projfiles.PackTypeResources:
 		dependency.UUID = projRecipe.UUIDs[0]
 	default:
 		panic("💀")

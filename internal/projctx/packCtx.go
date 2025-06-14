@@ -4,10 +4,10 @@ import (
 	"path/filepath"
 
 	"github.com/mcbundle/mcbundle/internal/jsonst"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
-func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool) (packCtx PackContext) {
+func packContext(projCtx *ProjectContext, packType projfiles.PackType, release bool) (packCtx PackContext) {
 	projRecipe := projCtx.Recipe
 
 	packCtx.ProjectContext = projCtx
@@ -23,7 +23,7 @@ func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool
 		baseDir = filepath.Join(baseDir, "debug")
 	}
 
-	if projRecipe.Type == recipe.RecipeTypeAddOn {
+	if projRecipe.Type == projfiles.RecipeTypeAddOn {
 		packCtx.PackDistDir = filepath.Join(baseDir, packType.Abbr())
 	} else {
 		packCtx.PackDistDir = baseDir
@@ -31,7 +31,7 @@ func packContext(projCtx *ProjectContext, packType recipe.PackType, release bool
 
 	packCtx.PackDirName = projRecipe.DirName()
 
-	if projRecipe.Type == recipe.RecipeTypeAddOn {
+	if projRecipe.Type == projfiles.RecipeTypeAddOn {
 		packCtx.PackDirName += "_" + packType.Abbr()
 	}
 
@@ -48,8 +48,8 @@ func (projCtx *ProjectContext) PackContext(release bool) (packCtx PackContext) {
 }
 
 func (projCtx *ProjectContext) AddonContext(release bool) (bpCtx PackContext, rpCtx PackContext) {
-	bpCtx = packContext(projCtx, recipe.PackTypeBehavior, release)
-	rpCtx = packContext(projCtx, recipe.PackTypeResources, release)
+	bpCtx = packContext(projCtx, projfiles.PackTypeBehavior, release)
+	rpCtx = packContext(projCtx, projfiles.PackTypeResources, release)
 	return
 }
 
@@ -60,7 +60,7 @@ type ScriptDependency struct {
 
 type PackContext struct {
 	*ProjectContext
-	PackType    recipe.PackType
+	PackType    projfiles.PackType
 	Release     bool
 	PackDistDir string
 	PackDirName string

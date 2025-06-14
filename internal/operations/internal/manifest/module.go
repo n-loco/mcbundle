@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mcbundle/mcbundle/internal/jsonst"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
 type ModuleType byte
@@ -40,13 +40,13 @@ type Module struct {
 	Entry       string         `json:"entry,omitempty,omitzero"`
 }
 
-func ModuleTypeFromRecipeModuleType(recipeModType recipe.ModuleType) ModuleType {
+func ModuleTypeFromRecipeModuleType(recipeModType projfiles.ModuleType) ModuleType {
 	switch recipeModType {
-	case recipe.ModuleTypeData:
+	case projfiles.ModuleTypeData:
 		return ModuleTypeData
-	case recipe.ModuleTypeResources:
+	case projfiles.ModuleTypeResources:
 		return ModuleTypeResources
-	case recipe.ModuleTypeServer:
+	case projfiles.ModuleTypeServer:
 		return ModuleTypeScript
 	}
 	panic("invalid RecipeModuleType")

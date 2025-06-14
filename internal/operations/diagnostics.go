@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/evanw/esbuild/pkg/api"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
 type ESBuildWrapperAlert api.Message
@@ -25,7 +25,7 @@ func (alertW *ESBuildWrapperAlert) Tip() string {
 
 type MainFileNotFoundErrAlert struct {
 	ExpectedFiles []string
-	ModuleType    recipe.ModuleType
+	ModuleType    projfiles.ModuleType
 }
 
 func (errAlert MainFileNotFoundErrAlert) Display() string {

@@ -7,13 +7,13 @@ import (
 	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
 	"github.com/mcbundle/mcbundle/internal/projctx"
-	"github.com/mcbundle/mcbundle/internal/projctx/recipe"
+	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
 func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *alert.Diagnostic) {
 	projType := projCtx.Recipe.Type
 
-	if projType == recipe.RecipeTypeAddOn {
+	if projType == projfiles.RecipeTypeAddOn {
 		bpCtx, rpCtx := projCtx.AddonContext(release)
 
 		diagnostic = diagnostic.Append(buildPack(&bpCtx))
@@ -83,13 +83,13 @@ func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic
 	recipeModule := modCtx.RecipeModule
 
 	switch recipeModule.Type {
-	case recipe.ModuleTypeData:
+	case projfiles.ModuleTypeData:
 		fallthrough
-	case recipe.ModuleTypeResources:
+	case projfiles.ModuleTypeResources:
 		{
 			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.ModSourcePath, modCtx.PackDistDir))
 		}
-	case recipe.ModuleTypeServer:
+	case projfiles.ModuleTypeServer:
 		{
 			diagnostic = diagnostic.Append(esbuild(modCtx))
 			if !diagnostic.HasErrors() {

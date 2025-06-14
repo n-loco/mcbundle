@@ -1,6 +1,6 @@
 //go:build windows
 
-package commojang
+package projctx
 
 import (
 	"os"
@@ -9,21 +9,11 @@ import (
 	"github.com/mcbundle/mcbundle/internal/alert"
 )
 
-type ComMojangWarnAndErrAlert struct{}
-
-func (ComMojangWarnAndErrAlert) Display() string {
-	return ""
-}
-
-func (ComMojangWarnAndErrAlert) Tip() string {
-	return ""
-}
-
-func WarnComMojangPath(bool) (_ *alert.Diagnostic) {
+func warnComMojangPath(bool) (_ *alert.Diagnostic) {
 	return
 }
 
-func ComMojangPath() (path string, _ *alert.Diagnostic) {
+func comMojangPath() (path string, _ *alert.Diagnostic) {
 	value, exists := os.LookupEnv(comMojangPathVarKey)
 
 	if exists {

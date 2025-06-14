@@ -1,4 +1,4 @@
-package recipe
+package projfiles
 
 type PackType byte
 
