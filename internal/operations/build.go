@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/mcbundle/mcbundle/internal/alert"
-	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
+	"github.com/mcbundle/mcbundle/internal/mcfiles"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
@@ -35,8 +35,8 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 		os.RemoveAll(buildPath)
 	}
 
-	var foundDeps []manifest.Dependency
-	var builtModules []manifest.Module
+	var foundDeps []mcfiles.Dependency
+	var builtModules []mcfiles.Module
 
 	for _, recipeModule := range projRecipe.Modules {
 		if recipeModule.BelongsTo() != packType {
@@ -57,7 +57,7 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	}
 
 	for _, dep := range packCtx.ScriptDependencies() {
-		foundDeps = append(foundDeps, manifest.Dependency{
+		foundDeps = append(foundDeps, mcfiles.Dependency{
 			ModuleName: dep.Name,
 			Version:    dep.Version,
 		})
@@ -79,7 +79,7 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	return
 }
 
-func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic *alert.Diagnostic) {
+func buildModule(modCtx *projctx.ModuleContext) (mod mcfiles.Module, diagnostic *alert.Diagnostic) {
 	recipeModule := modCtx.RecipeModule
 
 	switch recipeModule.Type {
@@ -107,7 +107,7 @@ func buildModule(modCtx *projctx.ModuleContext) (mod manifest.Module, diagnostic
 
 	mod.UUID = recipeModule.UUID
 	mod.Version = recipeModule.Version
-	mod.Type = manifest.ModuleTypeFromRecipeModuleType(recipeModule.Type)
+	mod.Type = mcfiles.ModuleTypeFromRecipeModuleType(recipeModule.Type)
 
 	return
 }

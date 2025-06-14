@@ -5,12 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mcbundle/mcbundle/internal/operations/internal/manifest"
+	"github.com/mcbundle/mcbundle/internal/mcfiles"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
-func writeManifest(packCtx *projctx.PackContext, builtModules []manifest.Module, foundDeps []manifest.Dependency) {
+func writeManifest(packCtx *projctx.PackContext, builtModules []mcfiles.Module, foundDeps []mcfiles.Dependency) {
 	manifest := createManifest(packCtx)
 
 	manifest.Modules = builtModules
@@ -22,10 +22,10 @@ func writeManifest(packCtx *projctx.PackContext, builtModules []manifest.Module,
 	os.WriteFile(manifestPath, manifestData, os.ModePerm)
 }
 
-func createManifest(packCtx *projctx.PackContext) (mcManifest *manifest.Manifest) {
+func createManifest(packCtx *projctx.PackContext) (mcManifest *mcfiles.Manifest) {
 	recipeType := packCtx.Recipe.Type
 
-	mcManifest = new(manifest.Manifest)
+	mcManifest = new(mcfiles.Manifest)
 	mcManifest.FormatVersion = 2
 
 	setHeader(&mcManifest.Header, packCtx)
@@ -39,7 +39,7 @@ func createManifest(packCtx *projctx.PackContext) (mcManifest *manifest.Manifest
 	return
 }
 
-func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
+func setHeader(header *mcfiles.Header, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
 	packType := packCtx.PackType
 
@@ -49,7 +49,7 @@ func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
 			header.UUID = projRecipe.UUIDs[0]
 		case projfiles.PackTypeResources:
 			header.UUID = projRecipe.UUIDs[1]
-			header.PackScope = manifest.PackScopeWorld
+			header.PackScope = mcfiles.PackScopeWorld
 		default:
 			panic("💀")
 		}
@@ -62,7 +62,7 @@ func setHeader(header *manifest.Header, packCtx *projctx.PackContext) {
 	header.MinEngineVersion = [3]uint8{1, 21, 0}
 }
 
-func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.Dependency) {
+func createAddonDependency(packCtx *projctx.PackContext) (dependency mcfiles.Dependency) {
 	projRecipe := packCtx.Recipe
 	packType := packCtx.PackType
 
@@ -80,7 +80,7 @@ func createAddonDependency(packCtx *projctx.PackContext) (dependency manifest.De
 	return
 }
 
-func setMeta(meta *manifest.MetaData, packCtx *projctx.PackContext) {
+func setMeta(meta *mcfiles.MetaData, packCtx *projctx.PackContext) {
 	projRecipe := packCtx.Recipe
 
 	meta.Authors = projRecipe.Authors
