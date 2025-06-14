@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/mcbundle/mcbundle/internal/alert"
+	"github.com/mcbundle/mcbundle/internal/esfiles"
 	"github.com/mcbundle/mcbundle/internal/mcfiles"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 	"github.com/mcbundle/mcbundle/internal/projfiles"
@@ -87,7 +88,23 @@ func buildModule(modCtx *projctx.ModuleContext) (mod mcfiles.Module, diagnostic 
 		}
 	case projfiles.ModuleTypeServer:
 		{
-			diagnostic = diagnostic.Append(esbuild(modCtx))
+			var bundleOpts = esfiles.JSBundlerOptions{
+				BundlingContext: esfiles.BundlingContextServerModule,
+				StripDebug:      modCtx.Release,
+				WorkDir:         modCtx.WorkDir,
+				MainFields:      []string{"minecraft_server", "minecraft", "module", "main"},
+				SourceDir:       modCtx.ModSourcePath,
+				PossibleEntryFiles: []string{
+					"main.ts", "main.mts", "main.cts",
+					"main.js", "main.mjs", "main.cjs",
+				},
+				OutPutFile: filepath.Join(modCtx.PackDistDir, "scripts", "server.js"),
+			}
+
+			bundleOpts.AddNativeResolverPlugin(modCtx)
+
+			diagnostic = diagnostic.Append(esfiles.JSBundler(&bundleOpts))
+
 			if !diagnostic.HasErrors() {
 				mod.Entry = "scripts/server.js"
 				mod.Language = "javascript"
