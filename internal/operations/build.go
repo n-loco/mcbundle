@@ -56,12 +56,7 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 		return
 	}
 
-	for _, dep := range packCtx.ScriptDependencies() {
-		foundDeps = append(foundDeps, mcfiles.Dependency{
-			ModuleName: dep.Name,
-			Version:    dep.Version,
-		})
-	}
+	foundDeps = packCtx.ScriptDependencies()
 
 	var packIconPath = filepath.Join(packCtx.PackDistDir, "pack_icon.png")
 	packIconPath, _ = filepath.Rel(packCtx.WorkDir, packIconPath)

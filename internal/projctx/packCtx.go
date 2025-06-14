@@ -4,6 +4,7 @@ import (
 	"path/filepath"
 
 	"github.com/mcbundle/mcbundle/internal/jsonst"
+	"github.com/mcbundle/mcbundle/internal/mcfiles"
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
@@ -12,7 +13,7 @@ func packContext(projCtx *ProjectContext, packType projfiles.PackType, release b
 
 	packCtx.ProjectContext = projCtx
 	packCtx.PackType = packType
-	packCtx.scriptDependencies = make(map[string]*ScriptDependency)
+	packCtx.scriptDependencies = make(map[string]*jsonst.SemVer)
 	packCtx.Release = release
 
 	baseDir := filepath.Join(projCtx.DistDir, "build")
@@ -53,11 +54,6 @@ func (projCtx *ProjectContext) AddonContext(release bool) (bpCtx PackContext, rp
 	return
 }
 
-type ScriptDependency struct {
-	Name    string
-	Version *jsonst.SemVer
-}
-
 type PackContext struct {
 	*ProjectContext
 	PackType    projfiles.PackType
@@ -66,7 +62,7 @@ type PackContext struct {
 	PackDirName string
 	PackDevDir  string
 
-	scriptDependencies map[string]*ScriptDependency
+	scriptDependencies map[string]*jsonst.SemVer
 }
 
 func (packCtx *PackContext) HasScriptDependency(name string) bool {
@@ -78,13 +74,16 @@ func (packCtx *PackContext) AddScriptDependency(name string, version *jsonst.Sem
 	has := packCtx.HasScriptDependency(name)
 
 	if !has {
-		packCtx.scriptDependencies[name] = &ScriptDependency{Name: name, Version: version}
+		packCtx.scriptDependencies[name] = version
 	}
 }
 
-func (packCtx *PackContext) ScriptDependencies() (deps []*ScriptDependency) {
-	for _, dep := range packCtx.scriptDependencies {
-		deps = append(deps, dep)
+func (packCtx *PackContext) ScriptDependencies() (deps []mcfiles.Dependency) {
+	for name, semver := range packCtx.scriptDependencies {
+		deps = append(deps, mcfiles.Dependency{
+			ModuleName: name,
+			Version:    semver,
+		})
 	}
 	return
 }
