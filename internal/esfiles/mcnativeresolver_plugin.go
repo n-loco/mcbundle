@@ -3,7 +3,7 @@ package esfiles
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
+	"strings"
 
 	esbuild "github.com/evanw/esbuild/pkg/api"
 	"github.com/mcbundle/mcbundle/internal/jsonst"
@@ -45,8 +45,8 @@ func findNativeModuleVersion(
 		return nil
 	}
 
-	packageJSONPath := filepath.Join(args.Path, "package.json")
-	result := build.Resolve(packageJSONPath, esbuild.ResolveOptions{
+	packageJSONImport := strings.Join([]string{args.Path, "package.json"}, "/")
+	result := build.Resolve(packageJSONImport, esbuild.ResolveOptions{
 		Kind:       args.Kind,
 		ResolveDir: args.ResolveDir,
 	})

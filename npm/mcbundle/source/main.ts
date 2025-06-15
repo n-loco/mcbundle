@@ -14,7 +14,7 @@ function findExecutable(): string {
 
 let exePath = findExecutable();
 
-let mcbundleProcess = childProcess.spawn(exePath, argv.slice(2), { stdio: "inherit", detached: true });
+let mcbundleProcess = childProcess.spawn(exePath, argv.slice(2), { stdio: "inherit", detached: false });
 
 mcbundleProcess.addListener("exit", exitCode => {
     process.exitCode = exitCode || 0;
