@@ -26,6 +26,7 @@ def target(target_double: str):
         "description": f"{target_double} binary for mcbundle",
         "version": get_version(),
         "files": ["mcbundle.exe" if node_os == "win32" else "mcbundle"],
+        "preferUnplugged": True,
         "os": [node_os],
         "cpu": [node_cpu]
     }

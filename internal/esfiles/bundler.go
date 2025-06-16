@@ -39,7 +39,7 @@ type JSBundlerOptions struct {
 }
 
 func (opts *JSBundlerOptions) AddNativeResolverPlugin(modCtx *projctx.ModuleContext) {
-	opts.plugins = append(opts.plugins, mcNativeModResolverPlugin(modCtx))
+	opts.plugins = append(opts.plugins, minecraftNativeModuleResolver(modCtx))
 }
 
 func JSBundler(opts *JSBundlerOptions) (diagnostic *alert.Diagnostic) {
