@@ -34,40 +34,84 @@ const ssColorIndexMap = new Map<string, number>([
     ["§v", 0xea7113],
 ]);
 
-function ssCodeToAnsi(wasBold: VRef<boolean>, ssCode: string, preview: boolean): string {
-    const boldSuffix = wasBold.value ? BOLD : "";
+function ssCodeToAnsi(renderRecord: RenderRecord, ssCode: string, preview: boolean): string {
+    const boldSuffix = renderRecord.wasBold ? BOLD : "";
+
+    const o = (s: string): string => {
+        if (renderRecord.obfuscated) {
+            return obfuscateChar(s[0], renderRecord.noise) + obfuscateChar(s[1], renderRecord.noise);
+        } else {
+            return s;
+        }
+    }
 
     switch (ssCode) {
         case "§r":
-            wasBold.value = false;
+            renderRecord.wasBold = false;
+            renderRecord.obfuscated = false;
             return preview ? `${RESET}${DIM}§r${RESET}` : `${RESET}`;
         case "§l":
-            wasBold.value = true;
-            return preview ? `${DIM}${BOLD}§l${RESET_BD}${BOLD}` : `${BOLD}`;
+            renderRecord.wasBold = true;
+            return preview ? `${DIM}${BOLD}${o("§l")}${RESET_BD}${BOLD}` : `${BOLD}`;
         case "§o":
-            return preview ? `${DIM}${ITALLIC}§o${RESET_BD}${boldSuffix}` : `${ITALLIC}`;
-        // case "§k": TODO!
+            return preview ? `${DIM}${ITALLIC}${o("§o")}${RESET_BD}${boldSuffix}` : `${ITALLIC}`;
+        case "§k":
+            renderRecord.obfuscated = true;
     }
 
     const colorI = ssColorIndexMap.get(ssCode);
     if (!isEmpty(colorI)) {
         const ansiColor = colorIndex(colorI);
-        return preview ? `${DIM}${ansiColor}${ssCode}${RESET_BD}${boldSuffix}` : ansiColor;
+        return preview ? `${DIM}${ansiColor}${o(ssCode)}${RESET_BD}${boldSuffix}` : ansiColor;
     }
 
-    return preview ? `${DIM}${ssCode}${RESET_BD}${boldSuffix}` : "";
+    return preview ? `${DIM}${o(ssCode)}${RESET_BD}${boldSuffix}` : "";
+}
+
+const obfuscatorSeed = Math.round(Math.random() * 100);
+
+function obfuscateChar(char: string, noise: number): string {
+    const particle = ((char.codePointAt(0) || 0) * 2) + noise + obfuscatorSeed;
+    const transformed = (particle % (0x02b0 - 0x00a1)) + 0x00a1;
+    return String.fromCodePoint(transformed);
+}
+
+function obfuscator(str: string): string {
+    let obfuscated = "";
+    let obfuscate = false;
+
+    for (let i = 0; i < str.length; i++) {
+        const char = str[i];
+        const char2 = str[i + 1] || "";
+
+        if (char === "§") {
+            i++;
+            if (char2 === "k") obfuscate = true;
+            if (char2 === "r") obfuscate = false;
+            obfuscated += char + char2;
+        } else {
+            obfuscated += obfuscate ? obfuscateChar(char, i) : char;
+        }
+    }
+
+    return obfuscated;
 }
 
 export function renderSSCodes(ssStr: string, preview: boolean): string {
-    const wasBold: VRef<boolean> = {
-        value: false,
-    }
+    const record: RenderRecord = {
+        wasBold: false,
+        obfuscated: false,
+        noise: 0,
+    };
 
-    return ssStr.replaceAll(ssCodeRegExp, c => {
-        return ssCodeToAnsi(wasBold, c, preview);
+    return obfuscator(ssStr).replaceAll(ssCodeRegExp, (c, i) => {
+        record.noise = i;
+        return ssCodeToAnsi(record, c, preview);
     });
 }
 
-interface VRef<T> {
-    value: T;
+interface RenderRecord {
+    wasBold: boolean,
+    obfuscated: boolean,
+    noise: number,
 }
