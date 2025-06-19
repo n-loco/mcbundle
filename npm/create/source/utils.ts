@@ -4,3 +4,7 @@ export function isEmpty(value: unknown): value is (null | undefined) {
 
 export type MetaData = typeof MetaData;
 export const MetaData = Symbol(".internal.metadata");
+
+export type Prettify<T> = {
+    [k in keyof T]: T[k];
+} & {};

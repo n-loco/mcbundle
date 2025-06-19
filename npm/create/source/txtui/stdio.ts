@@ -1,7 +1,7 @@
 import { kill, pid, stdin, stdout } from "node:process";
 import readline, { emitKeypressEvents, Key } from "node:readline";
 import { TextNode, TextSpan } from "./text.js";
-import { BEL, BOLD, colorIndex, DIM, EOT, ITALLIC, RESET } from "./ansi.js";
+import { ArrowSequence, BEL, BOLD, colorIndex, CR, DIM, EOT, EREASE_EOE, EREASE_EOL, ITALLIC, LF, RESET } from "./ansi.js";
 import { isEmpty } from "../utils.js";
 import { renderSSCodes } from "./mcsrenderer.js";
 
@@ -26,7 +26,37 @@ namespace StdIO {
         }
     }
 
+    export function lineFeed() {
+        stdout.write(LF);
+    }
+
+    export function ereaseScreen() {
+        stdout.write(EREASE_EOE);
+    }
+
+    export function ereaseLine() {
+        stdout.write(EREASE_EOL);
+    }
+
+    export function moveCursor(X: number, y: number) {
+        stdout.write(ArrowSequence.seq(X, y));
+    }
+
+    export function carriageReturn() {
+        stdout.write(CR);
+    }
+
+    export function verticalReturn(lines: number) {
+        stdout.write(CR + ArrowSequence.seq(0, lines));
+    }
+
+    let stdinLock = false;
     export async function keypress(): Promise<string> {
+        if (stdinLock) {
+            throw new Error("stdin locked");
+        }
+
+        stdinLock = true;
         emitKeypressEvents(stdin);
         stdin.setRawMode(true);
         stdin.resume();
@@ -35,6 +65,7 @@ namespace StdIO {
             stdin.once("keypress", (_: string, key: Key) => {
                 stdin.pause();
                 stdin.setRawMode(false);
+                stdinLock = false;
 
                 if (key.sequence === EOT) {
                     kill(pid, "SIGINT");

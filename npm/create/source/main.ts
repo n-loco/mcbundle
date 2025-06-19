@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { bell, println } from "./txtui/index.js";
+import { bell, boolDialog, checkMenu, println, selectMenu, stringInput } from "./txtui/index.js";
 
 println("Test1");
 
@@ -53,3 +53,58 @@ println([
         ssCodesPreview: true,
     }
 ]);
+
+console.debug(await selectMenu({
+    label: [{ content: "Test9", bold: true }],
+    options: [
+        {
+            normal: "Op 1",
+            highlighted: [
+                { content: "Op 1", bold: true }, " ",
+                { content: "useful hint 1", dim: true },
+            ],
+            choosen: [{ content: "Op 1", color: 0x2bef76 }]
+        },
+        {
+            normal: "Op 2",
+            highlighted: [
+                { content: "Op 2", bold: true }, " ",
+                { content: "useful hint 2", dim: true },
+            ],
+            choosen: [{ content: "Op 2", color: 0x2bef76 }]
+        },
+        {
+            normal: "Op 3",
+            highlighted: [
+                { content: "Op 3", bold: true }, " ",
+                { content: "useful hint 3", dim: true },
+            ],
+            choosen: [{ content: "Op 3", color: 0x2bef76 }]
+        }
+    ],
+}));
+
+console.debug(await checkMenu({
+    label: [{ content: "Test10", bold: true }],
+    options: [
+        {
+            normal: "Data",
+            highlighted: [{ content: "Data", bold: true }],
+            choosen: [{ content: "Data", color: 0x2bef76 }]
+        },
+        {
+            normal: "Server",
+            highlighted: [{ content: "Server", bold: true }],
+            choosen: [{ content: "Server", color: 0x2bef76 }]
+        }
+    ]
+}));
+
+console.debug(await boolDialog({
+    label: [{ content: "Test11", bold: true }]
+}));
+
+console.debug(await stringInput({
+    label: [{ content: "Test12", bold: true }],
+    defaultValue: "Minceraft 2",
+}));
