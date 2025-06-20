@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { bell, boolDialog, checkMenu, println, selectMenu, stringInput } from "./txtui/index.js";
+import { bell, boolDialog, checkMenu, Colors, println, selectMenu, stringInput } from "./txtui/index.js";
 
 println("Test1");
 
@@ -63,7 +63,7 @@ console.debug(await selectMenu({
                 { content: "Op 1", bold: true }, " ",
                 { content: "useful hint 1", dim: true },
             ],
-            choosen: [{ content: "Op 1", color: 0x2bef76 }]
+            choosen: [{ content: "Op 1", color: Colors.TYPE_VALUE }]
         },
         {
             normal: "Op 2",
@@ -71,7 +71,7 @@ console.debug(await selectMenu({
                 { content: "Op 2", bold: true }, " ",
                 { content: "useful hint 2", dim: true },
             ],
-            choosen: [{ content: "Op 2", color: 0x2bef76 }]
+            choosen: [{ content: "Op 2", color: Colors.TYPE_VALUE }]
         },
         {
             normal: "Op 3",
@@ -79,7 +79,7 @@ console.debug(await selectMenu({
                 { content: "Op 3", bold: true }, " ",
                 { content: "useful hint 3", dim: true },
             ],
-            choosen: [{ content: "Op 3", color: 0x2bef76 }]
+            choosen: [{ content: "Op 3", color: Colors.TYPE_VALUE }]
         }
     ],
 }));
@@ -90,12 +90,12 @@ console.debug(await checkMenu({
         {
             normal: "Data",
             highlighted: [{ content: "Data", bold: true }],
-            choosen: [{ content: "Data", color: 0x2bef76 }]
+            choosen: [{ content: "Data", color: Colors.TYPE_VALUE }]
         },
         {
             normal: "Server",
             highlighted: [{ content: "Server", bold: true }],
-            choosen: [{ content: "Server", color: 0x2bef76 }]
+            choosen: [{ content: "Server", color: Colors.TYPE_VALUE }]
         }
     ]
 }));

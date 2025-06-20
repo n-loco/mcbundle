@@ -1,9 +1,11 @@
 import { ArrowSequence, BP, CR, DEL, isControl, SPACE } from "./ansi.js";
+import Colors from "./colors.js";
 import Figures from "./figures.js";
 import StdIO from "./stdio.js";
 import { TextSpan } from "./text.js";
 
 export * from "./text.js";
+export * from "./colors.js";
 
 export function print(str: string | TextSpan) {
     StdIO.write(str);
@@ -192,13 +194,13 @@ export async function boolDialog(opts: BoolDialogOptions): Promise<boolean> {
     const truthy = opts.truthy || {
         normal: "Yes",
         highlighted: [{ content: "Yes", bold: true }],
-        choosen: [{ content: "Yes", color: 0x29a0f5 }]
+        choosen: [{ content: "Yes", color: Colors.BOOL_VALUE }]
     };
 
     const falsy = opts.falsy || {
         normal: "No",
         highlighted: [{ content: "No", bold: true }],
-        choosen: [{ content: "No", color: 0x29a0f5 }]
+        choosen: [{ content: "No", color: Colors.BOOL_VALUE }]
     };
 
     renderLabel({
@@ -379,13 +381,13 @@ function renderLabel(opts: RenderLabelOptions) {
     if (opts.done) {
         StdIO.write([
             " ",
-            { content: Figures.CHECK, color: 0x2bef76, bold: true },
+            { content: Figures.CHECK, color: Colors.PROMPTED, bold: true },
             " ",
         ]);
     } else {
         StdIO.write([
             " ",
-            { content: Figures.QUESTION, color: 0xffef0d, bold: true },
+            { content: Figures.QUESTION, color: Colors.PROMPTING, bold: true },
             " ",
         ]);
     }
