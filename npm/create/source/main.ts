@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cwd } from "node:process";
+import process, { cwd, platform as os } from "node:process";
 import childProcess from "node:child_process";
 import { availableModules, createPackageJSON, createRecipe, createRecipeConfig, createRecipeHeader, createRecipeModule, createTSConfig, displayStrRecipeMod, displayStrRecipeType, gitattributes, gitignoreLines, Language, PackageManager, RecipeModule, RecipeModuleType, RecipeType, serverMainScript } from "./projfiles/index.js";
 import { boolDialog, BoolDialogOptions, checkMenu, CheckMenuOptions, Colors, Selectable, selectMenu, SelectMenuOptions, stringInput, StringInputOptions, TextNode } from "./txtui/index.js";
@@ -32,7 +32,7 @@ const projName = await (async () => {
     const defaultName = path.basename(cwd()).split(/(?:[ _-]|(?<=[a-z])(?=[A-Z]))+/g)
         .map(s => s.slice(0, 1).toUpperCase() + s.slice(1).toLowerCase())
         .join(" ");
-    
+
     const inputOptions: StringInputOptions = {
         label: [{ content: "Project Name", bold: true }],
         defaultValue: defaultName
@@ -140,27 +140,33 @@ if (hasScripting) {
     );
 }
 
+
+const installPkgs = await (async () => {
+    if (pkgMngr === PackageManager.UNKNOWN) return false;
+
+    const dialogOptions: BoolDialogOptions = {
+        label: [{ content: "Install Packages", bold: true }],
+        truthy: {
+            normal: ["Yes ", { content: `(${pkgMngr})`, dim: true }],
+            highlighted: [
+                { content: "Yes ", bold: true },
+                { content: `(${pkgMngr})`, dim: true },
+            ],
+            choosen: [{ content: "Yes", color: Colors.BOOL_VALUE }],
+        },
+        defaultValue: true,
+    };
+
+    return await boolDialog(dialogOptions);
+})();
+
+
 writeFS(projTree);
 
-if (pkgMngr !== PackageManager.UNKNOWN) {
-    const installPkgs = await (async () => {
-        const dialogOptions: BoolDialogOptions = {
-            label: [{ content: "Install Packages", bold: true }],
-            truthy: {
-                normal: ["Yes ", { content: `(${pkgMngr})`, dim: true }],
-                highlighted: [
-                    { content: "Yes ", bold: true },
-                    { content: `(${pkgMngr})`, dim: true },
-                ],
-                choosen: [{ content: "Yes", color: Colors.BOOL_VALUE }],
-            },
-            defaultValue: true,
-        };
-
-        return await boolDialog(dialogOptions);
-    })();
-
-    if (installPkgs) {
-        childProcess.spawnSync(pkgMngr, ["install"], { stdio: "inherit" });
-    }
+if (installPkgs) {
+    console.debug(pkgMngr, "install");
+    childProcess.spawn(pkgMngr, ["install"], { stdio: "inherit", shell: true })
+        .on("exit", c => {
+            process.exitCode = c || 0;
+        });
 }
