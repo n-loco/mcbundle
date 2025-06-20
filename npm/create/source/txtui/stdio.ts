@@ -1,7 +1,7 @@
 import { kill, pid, stdin, stdout } from "node:process";
-import readline, { emitKeypressEvents, Key } from "node:readline";
+import { emitKeypressEvents, Key } from "node:readline";
 import { TextNode, TextSpan } from "./text.js";
-import { ArrowSequence, BEL, BOLD, colorIndex, CR, DIM, EOT, EREASE_EOE, EREASE_EOL, ITALLIC, LF, RESET } from "./ansi.js";
+import { ArrowSequence, BEL, bgColorSequence, BOLD, colorSequence, CR, DIM, EOT, EREASE_EOE, EREASE_EOL, ITALLIC, LF, RESET } from "./ansi.js";
 import { isEmpty } from "../utils.js";
 import { renderSSCodes } from "./mcsrenderer.js";
 
@@ -38,8 +38,8 @@ namespace StdIO {
         stdout.write(EREASE_EOL);
     }
 
-    export function moveCursor(X: number, y: number) {
-        stdout.write(ArrowSequence.seq(X, y));
+    export function moveCursor(x: number, y: number) {
+        stdout.write(ArrowSequence.seq(x, y));
     }
 
     export function carriageReturn() {
@@ -91,12 +91,12 @@ function renderTextNode(node: TextNode): string {
     let hasStyle = false;
 
     if (!isEmpty(node.color)) {
-        text = colorIndex(node.color) + text;
+        text = colorSequence(node.color, node.dim) + text;
         hasStyle = true;
     }
 
     if (!isEmpty(node.backgroundColor)) {
-        text = colorIndex(node.backgroundColor, true) + text;
+        text = bgColorSequence(node.backgroundColor) + text;
         hasStyle = true;
     }
 
@@ -105,7 +105,7 @@ function renderTextNode(node: TextNode): string {
         hasStyle = true;
     }
 
-    if (node.dim) {
+    if (node.dim && isEmpty(node.color)) {
         text = DIM + text;
         hasStyle = true;
     }

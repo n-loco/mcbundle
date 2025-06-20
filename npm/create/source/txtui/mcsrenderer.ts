@@ -1,7 +1,5 @@
 import { isEmpty } from "../utils.js";
-import { BOLD, colorIndex, DIM, ITALLIC, RESET_BD, RESET } from "./ansi.js";
-
-const ssCodeRegExp = /§./g;
+import { BOLD, DIM, ITALLIC, RESET_BD, RESET, colorSequence } from "./ansi.js";
 
 const ssColorIndexMap = new Map<string, number>([
     ["§0", 0x000000],
@@ -35,11 +33,20 @@ const ssColorIndexMap = new Map<string, number>([
 ]);
 
 function ssCodeToAnsi(renderRecord: RenderRecord, ssCode: string, preview: boolean): string {
-    const boldSuffix = renderRecord.wasBold ? BOLD : "";
+    const restoreSuffix = renderRecord.prevColor > -1
+        ? colorSequence(renderRecord.prevColor, false)
+        : renderRecord.wasBold
+            ? `${RESET_BD}${BOLD}`
+            : RESET_BD;
+
+    const dimPrefix = renderRecord.prevColor > -1
+        ? colorSequence(renderRecord.prevColor, true)
+        : DIM;
 
     const o = (s: string): string => {
         if (renderRecord.obfuscated) {
-            return obfuscateChar(s[0], renderRecord.noise) + obfuscateChar(s[1], renderRecord.noise);
+            return obfuscateChar(s[0], renderRecord.obfuscationNoise) +
+                obfuscateChar(s[1], renderRecord.obfuscationNoise + 1);
         } else {
             return s;
         }
@@ -49,23 +56,36 @@ function ssCodeToAnsi(renderRecord: RenderRecord, ssCode: string, preview: boole
         case "§r":
             renderRecord.wasBold = false;
             renderRecord.obfuscated = false;
-            return preview ? `${RESET}${DIM}§r${RESET}` : `${RESET}`;
+            renderRecord.prevColor = -1;
+            return preview ? `${RESET}${DIM}§r${RESET}` : RESET;
         case "§l":
-            renderRecord.wasBold = true;
-            return preview ? `${DIM}${BOLD}${o("§l")}${RESET_BD}${BOLD}` : `${BOLD}`;
+            {
+                let ssprev = `${dimPrefix}${BOLD}${o("§l")}`;
+                if (renderRecord.prevColor > -1) {
+                    ssprev += colorSequence(renderRecord.prevColor);
+                } else {
+                    ssprev += `${RESET_BD}${BOLD}`;
+                }
+                renderRecord.wasBold = true;
+                return preview
+                    ? ssprev
+                    : BOLD;
+            }
         case "§o":
-            return preview ? `${DIM}${ITALLIC}${o("§o")}${RESET_BD}${boldSuffix}` : `${ITALLIC}`;
+            return preview ? `${dimPrefix}${ITALLIC}${o("§o")}${restoreSuffix}` : ITALLIC;
         case "§k":
             renderRecord.obfuscated = true;
     }
 
     const colorI = ssColorIndexMap.get(ssCode);
     if (!isEmpty(colorI)) {
-        const ansiColor = colorIndex(colorI);
-        return preview ? `${DIM}${ansiColor}${o(ssCode)}${RESET_BD}${boldSuffix}` : ansiColor;
+        renderRecord.prevColor = colorI;
+        const ansiColor = colorSequence(colorI);
+        const dimAnsiColor = colorSequence(colorI, true);
+        return preview ? `${dimAnsiColor}${o(ssCode)}${ansiColor}` : ansiColor;
     }
 
-    return preview ? `${DIM}${o(ssCode)}${RESET_BD}${boldSuffix}` : "";
+    return preview ? `${dimPrefix}${o(ssCode)}${restoreSuffix}` : "";
 }
 
 const obfuscatorSeed = Math.round(Math.random() * 100);
@@ -82,9 +102,9 @@ function obfuscator(str: string): string {
 
     for (let i = 0; i < str.length; i++) {
         const char = str[i];
-        const char2 = str[i + 1] || "";
+        const char2 = str[i + 1];
 
-        if (char === "§") {
+        if (char === "§" && char2 != undefined) {
             i++;
             if (char2 === "k") obfuscate = true;
             if (char2 === "r") obfuscate = false;
@@ -101,11 +121,12 @@ export function renderSSCodes(ssStr: string, preview: boolean): string {
     const record: RenderRecord = {
         wasBold: false,
         obfuscated: false,
-        noise: 0,
+        obfuscationNoise: 0,
+        prevColor: -1,
     };
 
-    return obfuscator(ssStr).replaceAll(ssCodeRegExp, (c, i) => {
-        record.noise = i;
+    return obfuscator(ssStr).replaceAll(/§./g, (c, i) => {
+        record.obfuscationNoise = i;
         return ssCodeToAnsi(record, c, preview);
     });
 }
@@ -113,5 +134,6 @@ export function renderSSCodes(ssStr: string, preview: boolean): string {
 interface RenderRecord {
     wasBold: boolean,
     obfuscated: boolean,
-    noise: number,
+    obfuscationNoise: number,
+    prevColor: number
 }

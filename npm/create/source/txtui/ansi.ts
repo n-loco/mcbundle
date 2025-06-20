@@ -5,6 +5,7 @@ export const LF = "\n";
 export const ESC = "\x1b";
 export const SPACE = " ";
 export const BP = "\x08";
+export const DEL = "\x7f";
 
 export const RESET = `${ESC}[0m`;
 export const RESET_BD = `${ESC}[22m`;
@@ -50,22 +51,29 @@ export namespace ArrowSequence {
     }
 }
 
-export function colorRGB(r: number, g: number, b: number, bg = false): string {
-    const red = `${Math.round(r)}`;
-    const green = `${Math.round(g)}`;
-    const blue = `${Math.round(b)}`;
-
-    const space = bg ? "48" : "38";
-
-    return `${ESC}[${space};2;${red};${green};${blue}m`
-}
-
-export function colorIndex(color: number, bg = false): string {
-    color = Math.round(color);
-
+function commaRGB(color: number, fakeDim = false): string {
     const red = (color & 0xff0000) >> 16;
     const green = (color & 0x00ff00) >> 8;
     const blue = color & 0x0000ff;
 
-    return colorRGB(red, green, blue, bg);
+    if (fakeDim) {
+        return `2;${Math.floor(red / 2)};${Math.floor(green / 2)};${Math.floor(blue / 2)}`;
+    }
+
+    return `2;${red};${green};${blue}`;
+}
+
+export function colorSequence(color: number, fakeDim = false) {
+    return `${ESC}[38;${commaRGB(color, fakeDim)}m`;
+}
+
+export function bgColorSequence(color: number) {
+    return `${ESC}[48;${commaRGB(color)}m`;
+}
+
+export function isControl(char: string) {
+    const fCodePoint = char.codePointAt(0) || 0;
+    if (0 <= fCodePoint && fCodePoint <= 0x1f) return true
+    if (fCodePoint === 0x7f) return true;
+    return false;
 }

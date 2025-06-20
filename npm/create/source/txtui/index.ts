@@ -1,4 +1,4 @@
-import { ArrowSequence, BP, CR, SPACE } from "./ansi.js";
+import { ArrowSequence, BP, CR, DEL, isControl, SPACE } from "./ansi.js";
 import Figures from "./figures.js";
 import StdIO from "./stdio.js";
 import { TextSpan } from "./text.js";
@@ -70,7 +70,7 @@ export async function selectMenu(opts: SelectMenuOptions): Promise<number> {
             continue;
         }
 
-        let [_, y] = move;
+        const y = move[1];
         choice = (choice - y + opts.options.length) % opts.options.length;
         StdIO.verticalReturn(opts.options.length);
         renderOptions();
@@ -146,7 +146,7 @@ export async function checkMenu(opts: CheckMenuOptions): Promise<boolean[]> {
             continue;
         }
 
-        let [_, y] = move;
+        const y = move[1];
         pointer = (pointer - y + opts.options.length) % opts.options.length;
         StdIO.verticalReturn(opts.options.length);
         renderOptions();
@@ -248,7 +248,7 @@ export async function boolDialog(opts: BoolDialogOptions): Promise<boolean> {
             continue;
         }
 
-        let [x, _] = move;
+        const x = move[0];
         choice = Boolean((Number(choice) + x + 2) % 2);
 
         renderOptions();
@@ -278,6 +278,7 @@ export interface StringInputOptions {
 
 export async function stringInput(opts: StringInputOptions): Promise<string> {
     let strInput = "";
+    let cursor = 0;
 
     renderLabel({
         label: opts.label,
@@ -295,8 +296,9 @@ export async function stringInput(opts: StringInputOptions): Promise<string> {
             StdIO.moveCursor(-opts.defaultValue.length, 0);
         } else if (strInput.length > 0) {
             StdIO.write([{ content: strInput, useMCSSCodes: true, ssCodesPreview: true }]);
+            StdIO.moveCursor(-(strInput.length - cursor), 0);
         }
-    }
+    };
 
     renderStr();
 
@@ -305,24 +307,48 @@ export async function stringInput(opts: StringInputOptions): Promise<string> {
         if (key === CR) break;
 
         const move = ArrowSequence.vec(key);
-        if (move !== null && move[0] === 0) {
-            StdIO.bell();
-            continue;
-        } else if (move !== null) {
+        if (move !== null) {
+            if (move[0] === 0) {
+                StdIO.bell();
+            }
+            const movedCursor = cursor + move[0];
+            if (0 > movedCursor || movedCursor > strInput.length) {
+                StdIO.bell()
+            } else {
+                cursor = movedCursor;
+                StdIO.moveCursor(move[0], 0);
+            }
             continue;
         }
 
-        if (key === BP) {
-            if (strInput.length > 0) {
-                strInput = strInput.slice(0, strInput.length - 1);
+        if (key === BP || key === DEL) {
+            if (cursor > 0) {
+                strInput = strInput.slice(0, cursor - 1) + strInput.slice(cursor);
+                cursor--;
+                renderStr();
             } else {
                 StdIO.bell();
             }
-        } else {
-            strInput += key;
+            continue;
         }
+        
+        if (isControl(key)) {
+            StdIO.bell();
+        } else {
+            strInput = strInput.slice(0, cursor) + key + strInput.slice(cursor);
+            cursor++;
+            renderStr();
+        }
+    }
 
-        renderStr();
+    if (strInput.length > 0) {
+        const ssCodes = strInput.match(/§[0-9a-v]/g);
+        if (ssCodes != null) {
+            let isNotR = ssCodes[ssCodes.length - 1] !== "§r";
+            if (isNotR) {
+                strInput += "§r";
+            }
+        }
     }
 
     if (opts.defaultValue && strInput.length === 0) {
