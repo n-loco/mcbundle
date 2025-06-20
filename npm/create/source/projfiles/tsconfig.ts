@@ -3,6 +3,7 @@ export interface CompilerOptions {
     module: string,
     moduleResolution: string,
     strict: boolean,
+    allowJs: boolean,
 }
 
 export interface TSConfig {
@@ -16,6 +17,7 @@ export function createTSConfig(): TSConfig {
             module: "NodeNext",
             moduleResolution: "nodenext",
             strict: true,
+            allowJs: true,
         },
     }
 }

@@ -49,7 +49,7 @@ export function createPackageJSON(recipe: Recipe): PackageJSON {
         scripts: {
             "build": "mcbundle build",
             "dev": "mcbundle dev",
-            "dist": "mcbundle dist",
+            "dist": "mcbundle pack",
         },
         [MetaData]: {
             packageManaer: pmName,

@@ -3,7 +3,7 @@ import { MetaData } from "../utils.js";
 export const enum RecipeType {
     BEHAVIOR_PACK = "behavior_pack",
     RESOURCE_PACK = "resource_pack",
-    ADDON = "addon",
+    ADD_ON = "addon",
 }
 
 export const enum RecipeModuleType {
@@ -51,7 +51,7 @@ export function availableModules(recipeType: RecipeType): RecipeModuleType[] {
             return [
                 RecipeModuleType.RESOURCES,
             ];
-        case RecipeType.ADDON:
+        case RecipeType.ADD_ON:
             return [
                 RecipeModuleType.RESOURCES,
                 RecipeModuleType.DATA,
@@ -66,7 +66,7 @@ export function displayStrRecipeType(recipeType: RecipeType): string {
             return "Behavior Pack";
         case RecipeType.RESOURCE_PACK:
             return "Resource Pack";
-        case RecipeType.ADDON:
+        case RecipeType.ADD_ON:
             return "Add-On";
     }
 }
@@ -90,7 +90,7 @@ export function createRecipeConfig(recipeType: RecipeType): RecipeConfig {
 }
 
 export function createRecipeHeader(config: RecipeConfig, name: string): RecipeHeader {
-    const isAddon = config.type === RecipeType.ADDON;
+    const isAddon = config.type === RecipeType.ADD_ON;
     return {
         name,
         version: "0.1.0",
