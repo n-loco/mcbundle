@@ -23,3 +23,9 @@ func (vars *variables) get(varName string) string {
 func (vars *variables) set(varName string, value string) {
 	vars.intern[varName] = value
 }
+
+func (vars *variables) apply(s string) string {
+	return templateRegExp.ReplaceAllStringFunc(s, func(p string) string {
+		return vars.get(p[2 : len(p)-2])
+	})
+}

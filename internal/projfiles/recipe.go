@@ -35,26 +35,12 @@ func (recipe *Recipe) Load(reader io.Reader) (err error) {
 	if err != nil {
 		return
 	}
-
-	var vars = variables{intern: make(map[string]string)}
-
-	vars.set("name", ssCodeRegExp.ReplaceAllString(recipeContent.Header.Name, ""))
-	vars.set("raw_name", recipeContent.Header.Name)
-	vars.set("dir_name", strings.ReplaceAll(recipeContent.Header.Name, " ", ""))
-	vars.set("short_name",
-		strings.ToLower(strings.ReplaceAll(
-			ssCodeRegExp.ReplaceAllString(recipeContent.Header.Name, ""),
-			" ", "-",
-		)),
-	)
-	vars.set("version", recipeContent.Header.Version.String())
+	err = validateRecipe(&recipeContent)
+	if err != nil {
+		return
+	}
 
 	recipe.Type = recipeContent.Config.Type
-	recipe.Artifact = templateRegExp.ReplaceAllStringFunc(
-		recipeContent.Config.Artifact,
-		func(value string) string {
-			return vars.get(value[2 : len(value)-2])
-		})
 
 	recipe.Name = recipeContent.Header.Name
 	recipe.Version = recipeContent.Header.Version
@@ -65,6 +51,21 @@ func (recipe *Recipe) Load(reader io.Reader) (err error) {
 
 	recipe.Authors = recipeContent.Meta.Authors
 	recipe.License = recipeContent.Meta.License
+
+	var vars = variables{make(map[string]string)}
+
+	vars.set("name", ssCodeRegExp.ReplaceAllString(recipeContent.Header.Name, ""))
+	vars.set("raw_name", recipeContent.Header.Name)
+	vars.set("dir_name", recipe.DirName())
+	vars.set("short_name",
+		strings.ToLower(strings.ReplaceAll(
+			ssCodeRegExp.ReplaceAllString(recipeContent.Header.Name, ""),
+			" ", "-",
+		)),
+	)
+	vars.set("version", recipeContent.Header.Version.String())
+
+	recipe.Artifact = vars.apply(recipeContent.Config.Artifact)
 
 	return
 }
@@ -183,6 +184,18 @@ func (recipeType RecipeType) PackType() PackType {
 		panic("RecipeTypeAddon value cannot have a single PackType")
 	}
 	panic("unknown RecipeType value")
+}
+
+func (recipeType RecipeType) AcceptsModuleType(mT ModuleType) bool {
+	if recipeType == RecipeTypeAddOn {
+		return ((PackTypeBehavior | PackTypeResources) & mT.BelongsTo()) > 0
+	} else {
+		return recipeType.PackType() == mT.BelongsTo()
+	}
+}
+
+func (recipeType RecipeType) AcceptsModule(m *Module) bool {
+	return recipeType.AcceptsModuleType(m.Type)
 }
 
 // type RecipeType

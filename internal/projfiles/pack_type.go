@@ -3,7 +3,7 @@ package projfiles
 type PackType byte
 
 const (
-	PackTypeBehavior PackType = iota + 1
+	PackTypeBehavior PackType = 1 << iota
 	PackTypeResources
 )
 
