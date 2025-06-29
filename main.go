@@ -15,6 +15,6 @@ func main() {
 	txtui.ShowDiagnostic(diagnostic)
 
 	if diagnostic.HasErrors() {
-		os.Exit(-1)
+		os.Exit(125)
 	}
 }

@@ -1,70 +1,61 @@
 package cli
 
 import (
+	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/operations"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 )
 
-type buildOptsObj struct {
-	release bool
+func buildCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
+	var recipe = projctx.CreateProjectContext(projctx.EnvRequireFlagRecipe, diagnostic)
+
+	var isRelease = false
+
+	if argv.hasNext() {
+		var arg = argv.consume()
+
+		if arg == "--release" {
+			isRelease = true
+		} else {
+			diagnostic.AppendWarning(alert.AlertF("unknown option: %s", arg))
+		}
+	}
+
+	if diagnostic.HasErrors() {
+		return
+	}
+
+	operations.BuildProject(&recipe, isRelease)
 }
 
-type packOptsObj struct {
-	debug bool
+func devCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
+	var recipe = projctx.CreateProjectContext(projctx.EnvRequireFlagRecipe|projctx.EnvRequireFlagComMojang, diagnostic)
+
+	if diagnostic.HasErrors() {
+		return
+	}
+
+	operations.CopyToDev(&recipe)
 }
 
-var buildCmd = createOperationCommand(
-	commandInfo{
-		name: "build",
-		doc:  "...",
-	},
-	projctx.EnvRequireFlagRecipe,
-	func(obj *buildOptsObj, projCtx *projctx.ProjectContext) {
-		operations.BuildProject(projCtx, obj.release)
-	},
-	[]*operationOption[buildOptsObj]{
-		{
-			optionInfo: optionInfo{
-				name: "--release",
-			},
-			process: func(o *buildOptsObj, optSlice []string) int {
-				o.release = true
-				return 0
-			},
-		},
-	},
-)
+func packCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
+	var recipe = projctx.CreateProjectContext(projctx.EnvRequireFlagRecipe, diagnostic)
 
-var devCmd = createOperationCommand(
-	commandInfo{
-		name: "dev",
-		doc:  "...",
-	},
-	projctx.EnvRequireFlagRecipe|projctx.EnvRequireFlagComMojang,
-	func(obj *empty, projCtx *projctx.ProjectContext) {
-		operations.CopyToDev(projCtx)
-	},
-	nil,
-)
+	var isDebug = false
 
-var packCmd = createOperationCommand(
-	commandInfo{
-		name: "pack",
-		doc:  "...",
-	},
-	projctx.EnvRequireFlagRecipe,
-	func(obj *packOptsObj, projCtx *projctx.ProjectContext) {
-		operations.PackProject(projCtx, obj.debug)
-	},
-	[]*operationOption[packOptsObj]{
-		{
-			optionInfo: optionInfo{
-				name: "--debug",
-			},
-			process: func(o *packOptsObj, optSlice []string) int {
-				o.debug = true
-				return 0
-			},
-		},
-	},
-)
+	if argv.hasNext() {
+		var arg = argv.consume()
+
+		if arg == "--debug" {
+			isDebug = true
+		} else {
+			diagnostic.AppendWarning(alert.AlertF("unknown option: %s", arg))
+		}
+	}
+
+	if diagnostic.HasErrors() {
+		return
+	}
+
+	operations.PackProject(&recipe, isDebug)
+}

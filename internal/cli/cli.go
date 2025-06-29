@@ -1,80 +1,49 @@
 package cli
 
 import (
-	"os"
-
 	"github.com/mcbundle/mcbundle/internal/alert"
-	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
-type UnknownCommandErrorAlert struct {
-	CommandName string
-}
+type entryCommand = func(*argvIterator, alert.Diagnostic)
 
-func (errAlert UnknownCommandErrorAlert) Display() alert.AlertDisplay {
-	return alert.AlertDisplay{
-		Message: "unknown command: " + errAlert.CommandName,
-		Tip:     "use " + txtui.EscapeItalic + "mcbundle help" + txtui.EscapeReset + " to see a list of commands",
-	}
-}
+var entryCommands = map[string]entryCommand{
+	// build command
+	"build":  buildCmd,
+	"bundle": buildCmd,
 
-var cmdMap = map[string]command{}
-var cmdList = []command{}
+	// dev command
+	"dev":          devCmd,
+	"local-deploy": devCmd,
 
-func registerCommand(cmd command) {
-	cmdInfo := cmd.info()
-	cmdList = append(cmdList, cmd)
-	cmdMap[cmdInfo.name] = cmd
-	for _, alias := range cmdInfo.aliases {
-		cmdMap[alias] = cmd
-	}
-}
+	// pack command
+	"pack": packCmd,
+	"dist": packCmd,
 
-func setupCommands() {
-	registerCommand(&devCmd)
-	registerCommand(&packCmd)
-	registerCommand(&buildCmd)
-	registerCommand(&versionCmd)
+	// help command
+	"help":   helpCmd,
+	"--help": helpCmd,
+	"-h":     helpCmd,
+	"/?":     helpCmd,
 
-	// special case
-	registerCommand(&helpCmd)
-	cmdMap["-?"] = &helpCmd
-	cmdMap["/?"] = &helpCmd
-	cmdMap["h"] = &helpCmd
-}
-
-func getCommand(diagnostic alert.Diagnostic) (cmd command) {
-	if len(os.Args) < 2 {
-		cmd = &helpCmd
-		return
-	}
-
-	var cmdName = os.Args[1]
-	var cmdExists bool
-
-	cmd, cmdExists = cmdMap[cmdName]
-
-	if !cmdExists {
-		diagnostic.AppendError(&UnknownCommandErrorAlert{CommandName: cmdName})
-	}
-
-	return
+	// version command
+	"version":   versionCmd,
+	"--version": versionCmd,
+	"-v":        versionCmd,
 }
 
 func Entry(diagnostic alert.Diagnostic) {
-	setupCommands()
+	var argv = newArgvIterator()
 
-	var cmd = getCommand(diagnostic)
+	if argv.hasNext() {
+		var arg = argv.consume()
 
-	if diagnostic.HasErrors() {
-		return
+		var funcCmd, has = entryCommands[arg]
+		if has {
+			funcCmd(argv, diagnostic)
+		} else {
+			diagnostic.AppendError(alert.AlertF("unknown command: %s", arg))
+		}
+	} else {
+		helpCmd(argv, diagnostic)
 	}
-
-	var optSlice []string
-
-	if len(os.Args) > 2 {
-		optSlice = os.Args[2:]
-	}
-
-	cmd.execute(optSlice, diagnostic)
 }

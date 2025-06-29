@@ -1,105 +1,39 @@
 package cli
 
 import (
-	"fmt"
-	"slices"
-	"strings"
-
 	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/assets"
 	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
-type versionCommand empty
-
-var versionCmd = versionCommand{}
-
-var versionCmdInfo = commandInfo{
-	name:    "version",
-	aliases: []string{"--version", "-v"},
-	doc:     "...",
-}
-
-func (cmd versionCommand) info() *commandInfo {
-	return &versionCmdInfo
-}
-
-func (cmd versionCommand) execute([]string, alert.Diagnostic) {
+func versionCmd(*argvIterator, alert.Diagnostic) {
 	txtui.Printf(txtui.UIPartOut, "%s\n", assets.ProgramVersion)
 }
 
-type helpCommand empty
+const wikiURL = "https://github.com/n-loco/mcbundle/wiki"
 
-var helpCmd = helpCommand{}
-
-var helpCmdInfo = commandInfo{
-	name:    "help",
-	aliases: []string{"--help", "-h"},
-	doc:     "...",
-}
-
-func (cmd helpCommand) info() *commandInfo {
-	return &helpCmdInfo
-}
-
-func (cmd helpCommand) execute([]string, alert.Diagnostic) {
-	txtui.Print(txtui.UIPartOut, "Usage: "+txtui.EscapeItalic+"mcbundle [command] <options>"+txtui.EscapeReset+"\n\n")
-	txtui.Print(txtui.UIPartOut, "Commands:\n")
-
-	for i, cmd := range cmdList {
-		printCommandDoc(cmd)
-		if i < len(cmdList)-1 {
-			txtui.Print(txtui.UIPartOut, "\n")
-		}
-	}
-}
-
-func printCommandDoc(cmdDefs command) {
-	cmdInfo := cmdDefs.info()
-	name := cmdInfo.name
-	aliases := cmdInfo.aliases
-	tDoc := cmdInfo.doc
-
-	names := strings.Join(slices.Concat([]string{name}, aliases), ", ")
-	names = fmt.Sprintf("  %-28s", names)
-
-	docLines := breakDocInLines(tDoc)
-
-	for i, docLine := range docLines {
-		if i == 0 {
-			txtui.Printf(txtui.UIPartOut, "%s  %-35s\n", names, docLine)
+func helpCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
+	if argv.hasNext() {
+		var flag = argv.consume()
+		if flag == "--browser" {
+			open(wikiURL)
+			return
 		} else {
-			txtui.Printf(txtui.UIPartOut, "%30s  %-35s\n", "", docLine)
-		}
-	}
-}
-
-func breakDocInLines(docStr string) []string {
-	var lines []string
-
-	words := strings.Split(docStr, " ")
-
-	newLine := ""
-	for _, word := range words {
-		var testLine string
-
-		if len(newLine) == 0 {
-			testLine = word
-		} else {
-			testLine = strings.Join([]string{newLine, word}, " ")
-		}
-
-		if len(testLine) > 35 {
-			lines = append(lines, newLine)
-			newLine = word
-		} else {
-			newLine = testLine
+			diagnostic.AppendWarning(alert.AlertF("unknown option: %s", flag))
 		}
 	}
 
-	if len(newLine) > 0 {
-		lines = append(lines, newLine)
-	}
+	txtui.Print(txtui.UIPartOut, "Usage: mcbundle [command] <options>\n")
+	txtui.Print(txtui.UIPartOut, `
+Commands:
+    build, bundle              Build the project.
+    dev, local-deploy          Copy the built project to com.mojang.
+    pack, dist                 Package the project as a .mcaddon or .mcpack.
+    help, --help, -h           Show this help message.
+    version, --version, -v     Show the current version.
 
-	return lines
+`,
+	)
+	txtui.Printf(txtui.UIPartOut, "For more information, visit: %s\n", wikiURL)
+	txtui.Print(txtui.UIPartOut, "Or run: mcbundle help --browser\n")
 }
