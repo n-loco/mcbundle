@@ -1,12 +1,16 @@
 //go:build windows
 
-package cli
+package sysi
 
 import (
 	"golang.org/x/sys/windows"
 )
 
-func open(uri string) (err error) {
+func HasOpenSupport() bool {
+	return true
+}
+
+func Open(uri string) (err error) {
 	var wuri *uint16
 
 	wuri, err = windows.UTF16PtrFromString(uri)

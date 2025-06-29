@@ -3,6 +3,7 @@ package cli
 import (
 	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/assets"
+	"github.com/mcbundle/mcbundle/internal/sysi"
 	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
@@ -14,12 +15,16 @@ const wikiURL = "https://github.com/n-loco/mcbundle/wiki"
 
 func helpCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
 	if argv.hasNext() {
-		var flag = argv.consume()
-		if flag == "--browser" {
-			open(wikiURL)
+		var option = argv.consume()
+		if option == "--browser" {
+			if sysi.HasOpenSupport() {
+				sysi.Open(wikiURL)
+			} else {
+				diagnostic.AppendError(alert.AlertF("unsupported option: %s", option))
+			}
 			return
 		} else {
-			diagnostic.AppendWarning(alert.AlertF("unknown option: %s", flag))
+			diagnostic.AppendWarning(alert.AlertF("unknown option: %s", option))
 		}
 	}
 
@@ -35,5 +40,7 @@ Commands:
 `,
 	)
 	txtui.Printf(txtui.UIPartOut, "For more information, visit: %s\n", wikiURL)
-	txtui.Print(txtui.UIPartOut, "Or run: mcbundle help --browser\n")
+	if sysi.HasOpenSupport() {
+		txtui.Print(txtui.UIPartOut, "Or run: mcbundle help --browser\n")
+	}
 }

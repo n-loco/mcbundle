@@ -1,10 +1,14 @@
 //go:build darwin
 
-package cli
+package sysi
 
 import "os/exec"
 
-func open(uri string) (err error) {
+func HasOpenSupport() bool {
+	return true
+}
+
+func Open(uri string) (err error) {
 	var cmd = exec.Command("open", uri)
 
 	err = cmd.Start()
