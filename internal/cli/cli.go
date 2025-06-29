@@ -11,12 +11,11 @@ type UnknownCommandErrorAlert struct {
 	CommandName string
 }
 
-func (errAlert UnknownCommandErrorAlert) Display() string {
-	return "unknown command: " + errAlert.CommandName
-}
-
-func (errAlert UnknownCommandErrorAlert) Tip() string {
-	return "use " + txtui.EscapeItalic + "mcbundle help" + txtui.EscapeReset + " to see a list of commands"
+func (errAlert UnknownCommandErrorAlert) Display() alert.AlertDisplay {
+	return alert.AlertDisplay{
+		Message: "unknown command: " + errAlert.CommandName,
+		Tip:     "use " + txtui.EscapeItalic + "mcbundle help" + txtui.EscapeReset + " to see a list of commands",
+	}
 }
 
 var cmdMap = map[string]command{}
@@ -44,28 +43,29 @@ func setupCommands() {
 	cmdMap["h"] = &helpCmd
 }
 
-func getCommand() (cmd command, diagnostic *alert.Diagnostic) {
+func getCommand(diagnostic alert.Diagnostic) (cmd command) {
 	if len(os.Args) < 2 {
 		cmd = &helpCmd
 		return
 	}
 
-	cmdName := os.Args[1]
-	cmd, exists := cmdMap[cmdName]
+	var cmdName = os.Args[1]
+	var cmdExists bool
 
-	if !exists {
-		diagnostic = diagnostic.AppendError(&UnknownCommandErrorAlert{CommandName: cmdName})
+	cmd, cmdExists = cmdMap[cmdName]
+
+	if !cmdExists {
+		diagnostic.AppendError(&UnknownCommandErrorAlert{CommandName: cmdName})
 	}
 
 	return
 }
 
-func Entry() (diagnostic *alert.Diagnostic) {
+func Entry(diagnostic alert.Diagnostic) {
 	setupCommands()
 
-	cmd, getCmdDiag := getCommand()
+	var cmd = getCommand(diagnostic)
 
-	diagnostic = diagnostic.Append(getCmdDiag)
 	if diagnostic.HasErrors() {
 		return
 	}
@@ -76,7 +76,5 @@ func Entry() (diagnostic *alert.Diagnostic) {
 		optSlice = os.Args[2:]
 	}
 
-	diagnostic = diagnostic.Append(cmd.execute(optSlice))
-
-	return
+	cmd.execute(optSlice, diagnostic)
 }

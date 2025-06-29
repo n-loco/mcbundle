@@ -12,7 +12,7 @@ var (
 	tipPrefix  = EscapeBold + EscapeColorRaw(0x864aba, false) + "[ + TIP ]:" + EscapeReset
 )
 
-func ShowDiagnostic(diagnostic *alert.Diagnostic) {
+func ShowDiagnostic(diagnostic alert.Diagnostic) {
 	if diagnostic.IsZero() {
 		return
 	}
@@ -37,11 +37,13 @@ func ShowDiagnostic(diagnostic *alert.Diagnostic) {
 
 func showDiagnosticList(prefix string, alerts []alert.Alert) {
 	for _, alert := range alerts {
+		var display = alert.Display()
+
 		errUIPart.ansiAwareWrite(prefix)
 		errUIPart.WriteString(" ")
-		errUIPart.ansiAwareWrite(alert.Display())
+		errUIPart.ansiAwareWrite(display.Message)
 
-		if tip := alert.Tip(); len(tip) > 0 {
+		if tip := display.Tip; len(tip) > 0 {
 			errUIPart.WriteString("\n")
 			errUIPart.ansiAwareWrite(tipPrefix)
 			errUIPart.WriteString(" ")

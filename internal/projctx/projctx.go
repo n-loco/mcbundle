@@ -17,6 +17,7 @@ const (
 )
 
 type ProjectContext struct {
+	Diagnostic   alert.Diagnostic
 	Recipe       projfiles.Recipe
 	PackIcon     []byte
 	ComMojangDir string
@@ -29,15 +30,16 @@ func (projCtx *ProjectContext) Rel(path string) (string, error) {
 	return filepath.Rel(projCtx.WorkDir, path)
 }
 
-func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext, diagnostic *alert.Diagnostic) {
+func CreateProjectContext(flags EnvRequireFlags, diagnostic alert.Diagnostic) (projCtx ProjectContext) {
 	var needsRecipe = (flags & EnvRequireFlagRecipe) > 0
 	var needsComMojangPath = (flags & EnvRequireFlagComMojang) > 0
 
-	projCtx.PackIcon, diagnostic = getPackIcon()
+	projCtx.Diagnostic = diagnostic
+	projCtx.PackIcon = getPackIcon(diagnostic)
 
 	workDir, getwdErr := os.Getwd()
 	if getwdErr != nil {
-		diagnostic = diagnostic.AppendError(alert.WrappGoError(getwdErr))
+		diagnostic.AppendError(alert.WrappGoError(getwdErr))
 		return
 	}
 
@@ -54,22 +56,21 @@ func CreateProjectContext(flags EnvRequireFlags) (projCtx ProjectContext, diagno
 		}
 
 		if err != nil {
-			diagnostic = diagnostic.Append(diagnostic.AppendError(alert.WrappGoError(err)))
+			diagnostic.AppendError(alert.WrappGoError(err))
 		}
 	}
 
-	diagnostic = diagnostic.Append(warnComMojangPath(!needsComMojangPath))
+	warnComMojangPath(!needsComMojangPath, diagnostic)
 	if needsComMojangPath {
-		dir, comMojangDiag := comMojangPath()
+		var dir = comMojangPath(diagnostic)
 
 		projCtx.ComMojangDir = dir
-		diagnostic = diagnostic.Append(comMojangDiag)
 	}
 
 	return
 }
 
-func getPackIcon() (iconData []byte, diagnostic *alert.Diagnostic) {
+func getPackIcon(diagnostic alert.Diagnostic) (iconData []byte) {
 	iconData = assets.DefaultPackIcon[:]
 
 	var findPackIconSuccess uint8
@@ -78,7 +79,7 @@ func getPackIcon() (iconData []byte, diagnostic *alert.Diagnostic) {
 	var secondAttemptDiag = getPackIconAttempt("icon.png", &findPackIconSuccess, &iconData)
 
 	if findPackIconSuccess > 1 {
-		diagnostic = diagnostic.AppendWarning(
+		diagnostic.AppendWarning(
 			alert.AlertTF(
 				"too many icon files, reverting to default", nil,
 				"you can use either an icon.png or a pack_icon.png, but not both", nil,
@@ -86,18 +87,20 @@ func getPackIcon() (iconData []byte, diagnostic *alert.Diagnostic) {
 		)
 		iconData = assets.DefaultPackIcon[:]
 	} else {
-		diagnostic = diagnostic.Append(firstAttemptDiag)
-		diagnostic = diagnostic.Append(secondAttemptDiag)
+		diagnostic.Append(firstAttemptDiag)
+		diagnostic.Append(secondAttemptDiag)
 	}
 
 	return
 }
 
-func getPackIconAttempt(filePath string, findPackIconSuccess *uint8, iconData *[]byte) (diagnostic *alert.Diagnostic) {
+func getPackIconAttempt(filePath string, findPackIconSuccess *uint8, iconData *[]byte) (diagnostic alert.Diagnostic) {
+	diagnostic = alert.NewDiagnostic()
+
 	if packIcon, _ := os.Stat(filePath); packIcon != nil && !packIcon.IsDir() {
 		var packIconData, err = os.ReadFile(filePath)
 		if err != nil {
-			diagnostic = diagnostic.AppendWarning(alert.WrappGoError(err))
+			diagnostic.AppendWarning(alert.WrappGoError(err))
 		} else {
 			*findPackIconSuccess += 1
 			*iconData = packIconData

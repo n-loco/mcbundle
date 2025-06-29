@@ -11,27 +11,27 @@ import (
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
-func BuildProject(projCtx *projctx.ProjectContext, release bool) (diagnostic *alert.Diagnostic) {
-	projType := projCtx.Recipe.Type
+func BuildProject(projCtx *projctx.ProjectContext, release bool) {
+	var projType = projCtx.Recipe.Type
 
 	if projType == projfiles.RecipeTypeAddOn {
-		bpCtx, rpCtx := projCtx.AddonContext(release)
+		var bpCtx, rpCtx = projCtx.AddonContext(release)
 
-		diagnostic = diagnostic.Append(buildPack(&bpCtx))
-		diagnostic = diagnostic.Append(buildPack(&rpCtx))
+		buildPack(&bpCtx)
+		buildPack(&rpCtx)
 	} else {
-		packCtx := projCtx.PackContext(release)
-		diagnostic = diagnostic.Append(buildPack(&packCtx))
+		var packCtx = projCtx.PackContext(release)
+		buildPack(&packCtx)
 	}
-
-	return
 }
 
-func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
-	projRecipe := packCtx.Recipe
-	packType := packCtx.PackType
+func buildPack(packCtx *projctx.PackContext) {
+	var diagnostic = packCtx.Diagnostic
 
-	buildPath := packCtx.PackDistDir
+	var projRecipe = packCtx.Recipe
+	var packType = packCtx.PackType
+
+	var buildPath = packCtx.PackDistDir
 	if _, err := os.Stat(buildPath); err == nil {
 		os.RemoveAll(buildPath)
 	}
@@ -44,11 +44,9 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 			continue
 		}
 
-		modCtx := packCtx.ModuleContext(&recipeModule)
+		var modCtx = packCtx.ModuleContext(&recipeModule)
 
-		mod, buildModDiag := buildModule(&modCtx)
-
-		diagnostic = diagnostic.Append(buildModDiag)
+		var mod = buildModule(&modCtx, diagnostic)
 
 		builtModules = append(builtModules, mod)
 	}
@@ -72,23 +70,22 @@ func buildPack(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
 	}
 
 	writeManifest(packCtx, builtModules, foundDeps)
-
-	return
 }
 
-func buildModule(modCtx *projctx.ModuleContext) (mod mcfiles.Module, diagnostic *alert.Diagnostic) {
-	recipeModule := modCtx.RecipeModule
+func buildModule(modCtx *projctx.ModuleContext, diagnostic alert.Diagnostic) (mod mcfiles.Module) {
+	var recipeModule = modCtx.RecipeModule
 
 	switch recipeModule.Type {
 	case projfiles.ModuleTypeData:
 		fallthrough
 	case projfiles.ModuleTypeResources:
 		{
-			diagnostic = diagnostic.Append(copyDataToBuild(modCtx.ModSourcePath, modCtx.PackDistDir))
+			copyDataToBuild(modCtx.ModSourcePath, modCtx.PackDistDir, diagnostic)
 		}
 	case projfiles.ModuleTypeServer:
 		{
 			var bundleOpts = esfiles.JSBundlerOptions{
+				Diagnostic:      diagnostic,
 				BundlingContext: esfiles.BundlingContextServerModule,
 				StripDebug:      modCtx.Release,
 				WorkDir:         modCtx.WorkDir,
@@ -103,7 +100,7 @@ func buildModule(modCtx *projctx.ModuleContext) (mod mcfiles.Module, diagnostic 
 
 			bundleOpts.AddNativeResolverPlugin(modCtx)
 
-			diagnostic = diagnostic.Append(esfiles.JSBundler(&bundleOpts))
+			esfiles.JSBundler(&bundleOpts)
 
 			if !diagnostic.HasErrors() {
 				mod.Entry = "scripts/server.js"
@@ -125,6 +122,6 @@ func buildModule(modCtx *projctx.ModuleContext) (mod mcfiles.Module, diagnostic 
 	return
 }
 
-func copyDataToBuild(from string, to string) (diagnostic *alert.Diagnostic) {
-	return diagnostic.AppendError(alert.WrappGoError(os.CopyFS(to, os.DirFS(from))))
+func copyDataToBuild(from string, to string, diagnostic alert.Diagnostic) {
+	diagnostic.AppendError(alert.WrappGoError(os.CopyFS(to, os.DirFS(from))))
 }

@@ -8,33 +8,33 @@ import (
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
-func CopyToDev(projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
-	recipeType := projCtx.Recipe.Type
+func CopyToDev(projCtx *projctx.ProjectContext) {
+	var diagnostic = projCtx.Diagnostic
 
-	diagnostic = diagnostic.Append(BuildProject(projCtx, false))
+	var recipeType = projCtx.Recipe.Type
+
+	BuildProject(projCtx, false)
 
 	if diagnostic.HasErrors() {
 		return
 	}
 
 	if recipeType == projfiles.RecipeTypeAddOn {
-		bpCtx, rpCtx := projCtx.AddonContext(false)
+		var bpCtx, rpCtx = projCtx.AddonContext(false)
 
-		diagnostic = diagnostic.Append(copyPackToDev(&bpCtx))
-		diagnostic = diagnostic.Append(copyPackToDev(&rpCtx))
+		copyPackToDev(&bpCtx)
+		copyPackToDev(&rpCtx)
 	} else {
-		packCtx := projCtx.PackContext(false)
-		diagnostic = diagnostic.Append(copyPackToDev(&packCtx))
+		var packCtx = projCtx.PackContext(false)
+		copyPackToDev(&packCtx)
 	}
-
-	return
 }
 
-func copyPackToDev(packCtx *projctx.PackContext) (diagnostic *alert.Diagnostic) {
+func copyPackToDev(packCtx *projctx.PackContext) {
+	var diagnostic = packCtx.Diagnostic
+
 	os.RemoveAll(packCtx.PackDevDir)
-	err := os.CopyFS(packCtx.PackDevDir, os.DirFS(packCtx.PackDistDir))
+	var err = os.CopyFS(packCtx.PackDevDir, os.DirFS(packCtx.PackDistDir))
 
-	diagnostic = diagnostic.AppendError(alert.WrappGoError(err))
-
-	return
+	diagnostic.AppendError(alert.WrappGoError(err))
 }

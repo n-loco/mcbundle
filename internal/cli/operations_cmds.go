@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/mcbundle/mcbundle/internal/alert"
 	"github.com/mcbundle/mcbundle/internal/operations"
 	"github.com/mcbundle/mcbundle/internal/projctx"
 )
@@ -20,9 +19,8 @@ var buildCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe,
-	func(obj *buildOptsObj, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
-		diagnostic = diagnostic.Append(operations.BuildProject(projCtx, obj.release))
-		return
+	func(obj *buildOptsObj, projCtx *projctx.ProjectContext) {
+		operations.BuildProject(projCtx, obj.release)
 	},
 	[]*operationOption[buildOptsObj]{
 		{
@@ -43,9 +41,8 @@ var devCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe|projctx.EnvRequireFlagComMojang,
-	func(obj *empty, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
-		diagnostic = diagnostic.Append(operations.CopyToDev(projCtx))
-		return
+	func(obj *empty, projCtx *projctx.ProjectContext) {
+		operations.CopyToDev(projCtx)
 	},
 	nil,
 )
@@ -56,9 +53,8 @@ var packCmd = createOperationCommand(
 		doc:  "...",
 	},
 	projctx.EnvRequireFlagRecipe,
-	func(obj *packOptsObj, projCtx *projctx.ProjectContext) (diagnostic *alert.Diagnostic) {
-		diagnostic = diagnostic.Append(operations.PackProject(projCtx, obj.debug))
-		return
+	func(obj *packOptsObj, projCtx *projctx.ProjectContext) {
+		operations.PackProject(projCtx, obj.debug)
 	},
 	[]*operationOption[packOptsObj]{
 		{

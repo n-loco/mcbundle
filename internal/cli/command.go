@@ -13,7 +13,7 @@ type commandInfo struct {
 
 type command interface {
 	info() *commandInfo
-	execute([]string) *alert.Diagnostic
+	execute([]string, alert.Diagnostic)
 }
 
 type optionInfo struct {

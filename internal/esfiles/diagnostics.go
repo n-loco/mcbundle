@@ -5,21 +5,22 @@ import (
 	"strings"
 
 	esbuild "github.com/evanw/esbuild/pkg/api"
+	"github.com/mcbundle/mcbundle/internal/alert"
 )
 
 type esbuildWrapperAlert esbuild.Message
 
-func (alertW *esbuildWrapperAlert) Display() string {
-	file := alertW.Location.File
-	line := alertW.Location.Line
-	column := alertW.Location.Column
-	msg := strings.ToLower(alertW.Text[:1]) + alertW.Text[1:]
+func (alertW *esbuildWrapperAlert) Display() alert.AlertDisplay {
+	var file = alertW.Location.File
+	var line = alertW.Location.Line
+	var column = alertW.Location.Column
+	var msg = strings.ToLower(alertW.Text[:1]) + alertW.Text[1:]
 
-	return fmt.Sprintf("%s:%d:%d: %s", file, line, column, msg)
-}
+	var message = fmt.Sprintf("%s:%d:%d: %s", file, line, column, msg)
 
-func (alertW *esbuildWrapperAlert) Tip() string {
-	return ""
+	return alert.AlertDisplay{
+		Message: message,
+	}
 }
 
 type entryFileNotFoundErrAlert struct {
@@ -27,22 +28,25 @@ type entryFileNotFoundErrAlert struct {
 	BundlingContext BundlingContext
 }
 
-func (errAlert entryFileNotFoundErrAlert) Display() string {
+func (errAlert entryFileNotFoundErrAlert) Display() alert.AlertDisplay {
 	var ctxName = errAlert.BundlingContext.String()
+	var message = "no entry file found for " + ctxName
+	var tip string
 
-	return "no entry file found for " + ctxName
-}
-
-func (errAlert entryFileNotFoundErrAlert) Tip() string {
 	var fileCount = len(errAlert.ExpectedFiles)
-	var ctxName = errAlert.BundlingContext.String()
+
 	switch fileCount {
 	case 0:
 		panic("there is no possible entries for " + ctxName + " anyway")
 	case 1:
-		return "the entry file for the " + ctxName + " must be " + errAlert.ExpectedFiles[0]
+		tip = "the entry file for the " + ctxName + " must be " + errAlert.ExpectedFiles[0]
 	default:
-		return "the entry file for the " + ctxName + " must be one of these: " + strings.Join(errAlert.ExpectedFiles, ", ")
+		tip = "the entry file for the " + ctxName + " must be one of these: " + strings.Join(errAlert.ExpectedFiles, ", ")
+	}
+
+	return alert.AlertDisplay{
+		Message: message,
+		Tip:     tip,
 	}
 }
 
@@ -51,13 +55,13 @@ type tooManyEntriesError struct {
 	ExpectedFiles   []string
 }
 
-func (errA tooManyEntriesError) Display() string {
+func (errA tooManyEntriesError) Display() alert.AlertDisplay {
 	var ctxName = errA.BundlingContext.String()
+	var message = "too many entry files found for the " + ctxName
+	var tip = "the entry file for the " + ctxName + " must be only one of these: " + strings.Join(errA.ExpectedFiles, ", ")
 
-	return "too many entry files found for the " + ctxName
-}
-
-func (errA tooManyEntriesError) Tip() string {
-	var ctxName = errA.BundlingContext.String()
-	return "the entry file for the " + ctxName + " must be only one of these: " + strings.Join(errA.ExpectedFiles, ", ")
+	return alert.AlertDisplay{
+		Message: message,
+		Tip:     tip,
+	}
 }

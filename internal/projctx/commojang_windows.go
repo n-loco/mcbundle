@@ -9,12 +9,10 @@ import (
 	"github.com/mcbundle/mcbundle/internal/alert"
 )
 
-func warnComMojangPath(bool) (_ *alert.Diagnostic) {
-	return
-}
+func warnComMojangPath(bool, alert.Diagnostic) {}
 
-func comMojangPath() (path string, _ *alert.Diagnostic) {
-	value, exists := os.LookupEnv(comMojangPathVarKey)
+func comMojangPath(alert.Diagnostic) (path string) {
+	var value, exists = os.LookupEnv(comMojangPathVarKey)
 
 	if exists {
 		path = value

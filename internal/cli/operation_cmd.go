@@ -9,25 +9,23 @@ type UnknownOptionWarnAlert struct {
 	OptionName string
 }
 
-func (warnAlert UnknownOptionWarnAlert) Display() string {
-	return "ignored unknown option: " + warnAlert.OptionName
-}
-
-func (warnAlert UnknownOptionWarnAlert) Tip() string {
-	return ""
+func (warnAlert UnknownOptionWarnAlert) Display() alert.AlertDisplay {
+	return alert.AlertDisplay{
+		Message: "ignored unknown option: " + warnAlert.OptionName,
+	}
 }
 
 type operationCommand[T any] struct {
 	commandInfo
 	optionMap    map[string]*operationOption[T]
 	requirements projctx.EnvRequireFlags
-	execCommand  func(*T, *projctx.ProjectContext) *alert.Diagnostic
+	execCommand  func(*T, *projctx.ProjectContext)
 }
 
 func createOperationCommand[T any](
 	cmdInfo commandInfo,
 	requirements projctx.EnvRequireFlags,
-	execCommand func(*T, *projctx.ProjectContext) *alert.Diagnostic,
+	execCommand func(*T, *projctx.ProjectContext),
 	options []*operationOption[T],
 ) operationCommand[T] {
 	cmdInfo.options = make([]option, 0, len(options))
@@ -53,7 +51,7 @@ func (cmd *operationCommand[T]) info() *commandInfo {
 	return &cmd.commandInfo
 }
 
-func (cmd *operationCommand[T]) execute(optList []string) (diagnostic *alert.Diagnostic) {
+func (cmd *operationCommand[T]) execute(optList []string, diagnostic alert.Diagnostic) {
 	var o T
 
 	for i := 0; i < len(optList); i++ {
@@ -64,21 +62,17 @@ func (cmd *operationCommand[T]) execute(optList []string) (diagnostic *alert.Dia
 			optSlice := optList[i+1:]
 			i += opt.process(&o, optSlice)
 		} else {
-			diagnostic = diagnostic.AppendWarning(&UnknownOptionWarnAlert{OptionName: optName})
+			diagnostic.AppendWarning(&UnknownOptionWarnAlert{OptionName: optName})
 		}
 	}
 
-	projCtx, createCtxDiag := projctx.CreateProjectContext(cmd.requirements)
-
-	diagnostic = diagnostic.Append(createCtxDiag)
+	var projCtx = projctx.CreateProjectContext(cmd.requirements, diagnostic)
 
 	if diagnostic.HasErrors() {
 		return
 	}
 
-	diagnostic = diagnostic.Append(cmd.execCommand(&o, &projCtx))
-
-	return
+	cmd.execCommand(&o, &projCtx)
 }
 
 type operationOption[T any] struct {

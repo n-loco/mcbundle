@@ -27,6 +27,7 @@ func (bctx BundlingContext) String() string {
 }
 
 type JSBundlerOptions struct {
+	Diagnostic         alert.Diagnostic
 	BundlingContext    BundlingContext
 	StripDebug         bool
 	WorkDir            string
@@ -42,7 +43,9 @@ func (opts *JSBundlerOptions) AddNativeResolverPlugin(modCtx *projctx.ModuleCont
 	opts.plugins = append(opts.plugins, minecraftNativeModuleResolver(modCtx))
 }
 
-func JSBundler(opts *JSBundlerOptions) (diagnostic *alert.Diagnostic) {
+func JSBundler(opts *JSBundlerOptions) {
+	var diagnostic = opts.Diagnostic
+
 	var entryPath string
 	var success uint8
 
@@ -52,12 +55,12 @@ func JSBundler(opts *JSBundlerOptions) (diagnostic *alert.Diagnostic) {
 
 	switch {
 	case success == 0:
-		diagnostic = diagnostic.AppendError(&entryFileNotFoundErrAlert{
+		diagnostic.AppendError(&entryFileNotFoundErrAlert{
 			ExpectedFiles:   opts.PossibleEntryFiles,
 			BundlingContext: opts.BundlingContext,
 		})
 	case success > 1:
-		diagnostic = diagnostic.AppendError(&tooManyEntriesError{
+		diagnostic.AppendError(&tooManyEntriesError{
 			BundlingContext: opts.BundlingContext,
 			ExpectedFiles:   opts.PossibleEntryFiles,
 		})
@@ -99,16 +102,14 @@ func JSBundler(opts *JSBundlerOptions) (diagnostic *alert.Diagnostic) {
 	})
 
 	for _, eswarn := range result.Warnings {
-		wwarn := esbuildWrapperAlert(eswarn)
-		diagnostic = diagnostic.AppendError(&wwarn)
+		var wwarn = esbuildWrapperAlert(eswarn)
+		diagnostic.AppendError(&wwarn)
 	}
 
 	for _, eserror := range result.Errors {
-		werror := esbuildWrapperAlert(eserror)
-		diagnostic = diagnostic.AppendError(&werror)
+		var werror = esbuildWrapperAlert(eserror)
+		diagnostic.AppendError(&werror)
 	}
-
-	return
 }
 
 func getEntryAttempt(

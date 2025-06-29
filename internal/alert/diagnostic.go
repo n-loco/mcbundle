@@ -4,62 +4,49 @@ import (
 	"reflect"
 )
 
-type Diagnostic struct {
+type diagnosticInternal struct {
 	Warnings []Alert
 	Errors   []Alert
 }
 
-func (diagnostic *Diagnostic) Append(other *Diagnostic) *Diagnostic {
-	if other == nil {
-		return diagnostic
-	}
-
-	if diagnostic == nil {
-		diagnostic = new(Diagnostic)
-	}
-
-	diagnostic.Warnings = append(diagnostic.Warnings, other.Warnings...)
-	diagnostic.Errors = append(diagnostic.Errors, other.Errors...)
-
-	return diagnostic
+type Diagnostic struct {
+	*diagnosticInternal
 }
 
-func (diagnostic *Diagnostic) AppendWarning(warning Alert) *Diagnostic {
-	if reflect.ValueOf(warning).IsNil() {
-		return diagnostic
+func NewDiagnostic() Diagnostic {
+	return Diagnostic{new(diagnosticInternal)}
+}
+
+func (diagnostic Diagnostic) Append(other Diagnostic) {
+	for _, warn := range other.Warnings {
+		diagnostic.AppendWarning(warn)
 	}
 
-	if diagnostic == nil {
-		diagnostic = new(Diagnostic)
+	for _, err := range other.Errors {
+		diagnostic.AppendError(err)
+	}
+}
+
+func (diagnostic Diagnostic) AppendWarning(warning Alert) {
+	if warning == nil || reflect.ValueOf(warning).IsNil() {
+		return
 	}
 
 	diagnostic.Warnings = append(diagnostic.Warnings, warning)
-
-	return diagnostic
 }
 
-func (diagnostic *Diagnostic) AppendError(err Alert) *Diagnostic {
+func (diagnostic Diagnostic) AppendError(err Alert) {
 	if err == nil || reflect.ValueOf(err).IsNil() {
-		return diagnostic
-	}
-
-	if diagnostic == nil {
-		diagnostic = new(Diagnostic)
+		return
 	}
 
 	diagnostic.Errors = append(diagnostic.Errors, err)
-
-	return diagnostic
 }
 
-func (diagnostic *Diagnostic) IsZero() bool {
-	if diagnostic == nil {
-		return true
-	}
-
+func (diagnostic Diagnostic) IsZero() bool {
 	return (len(diagnostic.Warnings) == 0) && (len(diagnostic.Errors) == 0)
 }
 
-func (diagnostic *Diagnostic) HasErrors() bool {
-	return !diagnostic.IsZero() && len(diagnostic.Errors) > 0
+func (diagnostic Diagnostic) HasErrors() bool {
+	return len(diagnostic.Errors) > 0
 }

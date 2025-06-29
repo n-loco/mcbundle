@@ -9,20 +9,19 @@ import (
 	"github.com/mcbundle/mcbundle/internal/txtui"
 )
 
-func warnComMojangPath(should bool) (diagnostic *alert.Diagnostic) {
+func warnComMojangPath(should bool, diagnostic alert.Diagnostic) {
 	if should {
-		_, exists := os.LookupEnv(comMojangPathVarKey)
+		var _, exists = os.LookupEnv(comMojangPathVarKey)
 		if !exists {
-			diagnostic = diagnostic.AppendWarning(comMojangAlert())
+			diagnostic.AppendWarning(comMojangAlert())
 		}
 	}
-	return
 }
 
-func comMojangPath() (path string, diagnostic *alert.Diagnostic) {
+func comMojangPath(diagnostic alert.Diagnostic) (path string) {
 	value, exists := os.LookupEnv(comMojangPathVarKey)
 	if !exists {
-		diagnostic = diagnostic.AppendError(comMojangAlert())
+		diagnostic.AppendError(comMojangAlert())
 	}
 	path = value
 	return
