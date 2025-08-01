@@ -4,10 +4,13 @@
   "description": "...",
   "type": "module",
   "files": [
-    "dist/"
+    "debug/"
   ],
-  "bin": "dist/mcbundle.mjs",
+  "bin": "debug/mcbundle.mjs",
   "scripts": {
+    "sync-package": "tools.syncv && node update_native.js",
+    "prepack": "tools.prepack",
+    "postpack": "tools.postpack",
     "build": "node esbuild.js"
   },
   "keywords": [],
@@ -26,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "esbuild": "^0.25.3"
+    "esbuild": "^0.25.3",
+    "root": "workspace:.."
   }
 }

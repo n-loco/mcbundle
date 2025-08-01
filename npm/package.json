@@ -1,6 +1,27 @@
 {
+  "name": "root",
+  "version": "0.1.0-dev+local",
   "type": "module",
   "private": true,
-  "scripts": {},
-  "packageManager": "pnpm@10.8.1"
+  "bin": {
+    "tools.prepack": "./tools/bin/prepack.js",
+    "tools.postpack": "./tools/bin/postpack.js",
+    "tools.syncv": "./tools/bin/syncv.js"
+  },
+  "exports": {
+    ".": null,
+    "./build": {
+      "types": "./tools/lib/build/index.d.ts",
+      "default": "./tools/lib/build/index.js"
+    }
+  },
+  "scripts": {
+    "tool-types": "tsc",
+    "touch": "node touch.js"
+  },
+  "packageManager": "pnpm@10.8.1",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "typescript": "^5.9.2"
+  }
 }

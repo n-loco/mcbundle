@@ -9,6 +9,13 @@ else
   SHELL := sh
 endif
 
+# param $(1): executable name/path
+# returns 1 on success or empty on failure
+exec-exists = $(strip $(if $(WIN32),\
+  $(shell WHERE $(1) > NUL 2> NUL && ECHO 1 & EXIT /B 0),\
+  $(shell command -v $(1) >/dev/null 2>&1 && echo 1; exit 0)\
+))
+
 -include config.mk
 
 BUILD_MODE ?= debug
@@ -21,32 +28,26 @@ endif
 
 export BUILD_MODE
 
-PYTHON ?= $(if $(WIN32),python,python3)
-PYTHON_RT := $(PYTHON) $(PYTHON_FLAGS)
+IS_DEBUG := $(filter debug,$(BUILD_MODE))
+IS_RELEASE := $(filter release,$(BUILD_MODE))
 
-include scripts/inc.mk
+include tools/inc.mk
 
 # ==== external dependencies ===== #
 
+# param $(1): executable name/path
+# returns $(1) if it does not exist
+return-if-missing = $(if $(call exec-exists,$(1)),,$(1))
+
 NOT_FOUND_PROGRAMS :=
 
-NOT_FOUND_PROGRAMS += $(call findexec,go)
-NOT_FOUND_PROGRAMS += $(call findexec,$(PYTHON))
-NOT_FOUND_PROGRAMS += $(call findexec,node)
-NOT_FOUND_PROGRAMS += $(call findexec,pnpm)
+NOT_FOUND_PROGRAMS += $(call return-if-missing,go)
+NOT_FOUND_PROGRAMS += $(call return-if-missing,node)
+NOT_FOUND_PROGRAMS += $(call return-if-missing,pnpm)
 
 ifneq (,$(NOT_FOUND_PROGRAMS))
   $(error Programs not found: $(NOT_FOUND_PROGRAMS))
 endif
 
 undefine NOT_FOUND_PROGRAMS
-
-# ========== variables =========== #
-
-DEFAULT_PLATFORM := $(shell node -e "process.stdout.write(process.platform+'-'+process.arch)")
-ALL_PLATFORMS := $(platform-wildcard)
-
-IS_DEBUG := $(filter debug,$(BUILD_MODE))
-IS_RELEASE := $(filter release,$(BUILD_MODE))
-
-DBGPATH := $(if $(IS_DEBUG),debug/)
+undefine return-if-missing

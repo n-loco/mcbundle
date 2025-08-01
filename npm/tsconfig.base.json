@@ -3,6 +3,10 @@
     "esModuleInterop": true,
     "module": "NodeNext",
     "moduleResolution": "nodenext",
-    "strict": true
+    "strict": true,
+    "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   }
 }

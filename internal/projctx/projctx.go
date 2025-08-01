@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/mcbundle/mcbundle/assets"
 	"github.com/mcbundle/mcbundle/internal/alert"
-	"github.com/mcbundle/mcbundle/internal/assets"
 	"github.com/mcbundle/mcbundle/internal/projfiles"
 )
 
@@ -71,7 +71,7 @@ func CreateProjectContext(flags EnvRequireFlags, diagnostic alert.Diagnostic) (p
 }
 
 func getPackIcon(diagnostic alert.Diagnostic) (iconData []byte) {
-	iconData = assets.DefaultPackIcon[:]
+	iconData = assets.DefaultPackIcon
 
 	var findPackIconSuccess uint8
 
@@ -85,7 +85,7 @@ func getPackIcon(diagnostic alert.Diagnostic) (iconData []byte) {
 				"you can use either an icon.png or a pack_icon.png, but not both", nil,
 			),
 		)
-		iconData = assets.DefaultPackIcon[:]
+		iconData = assets.DefaultPackIcon
 	} else {
 		diagnostic.Append(firstAttemptDiag)
 		diagnostic.Append(secondAttemptDiag)

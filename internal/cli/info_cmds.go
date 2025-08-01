@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"github.com/mcbundle/mcbundle/assets"
 	"github.com/mcbundle/mcbundle/internal/alert"
-	"github.com/mcbundle/mcbundle/internal/assets"
 	"github.com/mcbundle/mcbundle/internal/sysi"
 	"github.com/mcbundle/mcbundle/internal/txtui"
 )

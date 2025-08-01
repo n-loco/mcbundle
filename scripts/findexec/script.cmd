@@ -1,3 +1,0 @@
-@ECHO OFF
-WHERE %1 > NUL 2> NUL && ECHO 1
-EXIT /B 0

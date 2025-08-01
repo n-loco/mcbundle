@@ -10,16 +10,13 @@
 **/node_modules/
 *.tgz
 
-# Python
-*.pyc
-**/__pycache__/
-
 # Build
 npm/@mcbundle/*
-!npm/@mcbundle/README.md
-internal/assets/
+!npm/@mcbundle/.gitkeep
 **/dist/
 **/debug/
+.og.*
+npm/tools/**/*.d.ts
 
 # User ignored files
 config.mk

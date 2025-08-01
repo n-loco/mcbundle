@@ -8,7 +8,7 @@ function findExecutable(): string {
     let suffix = os == "win32" ? ".exe" : "";
     let exeName = `mcbundle${suffix}`;
     let packageName = `@mcbundle/${os}-${cpu}`;
-    let fileURL = import.meta.resolve(`${packageName}/${exeName}`);
+    let fileURL = import.meta.resolve(`${packageName}/${DistDir}/${exeName}`);
     return url.fileURLToPath(fileURL);
 }
 

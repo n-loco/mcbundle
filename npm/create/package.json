@@ -4,10 +4,13 @@
   "version": "1.0.0-indev",
   "type": "module",
   "files": [
-    "dist/create.mjs"
+    "debug/create.mjs"
   ],
-  "bin": "dist/create.mjs",
+  "bin": "debug/create.mjs",
   "scripts": {
+    "sync-package": "tools.syncv",
+    "prepack": "tools.prepack",
+    "postpack": "tools.postpack",
     "build": "node esbuild.js"
   },
   "keywords": [],
@@ -16,6 +19,7 @@
   "packageManager": "pnpm@10.8.1",
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "esbuild": "^0.25.3"
+    "esbuild": "^0.25.3",
+    "root": "workspace:.."
   }
 }

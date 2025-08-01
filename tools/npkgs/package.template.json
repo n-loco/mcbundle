@@ -1,0 +1,28 @@
+{
+  "name": "@mcbundle/{{target_double}}",
+  "description": "mcbundle binary for {{display_cpu}} {{display_os}}",
+  "version": "{{program_version}}",
+  "files": [
+    "debug/mcbundle{{exename}}"
+  ],
+  "scripts": {
+    "prepack": "tools.prepack",
+    "postpack": "tools.postpack"
+  },
+  "packageManager": "pnpm@10.8.1",
+  "devDependencies": {
+    "root": "workspace:../.."
+  },
+  "preferUnplugged": true,
+  "os": [
+    "{{os}}"
+  ],
+  "cpu": [
+    "{{cpu}}"
+  ],
+  "publishConfig": {
+    "executableFiles": [
+      "./dist/mcbundle{{exename}}"
+    ]
+  }
+}

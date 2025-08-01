@@ -1,0 +1,6 @@
+{
+  "files": [
+    "dist/create.mjs"
+  ],
+  "bin": "dist/create.mjs"
+}
