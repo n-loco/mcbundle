@@ -1,7 +1,7 @@
 {
   "name": "create-mcbundle",
-  "description": "...",
   "version": "1.0.0-indev",
+  "description": "Project generator for mcbundle.",
   "type": "module",
   "files": [
     "debug/create.mjs"
@@ -13,9 +13,34 @@
     "postpack": "tools.postpack",
     "build": "node esbuild.js"
   },
-  "keywords": [],
-  "author": "...",
+  "keywords": [
+    "create",
+    "init",
+    "setup",
+    "scaffold",
+    "template",
+    "boilerplate",
+    "project-generator",
+    "mcbundle",
+    "minecraft-bedrock-edition",
+    "minecraft-bedrock",
+    "minecraft-addons",
+    "bedrock-addons",
+    "bundler",
+    "minecraft",
+    "mcpack",
+    "mcaddon"
+  ],
   "license": "MIT",
+  "homepage": "https://github.com/n-loco/mcbundle#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n-loco/mcbundle.git",
+    "directory": "npm/create"
+  },
+  "bugs": {
+    "url": "https://github.com/n-loco/mcbundle/issues"
+  },
   "packageManager": "pnpm@10.8.1",
   "devDependencies": {
     "@types/node": "^22.14.1",

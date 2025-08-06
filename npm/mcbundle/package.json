@@ -1,7 +1,7 @@
 {
   "name": "mcbundle",
   "version": "1.0.0-indev",
-  "description": "...",
+  "description": "CLI bundler for Minecraft: Bedrock Edition add-on development.",
   "type": "module",
   "files": [
     "debug/"
@@ -13,9 +13,26 @@
     "postpack": "tools.postpack",
     "build": "node esbuild.js"
   },
-  "keywords": [],
-  "author": "...",
+  "keywords": [
+    "minecraft-bedrock-edition",
+    "minecraft-bedrock",
+    "minecraft-addons",
+    "bedrock-addons",
+    "bundler",
+    "mcbundle",
+    "minecraft",
+    "mcpack",
+    "mcaddon"
+  ],
   "license": "MIT",
+  "homepage": "https://github.com/n-loco/mcbundle#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/n-loco/mcbundle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/n-loco/mcbundle/issues"
+  },
   "packageManager": "pnpm@10.8.1",
   "optionalDependencies": {
     "@mcbundle/darwin-arm64": "workspace:../@mcbundle/darwin-arm64",
