@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import path from "node:path";
+
+const licenseData = fs.readFileSync(path.join(import.meta.dirname, "..", "..", "..", "LICENSE"));
 
 const { atime, mtime } = fs.statSync("package.json");
 let packageJSONData = fs.readFileSync("package.json", "utf-8");
@@ -17,3 +20,5 @@ Object.assign(packageJSON, packagePublishJSON);
 packageJSONData = JSON.stringify(packageJSON, null, "  ");
 
 fs.writeFileSync("package.json", new TextEncoder().encode(packageJSONData))
+
+fs.writeFileSync("LICENSE", licenseData);

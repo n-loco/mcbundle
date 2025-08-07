@@ -15,8 +15,11 @@ npm/@mcbundle/*
 !npm/@mcbundle/.gitkeep
 **/dist/
 **/debug/
-.og.*
 npm/tools/**/*.d.ts
+
+# Pack
+.og.*
+npm/**/LICENSE
 
 # User ignored files
 config.mk

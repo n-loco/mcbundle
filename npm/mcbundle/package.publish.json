@@ -1,6 +1,7 @@
 {
   "files": [
-    "dist/"
+    "dist/",
+    "THIRD_PARTY.md"
   ],
   "bin": "dist/mcbundle.mjs"
 }

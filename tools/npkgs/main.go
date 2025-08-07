@@ -45,6 +45,7 @@ func main() {
 
 		var packagePath = filepath.Join(packageDir, "package.json")
 		var packagePublishPath = filepath.Join(packageDir, "package.publish.json")
+		var thirdPartyPath = filepath.Join(packageDir, "THIRD_PARTY.md")
 
 		var packageFile, pkgFErr = os.Create(packagePath)
 		if pkgFErr != nil {
@@ -58,7 +59,14 @@ func main() {
 		}
 		defer packagePublishFile.Close()
 
+		var thirdPartyFile, tpfErr = os.Create(thirdPartyPath)
+		if tpfErr != nil {
+			return
+		}
+		defer thirdPartyFile.Close()
+
 		packageFile.Write([]byte(finalPackage))
 		packagePublishFile.Write([]byte(finalPublishPackage))
+		thirdPartyFile.Write([]byte(thirdParty))
 	}
 }

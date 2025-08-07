@@ -1,5 +1,6 @@
 {
   "files": [
-    "dist/mcbundle{{exename}}"
+    "dist/mcbundle{{exename}}",
+    "THIRD_PARTY.md"
   ]
 }
