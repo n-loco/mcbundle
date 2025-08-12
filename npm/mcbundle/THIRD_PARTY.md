@@ -7,7 +7,10 @@ This document lists third-party software bundled and redistributed by this packa
 
 ## [esbuild](https://github.com/evanw/esbuild)
 
-- **Redistributed by**: All native packages published under the `@mcbundle/{os}-{arch}` naming convention.
+**Copyright © 2020, Evan Wallace**.
+- Licensed under the **MIT License**.
+- Version — `0.25.2`.
+- Redistributed by all native packages published under the `@mcbundle/{os}-{arch}` naming convention.
 
 ```
 MIT License

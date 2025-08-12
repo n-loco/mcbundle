@@ -6,6 +6,10 @@ This document lists third-party software bundled and redistributed by this packa
 
 ## [esbuild](https://github.com/evanw/esbuild)
 
+**Copyright © 2020, Evan Wallace**.
+- Licensed under the **MIT License**.
+- Version — `0.25.2`.
+
 ```
 MIT License
 
