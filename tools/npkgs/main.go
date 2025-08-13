@@ -38,6 +38,7 @@ func main() {
 
 		var finalPackage = vars.apply(templatePackage)
 		var finalPublishPackage = vars.apply(templateReleasePackage)
+		var finalReadme = vars.apply(templateReadme)
 
 		var packageDir = filepath.Join(baseDir, targetDouble)
 
@@ -46,6 +47,7 @@ func main() {
 		var packagePath = filepath.Join(packageDir, "package.json")
 		var packagePublishPath = filepath.Join(packageDir, "package.publish.json")
 		var thirdPartyPath = filepath.Join(packageDir, "THIRD_PARTY.md")
+		var readmePath = filepath.Join(packageDir, "README.md")
 
 		var packageFile, pkgFErr = os.Create(packagePath)
 		if pkgFErr != nil {
@@ -65,8 +67,15 @@ func main() {
 		}
 		defer thirdPartyFile.Close()
 
+		var readmeFile, rmfErr = os.Create(readmePath)
+		if rmfErr != nil {
+			return
+		}
+		defer readmeFile.Close()
+
 		packageFile.Write([]byte(finalPackage))
 		packagePublishFile.Write([]byte(finalPublishPackage))
 		thirdPartyFile.Write([]byte(thirdParty))
+		readmeFile.Write([]byte(finalReadme))
 	}
 }
