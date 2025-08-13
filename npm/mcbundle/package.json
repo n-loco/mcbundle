@@ -28,7 +28,8 @@
   "homepage": "https://github.com/n-loco/mcbundle#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/n-loco/mcbundle.git"
+    "url": "https://github.com/n-loco/mcbundle.git",
+    "directory": "npm/mcbundle"
   },
   "bugs": {
     "url": "https://github.com/n-loco/mcbundle/issues"
