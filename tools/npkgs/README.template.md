@@ -17,6 +17,6 @@ For more information, refer to:
 This software is distributed under the **MIT License** and may include third-party components.
 
 - [License](./LICENSE)
-- [Third-party notices](./THIRD_PARTY.md)
+- [Third-party notices](./tools/npkgs/THIRD_PARTY.md)
 
 ------------------------------------------------------------------------------------------

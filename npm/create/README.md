@@ -33,6 +33,6 @@ bun create mcbundle@latest
 
 This software is licensed under the **MIT License**.
 
-- [License](./LICENSE)
+- [License](../../LICENSE)
 
 -------------------------------------------------------
