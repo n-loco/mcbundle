@@ -28,12 +28,12 @@ func helpCmd(argv *argvIterator, diagnostic alert.Diagnostic) {
 		}
 	}
 
-	txtui.Print(txtui.UIPartOut, "Usage: mcbundle [command] <options>\n")
+	txtui.Print(txtui.UIPartOut, "Usage: mcbundle <command> [options]\n")
 	txtui.Print(txtui.UIPartOut, `
 Commands:
     build, bundle              Build the project.
-    dev, local-deploy          Copy the built project to com.mojang.
-    pack, dist                 Package the project as a .mcaddon or .mcpack.
+    dev, local-deploy          Deploy the project locally into com.mojang.
+    dist, pack                 Package the project into a .mcaddon or .mcpack.
     help, --help, -h           Show this help message.
     version, --version, -v     Show the current version.
 
